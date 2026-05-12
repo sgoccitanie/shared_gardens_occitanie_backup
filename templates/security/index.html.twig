@@ -1,0 +1,37 @@
+{# templates/security/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Connexion | Espace d'Administration
+{% endblock %}
+
+{% block content %}
+    <div class="content_dashboard">
+        <div class="container">
+            <div class="row d-flex justify-content-center">
+                <h2 class="text-center kgSecondChancesSolid">Connexion à l'espace d'administration</h2>
+
+                {# Messages FLASH #}
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {# Connexion avec EasyAdmin #}
+                {% include '@EasyAdmin/page/login.html.twig' with {
+                    'error': error,
+                    'last_username': last_username,
+                    'csrf_token_intention': csrf_token_intention,
+                    'target_path': null,
+                    'username_parameter': '_email',
+                    'password_parameter': '_password',
+                    'remember_me_enabled': true,
+                    'remember_me_checked': true,
+                    'forgot_password_enabled': true,
+                    'forgot_password_path': forgot_password_path
+                } only %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

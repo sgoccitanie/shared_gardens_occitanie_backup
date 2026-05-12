@@ -1,0 +1,58 @@
+controllers:
+  resource:
+    path: ../src/Controller/
+    namespace: App\Controller
+  type: attribute
+
+fm_elfinder:
+  resource: "@FMElfinderBundle/Resources/config/routing.yaml"
+oauth2:
+  resource: "@LeagueOAuth2ServerBundle/Resources/config/routes.php"
+  type: php
+
+# Routes statiques (FOOTER : RGPD, mentions légales, etc.)
+app_rgpd:
+    path: /rgpd
+    controller: App\Controller\PageController::rgpd
+    methods: GET
+
+app_legal:
+    path: /mentions-legales
+    controller: App\Controller\PageController::legal
+    methods: GET
+
+app_privacy:
+    path: /politique-de-confidentialite
+    controller: App\Controller\PageController::privacy
+    methods: GET
+
+app_cookies:
+    path: /cookies
+    controller: App\Controller\PageController::cookies
+    methods: GET
+
+# À propos : pour le moment revient à app_home , créer un nv fichier apropos.html.twig dans templates/page s nécessaire
+app_about:
+    path: /qui-sommes-nous
+    controller: App\Controller\PageController::about
+    methods: GET
+
+# Routes dynamiques (slugs)
+app_home:
+    path: /
+    controller: App\Controller\HomeController::index
+    methods: GET
+
+app_home_with_slug_and_id:
+    path: /{slug}/{id}
+    controller: App\Controller\HomeController::index
+    methods: GET
+    requirements:
+        id: '\d+'
+
+app_home_with_id:
+    path: /{id}
+    controller: App\Controller\HomeController::index
+    methods: GET
+    requirements:
+        id: '\d+'

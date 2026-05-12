@@ -1,0 +1,34 @@
+{# Ghoster un user #}
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block table %}
+    {{ parent() }}
+
+    {# Utilisateurs ghostés en gris #}
+    <style>
+        .ghosted-user {
+            opacity: 0.7;
+            background-color: #6c757d !important;
+            color: white !important;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const isGhostedCell = Array.from(cells).find(cell => cell.textContent.includes('Oui'));
+
+                if (isGhostedCell && cells[0].textContent.trim() !== '') {
+                    row.classList.add('ghosted-user');
+                    row.parentNode.appendChild(row); // Déplacer la ligne des ghostés en bas
+                }
+                {% if user.isGhosted %}
+                    <span class="badge bg-secondary">Ghosté</span>
+                {% endif %}
+                    });
+                });
+    </script>
+{% endblock %}

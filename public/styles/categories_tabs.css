@@ -1,0 +1,67 @@
+/* Catégories et sous-onglets (tabs) */
+.categories-tabs-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 15px 10vw;
+}
+.category-section {
+    position: relative;
+    display: inline-block;
+    text-align: left;
+}
+.category-title {
+    font-family: 'KG Second Chances Sketch';
+    margin-bottom: 0;
+    font-size: 1.2rem;
+    text-align: left;
+}
+.category-title a {
+    font-weight: 400;
+    text-decoration: underline;
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: var(--green);
+    border-radius: 5px;
+    box-shadow: var(--box-shadow-card);
+    transition: transform 0.2s;
+}
+.category-title a:hover {
+    transform: scale(1.05);
+}
+.tabs-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-left: 10px;
+    display: none;
+    flex-direction: column;
+    font-size: 2rem;
+    gap: 5px;
+    padding: 10px 0;
+    min-width: 180px;
+    z-index: 1000;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+.category-section:hover .tabs-list {
+    display: flex;
+}
+.tab-link {
+    color: var(--gray-border);
+    text-decoration: underline;
+    padding: 4px 8px;
+    font-size: 1.2rem;
+    white-space: nowrap;
+    background-color: transparent;
+    border: none;
+}
+.tab-link:hover {
+    transform: scale(1.05);
+    border-radius: 3px;
+    text-decoration: underline;
+    color: gray;
+    font-weight: 400;
+}

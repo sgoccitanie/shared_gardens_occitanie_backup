@@ -1,0 +1,40 @@
+{
+  "name": "shared_gardens_occitanie",
+  "version": "1.0.0",
+  "description": "Projet du Réseau des Jardins partagés d'Occitanie en Symfony 7",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "http-server ./public --cors",
+    "dev": "http-server ./public --cors",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sgoccitanie/shared_gardens_occitanie.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sgoccitanie/shared_gardens_occitanie/issues"
+  },
+  "homepage": "https://github.com/sgoccitanie/shared_gardens_occitanie#readme",
+  "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^44.1.0",
+    "@editorjs/editorjs": "^2.30.7",
+    "@editorjs/header": "^2.8.8",
+    "@editorjs/list": "^2.0.2",
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/google-calendar": "^6.1.15",
+    "googleapis": "^144.0.0",
+    "http-server": "^14.1.1"
+  },
+  "devDependencies": {
+    "cypress": "^15.9.0"
+  }
+}

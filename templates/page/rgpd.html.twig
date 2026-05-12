@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RGPD | Réseau des Semeurs de Jardins{% endblock %}
+
+{% block content %}
+    <div class="container main-container-style pt-5 pb-5">
+        <h1 class="text-center kgSecondChancesSolid mb-5">Politique de Protection des Données (RGPD)</h1>
+
+        <div class="rgpd-content bg-white p-4 rounded shadow-sm">
+            <h2 class="rgpd-title mb-4">1. Responsable du traitement</h2>
+            <p>
+                <strong>Réseau des Semeurs de Jardins</strong><br>
+                Adresse : 59bis rue Las Sorbes à Montpellier 34000<br>
+                Email : <a href="mailto:semeursdejardinslr@gmail.com">semeursdejardinslr@gmail.com</a>
+            </p>
+
+            <h2 class="rgpd-title mb-4 mt-5">2. Données personnelles collectées</h2>
+            <p>Nous collectons les données suivantes :</p>
+            <ul>
+                <li><strong>Formulaires</strong> : Nom, email, téléphone (pour les inscriptions aux événements ou contacts).</li>
+                <li><strong>Navigation</strong> : Adresse IP, pages visitées (via Google Analytics, si activé).</li>
+            </ul>
+
+            <h2 class="rgpd-title mb-4 mt-5">3. Finalités et base légale</h2>
+            <p>
+                Vos données servent à :
+                <ul>
+                    <li>Gérer votre participation aux événements (calendrier).</li>
+                    <li>Répondre à vos demandes (formulaire de contact).</li>
+                    <li>Modérer vos commentaires dans nos  articles.</li>
+                </ul>
+                <strong>Base légale</strong> : Consentement (RGPD art. 6.1.a) ou exécution d’un service (RGPD art. 6.1.b).
+            </p>
+
+            <h2 class="rgpd-title mb-4 mt-5">4. Destinataires</h2>
+            <p>
+                Vos données sont accessibles à :
+                <ul>
+                    <li>L’équipe administrative du Réseau des Semeurs de Jardins.</li>
+                    <li>Nos prestataires (hébergeur à définir, Google Drive/Calendar) sous contrat de confidentialité.</li>
+                </ul>
+                <strong>Aucune donnée n’est vendue.</strong>
+            </p>
+
+            <h2 class="rgpd-title mb-4 mt-5">5. Durée de conservation</h2>
+            <ul>
+                <li><strong>Données de contact</strong> : 3 ans après le dernier échange.</li>
+                <li><strong>Données techniques</strong> : 26 mois (cookies).</li>
+            </ul>
+
+            <h2 class="rgpd-title mb-4 mt-5">6. Vos droits</h2>
+            <p>
+                Vous pouvez :
+                <ul>
+                    <li>Accéder à vos données.</li>
+                    <li>Les rectifier ou supprimer.</li>
+                    <li>Limiter leur traitement.</li>
+                    <li>Vous opposer à leur utilisation.</li>
+                </ul>
+                Pour exercer ces droits : <a href="mailto:semeursdejardinslr@gmail.com">semeursdejardinslr@gmail.com</a>.
+            </p>
+
+            <h2 class="rgpd-title mb-4 mt-5">7. Cookies</h2>
+            <p>
+                Nous utilisons des cookies pour :
+                <ul>
+                    <li>Le fonctionnement technique du site.</li>
+                    <li>Les statistiques (Google Analytics).</li>
+                </ul>
+                <a href="{{ path('app_cookies') }}">Gérer les cookies</a>.
+            </p>
+
+            <h2 class="rgpd-title mb-4 mt-5">8. Sécurité</h2>
+            <p>
+                Mesures en place :
+                <ul>
+                    <li>Chiffrement (HTTPS).</li>
+                    <li>Accès restreint aux données.</li>
+                </ul>
+            </p>
+
+            <h2 class="rgpd-title mb-4 mt-5">9. Réclamation</h2>
+            <p>
+                Pour toute réclamation, contactez la <a href="https://www.cnil.fr" target="_blank">CNIL</a>.
+            </p>
+
+            <p class="text-center mt-5 text-muted">
+                Mise à jour : 31 mars 2026
+            </p>
+        </div>
+    </div>
+{% endblock %}

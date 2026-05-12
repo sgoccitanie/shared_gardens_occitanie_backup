@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ressources | Réseau des Semeurs de Jardins{% endblock %}
+
+{% block content %}
+    <div class="container main-container-style pt-5">
+
+        <h2 class="text-center kgSecondChancesSolid pb-lg-5">Ressources Google Drive</h2>
+
+        {# BARRE DE RECHERCHE #}
+        <form method="get" action="{{ path('app_resources') }}" class="mb-4">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    name="q" 
+                    class="form-control" 
+                    placeholder="Rechercher une ressource..."
+                    value="{{ query ?? '' }}"
+                >
+                <button class="button btn-secondary-green" type="submit">
+                    Rechercher
+                </button>
+            </div>
+        </form>
+
+        {% if message is defined and files|length == 0 %}
+            <div class="alert alert-warning">
+                {{ message }}
+            </div>
+         {% endif %}
+
+        {% if files|length > 0 %}
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                {% for file in files %}
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ file.name }}</h5>
+                                <p class="card-text">
+                                    {{ file.description ? file.description : 'Aucune description' }}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="badge bg-secondary">
+                                        {{ file.parents[0] == '1sTXBydEI27J0mkwM-A50jXKRLpCsD4vI' ? 'Dossier R. Morez' : 'Dossier RSJ' }}
+                                    </span>
+                                    <div>
+                                        <a href="{{ file.webViewLink }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                            <i class="fa-solid fa-eye"></i> Voir
+                                        </a>
+                                        {% if file.mimeType == 'application/pdf' %}
+                                            <a href="{{ file.webContentLink }}" class="btn btn-sm btn-outline-danger" target="_blank">
+                                                <i class="fa-solid fa-file-pdf"></i> PDF
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                <p>Aucune ressource trouvée</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

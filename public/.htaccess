@@ -1,0 +1,22 @@
+<IfModule mod_headers.c>
+    # Autoriser CORS pour tous les fichiers statiques (PDF, images, SVG, JS, CSS, etc.)
+    <FilesMatch "\.(eot|ttf|otf|woff|woff2|svg|svgz|pdf|jpg|jpeg|png|gif|ico|js|css|html)$">
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+        Header set Access-Control-Allow-Headers
+        "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range"
+        Header set Access-Control-Expose-Headers "Content-Length,Content-Range"
+    </FilesMatch>
+    <FilesMatch "\.pdf$">
+        Header set Content-Type "application/pdf"
+        </FilesMatch>
+
+    # Forcer le type MIME pour les SVG
+    <FilesMatch "\.svg$">
+        Header set Content-Type "image/svg+xml"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_mime.c>
+    AddType image/svg+xml svg svgz
+</IfModule>

@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ pageTitle|default('Accueil | Réseau des Semeurs de Jardins') }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/calendar.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid d-flex flex-column main-container-style">
+    {% for message in app.flashes('success') %}
+        <div class="flash-notice alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="flash-notice alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <div class="content_home josefinSans">
+        <div class="home_picture" style="background-image: url('{{ asset(bannerPath) }}');"></div>
+
+        {# Categories et onglets #}
+        {% include '_partials/categories_tabs/categories_tabs.html.twig' %}
+
+        <div class="content_main">
+            <div class="d-flex flex-column p-2">
+                {% if displayList %}
+                    {% if postsWithUrls|length > 0 %}
+                        <div class="d-flex justify-content-end p-lg-2">
+                            <select class="form-select" aria-label="Default select example" style="width: fit-content;" onchange="window.location.href='{{ path('app_articles') }}?order=' + this.value">
+                                <option value="ASC" {% if order == 'ASC' %} selected {% endif %}>Du plus ancien au plus récent</option>
+                                <option value="DESC" {% if order == 'DESC' %} selected {% endif %}>Du plus récent au plus ancien</option>
+                            </select>
+                        </div>
+                        <div class="row row-cols-1 row-cols-md-1 g-4 d-flex flex-row" id="postslist-container">
+                            {% include 'home/postslist.html.twig' %}
+                        </div>
+                    {% else %}
+                        <div class="post-container">
+                            <h2 class="empty-post">Aucun article trouvé</h2>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    {% if postsWithUrls|length == 1 %}
+                        {% set postWithUrl = postsWithUrls[0] %}
+                        <div class="post-container">
+                            <h2>{{ postWithUrl.post.title|raw }}</h2>
+                            <div class="post-content">{{ postWithUrl.post.content|raw }}</div>
+                        </div>
+                        {% if id %}
+                            <div class="col-12 m-auto comments-section my-3">
+                                <h4 class="my-4 mb-5 text-center">Commentaires ({{ commentCount }})</h4>
+                                {% if commentForm %}
+                                    <h4 class="my-4 fw-light" style="margin-left:12.5%"> Ajouter un commentaire</h4>
+                                    <form action="{{ path('app_comment_post', {'id': id}) }}" method="post" class="w-75 m-auto my-4 text-end">
+                                        {{ form_start(commentForm) }}
+                                            {{ form_widget(commentForm.content) }}
+                                            <button class="button btn-secondary-green mx-5 my-3" type="submit">Envoyer</button>
+                                        {{ form_end(commentForm) }}
+                                    </form>
+                                {% endif %}
+                                {% for comment in comments %}
+                                    <div class="comment py-2">
+                                        <p>
+                                            {% set roles = (comment.user and comment.user.roles is defined) ? comment.user.roles : [] %}
+                                            {% if 'ROLE_EDITOR' in roles and 'ROLE_ADMIN' in roles %}
+                                                {% set role_label = 'Super-modérateur' %}
+                                            {% elseif 'ROLE_EDITOR' in roles %}
+                                                {% set role_label = 'Modérateur' %}
+                                            {% else %}
+                                                {% set role_label = '' %}
+                                            {% endif %}
+                                            {% if comment.user %}
+                                                {{ comment.user.firstname }} {{ comment.user.lastname }}
+                                                {% if role_label != '' %}, {{ role_label }}{% endif %}
+                                            {% else %}
+                                                Anonyme
+                                            {% endif %}
+                                            ({{ comment.createdAt|date('d/m/Y H:i') }})
+                                        </p>
+                                        <p class="mx-4 text-secondary">{{ comment.content }}</p>
+                                        <hr>
+                                    </div>
+                                {% else %}
+                                    <p class="mx-5 px-5">Aucun commentaire.</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="post-container">
+                            <h2 class="empty-post">Aucun article trouvé</h2>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

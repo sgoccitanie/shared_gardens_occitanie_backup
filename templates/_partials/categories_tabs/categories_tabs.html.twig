@@ -1,0 +1,29 @@
+{# Afficher les catégories et les sous-onglets #}
+{% if categoriesWithTabs is defined and categoriesWithTabs|length > 0 %}
+    <div class="categories-tabs-container">
+        {% for categoryWithTabs in categoriesWithTabs %}
+            <div class="category-section">
+                <h3 class="category-title">
+                    <a href="{{ path('app_articles') }}?category={{ categoryWithTabs.category.id }}">
+                        {{ categoryWithTabs.category.name }}
+                    </a>
+                </h3>
+                {% if categoryWithTabs.tabs|length > 0 %}
+                    <div class="tabs-list">
+                        {% for tab in categoryWithTabs.tabs %}
+                            <a
+                                href="{{ path('app_home_with_slug_and_id', {
+                                    'slug': tab.slug,
+                                    'id': tab.pages.id
+                                }) }}"
+                                class="tab-link"
+                            >
+                                {{ tab.label }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

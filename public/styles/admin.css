@@ -1,0 +1,144 @@
+/* .sidebar-wrapper {
+    position: absolute;
+} */
+
+#main-menu .menu .menu-icon {
+    color: black;
+    text-align: center;
+}
+#main-menu .menu .submenu a {
+    color: var(--sidebar-menu-submenu-color);
+    padding: 3px 0 3px 10px;
+}
+
+/**
+* Index table
+**/
+table tr{
+    border: 1px solid gray;
+}
+/* .datagrid td, .datagrid th {
+    padding: 15px;
+} */
+
+table tr:last-child td:first-child {
+    border-bottom-left-radius: 10px;
+}
+
+/* Polices */
+body.ea,
+.ea .main-content,
+.ea .content-header,
+.ea .content-body,
+.ea .content-footer,
+.ea .datagrid,
+.ea .datagrid th,
+.ea .datagrid td {
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+.ea .content-header h1,
+.ea .content-header h2,
+.ea .content-header h3,
+.ea .datagrid th {
+    font-family: 'Black Ops One', cursive;
+}
+
+/* Tableaux dans le dashboard */
+.datagrid {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 20px 0;
+    font-size: 1em;
+    min-width: 400px;
+    box-shadow: none;
+    border-radius: 0;
+    background-color: transparent;
+    border: 1px solid var(--gray-border);
+}
+
+.datagrid thead tr {
+    background-color: var(--green-light);
+    color: white;
+}
+
+.datagrid th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid var(--gray-border);
+}
+
+.datagrid td {
+    padding: 12px 15px;
+    text-align: left;
+    border-top: none;
+    border-bottom: 1px solid var(--gray-border);
+}
+
+.datagrid tbody tr:nth-of-type(even) {
+    background-color: var(--turquoise-light);
+}
+
+.datagrid tbody tr:last-of-type td:first-child {
+    border-bottom-left-radius: 4px;
+}
+
+.datagrid tbody tr:last-of-type td:last-child {
+    border-bottom-right-radius: 4px;
+}
+
+.datagrid tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.datagrid tbody tr.ghosted-user {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+.datagrid tbody tr.ghosted-user:hover {
+    background-color: #dfe2e5;
+}
+
+.datagrid tbody tr.ghosted-user td {
+    color: #6c757d;
+}
+
+.datagrid .actions {
+    white-space: nowrap;
+}
+
+.datagrid .actions a {
+    margin: 0 5px;
+}
+
+.datagrid .form-check-input {
+    margin-left: 0;
+}
+
+/* Style des boutons dans les tableaux */
+.datagrid .btn {
+    border-radius: 25px !important;
+    padding: 4px 10px 8px !important;
+    border: 1.5px solid var(--gray-border) !important;
+    font-size: 16px !important;
+    font-family: 'Josefin Sans', sans-serif !important;
+    font-weight: 200 !important;
+    letter-spacing: 1px !important;
+    cursor: pointer !important;
+    position: relative !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    touch-action: manipulation !important;
+    font-size: var(--font-size-btn) !important;
+    font-weight: 600 !important;
+}
+
+.datagrid .btn:hover {
+    background: var(--turquoise) !important;
+    color: black !important;
+    border: 1.5px solid black !important;
+}
+

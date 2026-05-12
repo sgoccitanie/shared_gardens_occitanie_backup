@@ -1,0 +1,48 @@
+{# "Modifier Présentation" #}
+{% extends '@EasyAdmin/crud/form_theme.html.twig' %}
+
+{% block _Presentation_content_widget %}
+{# Chargement asynchrone de TinyMCE via CDN => recharge améliorée de la page #}
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    {{ tinymce_scripts() }}
+    <textarea name="Presentation[content]" id="presentation_content" class="tinymce presentation-content" role="textbox">{{ data }}</textarea>
+    <script>
+    
+        tinymce.init({
+            selector: '.tinymce',
+            license_key: 'gpl',
+            base_url: '/bundles/tinymce/ext/tinymce/',
+            entity_encoding: "raw",
+            relative_urls: false,
+            remove_script_host: false,
+            verify_html: false,
+            cleanup: false,
+            valid_elements: '*[*]',
+            valid_children: '+body[style],+div[iframe],+iframe[div],+a[href|target],+img[src|alt|width|height]',
+            plugins: [
+                "link", "image", "lists", "advlist", "autolink", "charmap", "anchor",
+                "searchreplace", "visualblocks", "code", "fullscreen", "insertdatetime",
+                "media", "table", "help", "wordcount"
+            ],
+            toolbar: [
+                "undo redo | blocks | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | removeformat | help"
+            ],
+            height: 600,
+            link_default_target: '_blank',
+            content_style: "body { font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; } " +
+                           ".text-center { text-align: center; } " +
+                           ".color-green { color: #99cd47; } " +
+                           ".lead { font-size: 1.25rem; font-weight: 300; } " +
+                           "h2 { color: #99cd47; font-size: 2rem; margin-bottom: 1rem; } " +
+                           "p { margin-bottom: 1rem; }",
+            setup: function(editor) {
+                editor.on('init', function() {
+                    this.getDoc().body.style.fontSize = '14px';
+                });
+            }
+        });
+    </script>
+{% endblock %}
+
+
+

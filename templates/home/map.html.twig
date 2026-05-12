@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carte des jardins{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* Conteneur de la carte */
+        .map-container {
+            margin-top: 120px;
+            padding: 10px;
+            height: calc(100vh - 200px);
+            min-height: 500px;
+        }
+        /* Style de la carte Leaflet */
+        #map {
+            height: 100%;
+            width: 100%;
+            z-index: 1;
+        }
+        /* Style des popups */
+        .leaflet-popup-content {
+            font-family: 'Josefin Sans', sans-serif !important;
+            font-size: 14px;
+        }
+        .leaflet-popup-content h5 {
+            color: #2c5a2c;
+            margin-bottom: 5px;
+        }
+        .leaflet-popup-content p {
+            color: #333;
+            margin-bottom: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid d-flex flex-column mt-lg-5">
+        <div class="content_dashboard josefinSans">
+            <h1 class="mb-2">Carte des jardins partagés</h1>
+            <div class="map-container mt-2">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <!-- Utiliser la bibliothèque "Leaflet" -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1) Initialiser la carte avec une vue centrée sur Montpellier
+            const map = L.map('map').setView([43.6109, 3.8772], 12);
+
+            // 2) Ajouter la couche de tuiles OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // 3) Définir l'icône personnalisée pour les marqueurs
+            const gardenIcon = L.icon({
+                iconUrl: '{{ asset("img/icons/nichoir_sans_pied.png") }}',
+                iconSize: [32, 32],      // Taille de l'icône
+                iconAnchor: [16, 32],    // Point d'ancrage de l'icône (bas-centre)
+                popupAnchor: [0, -32]   // Point d'ancrage de la popup (au-dessus de l'icône)
+            });
+
+            // 4) Préparer les données des adresses pour JavaScript
+            //    Chaque adresse contient : latitude, longitude, rue, ville et code postal
+            const addresses = [
+                {%- for address in addresses -%}
+                {
+                    latitude: {{ address.latitude|default(0) }},
+                    longitude: {{ address.longitude|default(0) }},
+                    street: "{{ address.street|e('js') }}",
+                    city: {
+                        name: "{{ address.city.name|e('js') }}",
+                        postalcode: "{{ address.city.postalcode|e('js') }}"
+                    }
+                }{% if not loop.last %},{% endif %}
+                {%- endfor -%}
+            ];
+
+            // 5) Afficher les adresses dans la console (pour débogage)
+            console.log('Adresses chargées :', addresses);
+
+            // 6) Ajouter les marqueurs avec l'icône personnalisée
+            addresses.forEach(address => {
+                if (address.latitude && address.longitude) {
+                    L.marker([address.latitude, address.longitude], { icon: gardenIcon })
+                        .addTo(map)
+                        .bindPopup(`
+                            <div class="map-popup">
+                                <h5>${address.street}</h5>
+                                <p>${address.city.name}, ${address.city.postalcode}</p>
+                            </div>
+                        `);
+                }
+            });
+        });
+    </script>
+{% endblock %}
