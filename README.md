@@ -49,13 +49,17 @@
 - 🟩 Réparer les exceptions
 - 🟩 Résoudre les problèmes d'affichages (logo, mantra, articles) et de navigation
 - 🟩 Accéder/naviguer dans : l'espace administrateur / l'espace éditeur
-- 🚧 Résoudre les problèmes de navigation des onglets Ressources, Calendrier et Carte des jardins
-- 🚧 Section notifications
+- 🟩 Résoudre les problèmes de connexion/navigation des onglets Ressources, Calendrier et Carte des jardins
+- 🟩 Créer la section des notifications (commentaires) : l'éditeur comme modérateur 
+- 🟩 Créer la section de la présentation (pour l'administrateur uniquement)
 
 <br>
 
 ## 🔧 Continuer l'initialisation du projet original
 
-- 🚧 Corriger les bugs
-- 🚧 Finir le design suivant les consignes
+- 🟩 Finir le design suivant les consignes
+- 🚧 Tester/Corriger les bugs
+- 🚧 Charger/Tester/Corriger la base
+- 🚧 Mettre en production/Tester : nom de domaine et hébergeur
+
 
