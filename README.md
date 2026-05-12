@@ -47,15 +47,15 @@
 ## 🌐 Front-end
 
 - 🟩 Réparer les exceptions
-- 🟩 Résoudre les problèmes d'affichages (logo, mantra, articles) et de navigation
+- 🟩 Résoudre les problèmes d'affichages (logo, mantra, articles, PDF) et de navigation
 - 🟩 Accéder/naviguer dans : l'espace administrateur / l'espace éditeur
 - 🟩 Résoudre les problèmes de connexion/navigation des onglets Ressources, Calendrier et Carte des jardins
 - 🟩 Créer la section des notifications (commentaires) : l'éditeur comme modérateur 
-- 🟩 Créer la section de la présentation (pour l'administrateur uniquement)
+- 🟩 Créer la page de présentation (pour l'administrateur uniquement)
 
 <br>
 
-## 🔧 Continuer l'initialisation du projet original
+## 🔧 Finaliser le projet
 
 - 🟩 Finir le design suivant les consignes
 - 🚧 Tester/Corriger les bugs
