@@ -11,7 +11,7 @@
 
 <div align="center">
 
-<img src="/img/logos/logo_SDJ.png" alt="Logo SDJ" width="400"/>
+<img src="public/img/logos/logo_SDJ.png" alt="Logo SDJ" width="400"/>
 </div>
 
 ## ⚙️ Installation
