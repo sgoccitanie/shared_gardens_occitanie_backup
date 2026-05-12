@@ -47,15 +47,19 @@
 ## 🌐 Front-end
 
 - 🟩 Réparer les exceptions
-- 🟩 Résoudre les problèmes d'affichages (logo, mantra, articles) et de navigation
+- 🟩 Résoudre les problèmes d'affichages (logo, mantra, articles, PDF) et de navigation
 - 🟩 Accéder/naviguer dans : l'espace administrateur / l'espace éditeur
-- 🚧 Résoudre les problèmes de navigation des onglets Ressources, Calendrier et Carte des jardins
-- 🚧 Section notifications
+- 🟩 Résoudre les problèmes de navigation des onglets Ressources, Calendrier et Carte des jardins / Afficher
+- 🟩 Créer la section des notifications accessibles par l'administrateur et l'éditeur
+- 🟩 Créer la page de présentation
+- 🟩 Créer les pages RGPD, Mentions Légales et Cookies
 
 <br>
 
-## 🔧 Continuer l'initialisation du projet original
+## 🔧 Finaliser le projet
 
-- 🚧 Corriger les bugs
-- 🚧 Finir le design suivant les consignes
-
+- 🟩 Finir le design suivant les consignes
+- 🚧 Tester/Corriger les bugs
+- 🚧 Tester/Corriger la sécurisation
+- 🚧 Charger/Tester/Corriger la base
+- 🚧 Mettre en production (nom de domaine, hébergeur)
