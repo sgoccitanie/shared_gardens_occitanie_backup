@@ -48,15 +48,15 @@
                                 alert(jsonData.error);
                             } else if (jsonData.location) {
                                 let pdfUrl = jsonData.location;
-                                if (!pdfUrl.startsWith('/')) {
-                                    pdfUrl = '/' + pdfUrl;
-                                }
-                                // **Utilise directement <object> sans div intermédiaire**
+                                
+                                
+
+                                // **Utiliser directement <object> sans div intermédiaire**
                                 const pdfHtml = '<object data="' + pdfUrl + '" type="application/pdf" width="100%" height="600px">' +
                                                 'Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>.' +
                                                 '</object>';
                                 editor.insertContent(pdfHtml);
-                                editor.save(); // Force la mise à jour du textarea
+                                editor.save(); // Forcer la mise à jour du textarea
                             }
                         })
                         .catch(error => {
@@ -76,9 +76,9 @@
             remove_script_host: false,
             verify_html: false,
             cleanup: false,
-            // **Désactive la conversion des balises**
+            // **Désactiver la conversion des balises**
             object_resizing: false,
-            // **Autorise toutes les balises et attributs**
+            // **Autoriser toutes les balises et attributs**
             valid_elements: '*[*]',
             valid_children: '+body[object|embed|p|img|a|span|br|#text]',
             extended_valid_elements: '*[*]',
@@ -141,16 +141,16 @@
                                         editor.insertContent('<img src="' + jsonData.location + '" alt="' + file.name + '">');
                                     } else {
                                         let pdfUrl = jsonData.location;
-                                        if (!pdfUrl.startsWith('/')) {
-                                            pdfUrl = '/' + pdfUrl;
-                                        }
-                                        // **Utilise directement <object> sans div intermédiaire**
+                                        
+                                        
+
+                                        // **Utiliser directement <object> sans div intermédiaire**
                                         const pdfHtml = '<object data="' + pdfUrl + '" type="application/pdf" width="100%" height="600px">' +
                                                         'Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>.' +
                                                         '</object>';
                                         editor.insertContent(pdfHtml);
                                     }
-                                    editor.save(); // **FORCE LA MISE À JOUR DU TEXTAREA**
+                                    editor.save(); // **FORCER LA MISE À JOUR DU TEXTAREA**
                                 }
                             })
                             .catch(error => { alert('Erreur : ' + error.message); });
@@ -160,24 +160,24 @@
                     }
                 });
 
-                // **Désactive la conversion des <object> en <iframe> par TinyMCE**
+                // **Désactiver la conversion des <object> en <iframe> par TinyMCE**
                 editor.on('BeforeSetContent', function(e) {
                     if (e.content) {
-                        // Remplace les iframes sandboxées par des objects
+                        // Remplacer les iframes sandboxées par des objects
                         e.content = e.content.replace(/<iframe[^>]*src="([^"]*\/uploads\/files\/[^"]*)"[^>]*sandbox="[^"]*"[^>]*>/gi, function(match, url) {
                             return '<object data="' + url + '" type="application/pdf" width="100%" height="600px"></object>';
                         });
                     }
                 });
 
-                // **Désactive la suppression des balises <object>**
+                // **Désactiverr la suppression des balises <object>**
                 editor.on('PostProcess', function(e) {
                     if (e.content) {
                         e.content = e.content.replace(/<p><\/p>/g, '');
                     }
                 });
             },
-            // **Désactive le nettoyage automatique**
+            // **Désactiver le nettoyage automatique**
             init_instance_callback: function(editor) {
                 editor.on('LoadContent', function() {
                     const content = editor.getContent();
