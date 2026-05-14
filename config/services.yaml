@@ -49,3 +49,8 @@ services:
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
 
+  App\EventListener\PostContentListener:
+    tags:
+      - { name: kernel.event_listener, event: easy_admin.pre_persist, method: cleanPostContent }
+      - { name: kernel.event_listener, event: easy_admin.pre_update, method: cleanPostContent }
+

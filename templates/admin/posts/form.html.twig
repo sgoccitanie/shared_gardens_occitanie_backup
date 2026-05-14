@@ -3,23 +3,22 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .pdf-embed {
-            width: 100%;
-            border: 1px solid #ccc;
-            margin: 10px 0;
-        }
-        .pdf-embed object {
-            width: 100%;
-            height: 600px;
-            border: none;
-            background: white;
-        }
+    .pdf-embed {
+        min-height: 600px;
+        display: block;
+    }
+    .pdf-embed object {  /* Utiliser <object> => plus fiable que <iframe> */
+        width: 100%;
+        height: 600px;
+        display: block;
+        border: none !important;
+    }
     </style>
 {% endblock %}
 
 {% block _Posts_content_widget %}
     {{ tinymce_scripts() }}
-    <textarea name="Posts[content]" id="{{ id }}" class="tinymce" role="textbox">{{ data }}</textarea>
+    <textarea name="Posts[content]" id="{{ id }}" class="tinymce" role="textbox" style="background-red">{{ data }}</textarea>
 
     <script>
         tinymce.PluginManager.add('pdf', function(editor) {
@@ -48,15 +47,9 @@
                                 alert(jsonData.error);
                             } else if (jsonData.location) {
                                 let pdfUrl = jsonData.location;
-                                
-                                
-
-                                // **Utiliser directement <object> sans div intermédiaire**
-                                const pdfHtml = '<object data="' + pdfUrl + '" type="application/pdf" width="100%" height="600px">' +
-                                                'Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>.' +
-                                                '</object>';
+                                // Utiliser <object> => plus fiable que <iframe>
+                                const pdfHtml = '<div class="pdf-embed"><object data="' + pdfUrl + '" type="application/pdf" width="100%" height="600px" style="border:none;">Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>.</object></div>';
                                 editor.insertContent(pdfHtml);
-                                editor.save(); // Forcer la mise à jour du textarea
                             }
                         })
                         .catch(error => {
@@ -74,14 +67,18 @@
             base_url: '/bundles/tinymce/ext/tinymce/',
             relative_urls: false,
             remove_script_host: false,
+            // Désactiver TOUTE modification du HTML
+            cleanup_on_startup: false,
+            trim_span_elements: false,
+            entity_encoding: 'raw',
+            forced_root_block: '',
+            forced_root_block_attrs: {},
+            // Autoriser TOUTES les balises et attributs (y compris <object>)
+            valid_elements: '*[*]',
+            valid_children: '+body[*]',
+            extended_valid_elements: '*[*]',
             verify_html: false,
             cleanup: false,
-            // **Désactiver la conversion des balises**
-            object_resizing: false,
-            // **Autoriser toutes les balises et attributs**
-            valid_elements: '*[*]',
-            valid_children: '+body[object|embed|p|img|a|span|br|#text]',
-            extended_valid_elements: '*[*]',
             plugins: ["link", "image", "pdf", "code"],
             toolbar: [
                 "cut copy | undo redo | bold italic strikethrough underline | forecolor backcolor | blockquote | removeformat | pdf | link image | code",
@@ -108,6 +105,14 @@
                 .catch(error => { failure('Erreur : ' + error.message); });
             },
             setup: function(editor) {
+                editor.on('BeforeSetContent', function(e) {
+                    // Ne pas modifier le contenu
+                    e.content = e.content;
+                });
+                editor.on('PostProcess', function(e) {
+                    // Ne pas modifier le contenu
+                    e.content = e.content;
+                });
                 editor.on('dragend', function(e) { e.preventDefault(); });
                 editor.on('dragover', function(e) {
                     e.preventDefault();
@@ -118,7 +123,6 @@
                     e.preventDefault();
                     editor.getBody().style.backgroundColor = '';
                 });
-
                 editor.on('drop', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -141,16 +145,9 @@
                                         editor.insertContent('<img src="' + jsonData.location + '" alt="' + file.name + '">');
                                     } else {
                                         let pdfUrl = jsonData.location;
-                                        
-                                        
-
-                                        // **Utiliser directement <object> sans div intermédiaire**
-                                        const pdfHtml = '<object data="' + pdfUrl + '" type="application/pdf" width="100%" height="600px">' +
-                                                        'Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>.' +
-                                                        '</object>';
+                                        const pdfHtml = '<div class="pdf-embed"><object data="' + pdfUrl + '" type="application/pdf" width="100%" height="600px" style="border:none;">Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>.</object></div>';
                                         editor.insertContent(pdfHtml);
                                     }
-                                    editor.save(); // **FORCER LA MISE À JOUR DU TEXTAREA**
                                 }
                             })
                             .catch(error => { alert('Erreur : ' + error.message); });
@@ -159,31 +156,11 @@
                         }
                     }
                 });
-
-                // **Désactiver la conversion des <object> en <iframe> par TinyMCE**
-                editor.on('BeforeSetContent', function(e) {
-                    if (e.content) {
-                        // Remplacer les iframes sandboxées par des objects
-                        e.content = e.content.replace(/<iframe[^>]*src="([^"]*\/uploads\/files\/[^"]*)"[^>]*sandbox="[^"]*"[^>]*>/gi, function(match, url) {
-                            return '<object data="' + url + '" type="application/pdf" width="100%" height="600px"></object>';
-                        });
-                    }
-                });
-
-                // **Désactiverr la suppression des balises <object>**
-                editor.on('PostProcess', function(e) {
-                    if (e.content) {
-                        e.content = e.content.replace(/<p><\/p>/g, '');
-                    }
-                });
             },
-            // **Désactiver le nettoyage automatique**
             init_instance_callback: function(editor) {
                 editor.on('LoadContent', function() {
                     const content = editor.getContent();
-                    if (content.includes('<object')) {
-                        editor.setContent(content);
-                    }
+                    editor.setContent(content, { format: 'raw' });
                 });
             }
         });

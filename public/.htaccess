@@ -1,4 +1,8 @@
 <IfModule mod_headers.c>
+    Header always unset X-Frame-Options
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+<IfModule mod_headers.c>
     # Autoriser CORS pour tous les fichiers statiques (PDF, images, SVG, JS, CSS, etc.)
     <FilesMatch "\.(eot|ttf|otf|woff|woff2|svg|svgz|pdf|jpg|jpeg|png|gif|ico|js|css|html)$">
         Header set Access-Control-Allow-Origin "*"

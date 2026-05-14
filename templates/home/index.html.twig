@@ -49,6 +49,7 @@
                         {% set postWithUrl = postsWithUrls[0] %}
                         <div class="post-container">
                             <h2>{{ postWithUrl.post.title|raw }}</h2>
+                            {# Affichage du contenu : texte, image, PDF #}
                             <div class="post-content">{{ postWithUrl.post.content|raw }}</div>
                         </div>
                         {% if id %}
@@ -101,3 +102,6 @@
     </div>
 </div>
 {% endblock %}
+
+
+
