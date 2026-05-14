@@ -6,8 +6,8 @@
                 <div class="card card-profile h-100 p-3">
                     <div class="align-content-center">
                         <h3>{{ post.title|raw }}</h3>
-                        {# Décoder les entités HTML, supprimer les balises, puis couper le texte #}
-                        <p>{{ post.content|decode_html|striptags|slice(0, 100) }}...</p>
+                        {# <p>{{ post.content|decode_html|striptags|slice(0, 100) }}...</p> #}
+                        <p>{{ post.content|striptags|slice(0, 100) }}...</p>
                     </div>
                     <div class="card-body p-0">
                         <div class="row align-items-center">
@@ -25,9 +25,8 @@
                                     Aucune catégorie
                                 {% endif %}
                             </div>
-                            {# Nombre de commentaires #}
                             <div class="col-5 d-flex justify-content-end">
-                                <div>Commentaire({{ post.commentCounter ?? 0 }})</div>
+                                <div>Commentaire {{ post.commentCounter ?? 0 }})</div>
                             </div>
                         </div>
                     </div>
@@ -36,3 +35,8 @@
         </a>
     {% endif %}
 {% endfor %}
+
+
+
+
+
