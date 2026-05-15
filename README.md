@@ -59,12 +59,11 @@
 
 ## 🌐 Front-end
 
-- 🟩 Réparer les exceptions
 - 🟩 Résoudre les problèmes d'affichages (logo, mantra, articles, PDF) et de navigation
 - 🟩 Accéder/naviguer dans : l'espace administrateur / l'espace éditeur
 - 🟩 Résoudre les problèmes de connexion/navigation des onglets Ressources, Calendrier et Carte des jardins
 - 🟩 Créer la section des notifications (commentaires) : l'éditeur comme modérateur 
-- 🟩 Créer la section de présentation avec TinyMCE (gestion par l'admin) : texte, images DRAG & DROP et PDF
+- 🟩 Créer la section de présentation gérée par l'administrateur
 - 🟩 Insérer une mini-carte du Réseau dans la navbar avec uMAP
 
 <br>
