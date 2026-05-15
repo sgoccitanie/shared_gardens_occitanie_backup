@@ -5,7 +5,7 @@
  * Objectif : Nettoyer le contenu pour les PDFs insérés => CONTRER les erreurs générées par TinyMCE
  *  -> Supprimer les attributs sandbox="",
  *  -> Remplacer les <iframe> PDF par des <object> pour assurer la compatibilité,
- *  ->> Supprimer les imbrications et div.pdf-embed vides générées automatiquement.
+ *  -> Supprimer les imbrications et div.pdf-embed vides générées automatiquement.
  */
 
 namespace App\EventListener;
