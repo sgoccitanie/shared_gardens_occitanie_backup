@@ -6,16 +6,21 @@
   
 #  $\textsf{\color{blue}{shared gardens occitanie}}$
 
+<br>
+
 ### Reprise du projet ["jardins-partages-occitanie"](https://github.com/jbarn9/jardins-partages-occitanie)
 
 👉 **[Visiter le site actuel en WordPress 🔗](https://semeursdejardins34.wordpress.com/)**
 
 </div>
 
-#### ⚠️ **<i>Objectif</i>** :  <i style="font-weight:normal;"> Finaliser la refonte du site **débutée en Symfony 7**, améliorer son design, ses fonctionnalités et sa performance.</i>
+<br><br>
+
+<strong>⚠️ Objectif :</strong> <span style="font-weight:normal;"> Finaliser la refonte du site **débutée en Symfony 7**, améliorer son design, ses fonctionnalités et sa performance.</span>
+
+<br><br>
 
 <div align="center">
-
 <img src="public/img/logos/logo_SDJ.png" alt="Logo SDJ" width="400"/>
 </div>
 
@@ -32,34 +37,37 @@
 
 <br>
 
-
-
-
 ## 🛠️ Technologies utilisées
 
 ### **Cœur du projet**
+
 - **[Symfony 7.1.0](https://symfony.com/)** : Framework PHP full-stack utilisé pour le **backend** et le **frontend** (via Twig et Symfony UX)
 - **[PHP 8.3.28](https://www.php.net/)** : Côté serveur.
 - **[Composer 2.9.3](https://getcomposer.org/)** : Gestionnaire de dépendances PHP pour installer et mettre à jour les bibliothèques (Symfony, Doctrine, etc.)
 
 ### **Base de données**
+
 - **[Doctrine ORM](https://www.doctrine-project.org/projects/orm.html)** : Gestion de la base de données (ORM, migrations, fixtures)
 - **MySQL 8.4.7** : SGBDR
 
 ### **Frontend & Design**
+
 - **[TinyMCE](https://www.tiny.cloud/)** : Éditeur de texte riche (WYSIWYG) pour la création de contenu
 - **[Bootstrap 5](https://getbootstrap.com/)** : Framework CSS pour un design **responsive** et moderne
 - **[FullCalendar](https://fullcalendar.io/)** : Gestion des **calendriers** et intégration avec Google Calendar
 
 ### **Sécurité & Authentification**
+
 - **[OAuth2](https://oauth.net/2/)** + **[JWT](https://jwt.io/)** : Protocoles pour l’**authentification sécurisée** et la gestion des tokens
 
 ### **Administration**
+
 - **[EasyAdmin Bundle](https://github.com/EasyCorp/EasyAdminBundle)** : Interface d’administration "**prête à l’emploi**" pour Symfony
 
 <br>
 
 ### 💡 **Bonnes pratiques**
+
 - **Fixtures** : Utiliser `Faker` pour générer des données réalistes dans les fixtures
 - **Sécurité** :
   - Ne jamais stocker de mots de passe en clair (utiliser `password_hash` ou Symfony PasswordHasher).
@@ -74,7 +82,9 @@
 <br>
 
 ### 📋 **Commandes les plus utilisées**
+
 #### **Pour gérer le back-end :**
+
     ➝ Créer la base de données
         php bin/console doctrine\:database\:create
 
@@ -96,24 +106,23 @@
     ➝ Générer un CRUD avec MakerBundle
         php bin/console make\:crud
 
-
 #### **Pour voir la liste des routes :**
+
     ➝ php bin/console debug\:router
 
-
 #### **Pour vider le cache :**
-    ➝ php bin/console cache\:clear
 
+    ➝ php bin/console cache\:clear
 
 <br>
 
 ## ⚙️ Installation pour cette reprise de projet
 
-### > Désinstaller Typesense
+### Désinstaller Typesense
 
 - composer remove typesense/typesense-php
 
-### > Installer
+### Installer
 
 - composer require --dev doctrine/doctrine-fixtures-bundle
 - composer require symfony/form\
@@ -136,7 +145,7 @@
     🟩 Résoudre les problèmes d'affichages (logo, mantra, articles, PDF) et de navigation
     🟩 Accéder/naviguer dans : l'espace administrateur / l'espace éditeur
     🟩 Résoudre les problèmes de connexion/navigation des onglets Ressources, Calendrier et Carte des jardins
-    🟩 Créer la section des notifications (commentaires) : l'éditeur comme modérateur 
+    🟩 Créer la section des notifications (commentaires) : l'éditeur comme modérateur
     🟩 Créer la section de présentation gérée par l'administrateur
     🟩 Insérer une mini-carte du Réseau dans la navbar avec uMAP
 
