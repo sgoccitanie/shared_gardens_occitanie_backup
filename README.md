@@ -14,6 +14,18 @@
 <img src="public/img/logos/logo_SDJ.png" alt="Logo SDJ" width="400"/>
 </div>
 
+<br>
+<br>
+
+<p align="center">
+  <a href="https://umap.openstreetmap.fr/fr/map/les-jardins-partages-de-lherault-et-composteurs-co_196132#19/43.617480/3.863076">
+     <i>
+    Voir la carte des jardins en plein écran
+  </i>
+  </a>
+</p>
+
+
 ## ⚙️ Installation
 
 ### > Vérifier
@@ -41,6 +53,7 @@
 - 🟩 **Créer la base de données**
 - 🟩 **Créer les tables**
 - 🟩 **Remplir avec les fixtures**
+- 🟩 **Forcer l'affichage du pdf contre les erreurs générées par TinyMCE, via un écouteur**
 
 <br>
 
@@ -51,7 +64,8 @@
 - 🟩 Accéder/naviguer dans : l'espace administrateur / l'espace éditeur
 - 🟩 Résoudre les problèmes de connexion/navigation des onglets Ressources, Calendrier et Carte des jardins
 - 🟩 Créer la section des notifications (commentaires) : l'éditeur comme modérateur 
-- 🟩 Créer la page de présentation (pour l'administrateur uniquement)
+- 🟩 Créer la section de présentation avec TinyMCE (gestion par l'admin) : texte, images DRAG & DROP et PDF
+- 🟩 Insérer une mini-carte du Réseau dans la navbar avec uMAP
 
 <br>
 
