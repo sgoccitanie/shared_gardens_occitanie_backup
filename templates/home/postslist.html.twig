@@ -1,3 +1,4 @@
+{# COMPOSANT : afficher la liste des articles en card : chaque card est cliquable et mène vers sa page #}
 {% for postWithUrl in postsWithUrls %}
     {% set post = postWithUrl.post %}
     {% if post.status == true %}
@@ -6,7 +7,7 @@
                 <div class="card card-profile h-100 p-3">
                     <div class="align-content-center">
                         <h3>{{ post.title|raw }}</h3>
-                        {# <p>{{ post.content|decode_html|striptags|slice(0, 100) }}...</p> #}
+                        {# Aperçu du contenu d'un 'article (100 premiers caractères) #}
                         <p>{{ post.content|striptags|slice(0, 100) }}...</p>
                     </div>
                     <div class="card-body p-0">
@@ -35,7 +36,6 @@
         </a>
     {% endif %}
 {% endfor %}
-
 
 
 
