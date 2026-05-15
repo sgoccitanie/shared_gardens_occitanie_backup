@@ -1,3 +1,4 @@
+{# Affiche soit la liste des articles (avec postsList.php), soit un article unique avec son contenu complet #}
 {% extends 'base.html.twig' %}
 
 {% block title %} {{ pageTitle|default('Accueil | Réseau des Semeurs de Jardins') }}{% endblock %}
@@ -28,6 +29,7 @@
 
         <div class="content_main">
             <div class="d-flex flex-column p-2">
+                {# => Liste de tous les articles #}
                 {% if displayList %}
                     {% if postsWithUrls|length > 0 %}
                         <div class="d-flex justify-content-end p-lg-2">
@@ -45,12 +47,13 @@
                         </div>
                     {% endif %}
                 {% else %}
+                    {# => Un article unique #}
                     {% if postsWithUrls|length == 1 %}
                         {% set postWithUrl = postsWithUrls[0] %}
                         <div class="post-container">
-                            <h2>{{ postWithUrl.post.title|raw }}</h2>
+                            <h2 style="margin-top:40px;">{{ postWithUrl.post.title|raw }}</h2>
                             {# Affichage du contenu : texte, image, PDF #}
-                            <div class="post-content">{{ postWithUrl.post.content|raw }}</div>
+                            <div class="post-content" style="margin-top:20px;">{{ postWithUrl.post.content|raw }}</div>
                         </div>
                         {% if id %}
                             <div class="col-12 m-auto comments-section my-3">
@@ -102,6 +105,5 @@
     </div>
 </div>
 {% endblock %}
-
 
 

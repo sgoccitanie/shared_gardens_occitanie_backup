@@ -1,3 +1,4 @@
+{# Éditeur complet pour créer un article par l'admin : TinyMCE pour le texte riche, les images via upload, les PDFs via plugin drag & drop #}
 {% extends '@EasyAdmin/crud/form_theme.html.twig' %}
 
 {% block stylesheets %}
@@ -7,9 +8,10 @@
         min-height: 600px;
         display: block;
     }
+
     .pdf-embed object {  /* Utiliser <object> => plus fiable que <iframe> */
         width: 100%;
-        height: 600px;
+        height: 1200px;
         display: block;
         border: none !important;
     }
@@ -26,6 +28,7 @@
                 text: 'PDF',
                 icon: 'insert-file',
                 tooltip: 'Insérer un PDF',
+                // Clic sur bouton PDF ou glisser-déposer
                 onAction: function() {
                     let input = document.createElement('input');
                     input.type = 'file';
@@ -47,8 +50,12 @@
                                 alert(jsonData.error);
                             } else if (jsonData.location) {
                                 let pdfUrl = jsonData.location;
-                                // Utiliser <object> => plus fiable que <iframe>
-                                const pdfHtml = '<div class="pdf-embed"><object data="' + pdfUrl + '" type="application/pdf" width="100%" height="600px" style="border:none;">Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>.</object></div>';
+                                // 1. Insérer avec le bouton "PDF" de TinyMCE
+                                // Utiliser <object> => plus fiable que <iframe>  => ~hauteur A4 + marge  (Pour le moment : !vue )
+                                const pdfHtml = '<div class="pdf-embed" style="width:100%; height:1123px; margin:1rem 0;">' +
+                                    '<object data="' + pdfUrl + '" type="application/pdf" style="width:100%; height:100%; border:none;">' +
+                                    'Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>' +
+                                    '</object></div>';
                                 editor.insertContent(pdfHtml);
                             }
                         })
@@ -145,7 +152,11 @@
                                         editor.insertContent('<img src="' + jsonData.location + '" alt="' + file.name + '">');
                                     } else {
                                         let pdfUrl = jsonData.location;
-                                        const pdfHtml = '<div class="pdf-embed"><object data="' + pdfUrl + '" type="application/pdf" width="100%" height="600px" style="border:none;">Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>.</object></div>';
+                                        // 2. Insérer un pdf avec glisser-déposer
+                                        const pdfHtml = '<div class="pdf-embed" style="width:100%; height:1123px; margin:1rem 0;">' +
+                                            '<object data="' + pdfUrl + '" type="application/pdf" style="width:100%; height:100%; border:none;">' +
+                                            'Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>' +
+                                            '</object></div>';
                                         editor.insertContent(pdfHtml);
                                     }
                                 }
