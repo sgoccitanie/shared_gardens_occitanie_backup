@@ -1,35 +1,101 @@
-{# Éditeur complet pour créer un article par l'admin : TinyMCE pour le texte riche, les images via upload, les PDFs via plugin drag & drop #}
+{# Éditeur complet pour créer un article par l'admin #}
+
 {% extends '@EasyAdmin/crud/form_theme.html.twig' %}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
-    .pdf-embed {
-        min-height: 600px;
-        display: block;
-    }
-
-    .pdf-embed object {  /* Utiliser <object> => plus fiable que <iframe> */
-        width: 100%;
-        height: 1200px;
-        display: block;
-        border: none !important;
-    }
+        /* Conteneur PDF hauteur A4 (297mm ≈ 1122px) */
+        .pdf-embed {
+            width: 100%;
+            height: 1122px !important;
+            margin: 1rem 0;
+            display: block;
+            overflow: auto;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        /* Cibler les iframes dans le conteneur PDF */
+        .pdf-embed iframe {
+            width: 100% !important;
+            height: 100% !important;
+            display: block !important;
+            border: none !important;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .pdf-embed {
+                height: 800px !important;
+            }
+        }
     </style>
 {% endblock %}
 
 {% block _Posts_content_widget %}
+    {# Charger TinyMCE et ses dépendances #}
     {{ tinymce_scripts() }}
     <textarea name="Posts[content]" id="{{ id }}" class="tinymce" role="textbox" style="background-red">{{ data }}</textarea>
 
     <script>
+        /* Message (succès ou erreur) dans un conteneur .pdf-embed */
+        function showPdfMessage(pdfEmbedElement, messageText, isSuccess) {
+            // Vérifier que le conteneur contient un iframe
+            const iframe = pdfEmbedElement.querySelector('iframe');
+            if (!iframe) return;
+
+            // Supprimer les messages existants (succès ou erreur)
+            const existingMessage = pdfEmbedElement.querySelector('.pdf-validation-message, .pdf-error-message');
+            if (existingMessage) {
+                // Annuler le timeout existant avant de supprimer le message
+                if (existingMessage.dataset.timeoutId) {
+                    clearTimeout(parseInt(existingMessage.dataset.timeoutId));
+                }
+                existingMessage.remove();
+            }
+
+            // Créer le message
+            const message = document.createElement('div');
+            message.className = isSuccess ? 'pdf-validation-message' : 'pdf-error-message';
+
+            // Messages : bleu (succès), rouge (erreur)
+            const backgroundColor = isSuccess ? '#d1ecf1' : '#f8d7da';
+            const textColor = isSuccess ? '#0d6efd' : '#dc3545';
+            const borderColor = isSuccess ? '#0dcaf0' : '#f5c6cb';
+
+            message.innerHTML = `
+                <div style="
+                    width: 100%;
+                    text-align: center;
+                    background-color: ${backgroundColor};
+                    color: ${textColor};
+                    padding: 8px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    border-top: 2px solid ${borderColor};
+                    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+                ">${messageText}</div>
+            `;
+
+            // Placer le message en bas du conteneur
+            pdfEmbedElement.appendChild(message);
+
+            // Stocker le timeout
+            const timeoutId = setTimeout(() => {
+                if (message && message.parentNode) {
+                    message.remove();
+                }
+            }, 8000); // 8 secondes
+            message.dataset.timeoutId = timeoutId;
+        }
+
+        // Plugin TinyMCE pour gérer l'insertion de PDF
         tinymce.PluginManager.add('pdf', function(editor) {
             editor.ui.registry.addButton('pdf', {
                 text: 'PDF',
                 icon: 'insert-file',
                 tooltip: 'Insérer un PDF',
-                // Clic sur bouton PDF ou glisser-déposer
                 onAction: function() {
+                    // Créer un input file pour sélectionner un PDF
                     let input = document.createElement('input');
                     input.type = 'file';
                     input.accept = '.pdf';
@@ -37,6 +103,7 @@
                         let file = this.files[0];
                         if (!file) return;
 
+                        // Préparer la requête pour uploader le PDF
                         let formData = new FormData();
                         formData.append('file', file);
 
@@ -49,14 +116,20 @@
                             if (jsonData.error) {
                                 alert(jsonData.error);
                             } else if (jsonData.location) {
+                                // Insérer le PDF dans l'éditeur
                                 let pdfUrl = jsonData.location;
-                                // 1. Insérer avec le bouton "PDF" de TinyMCE
-                                // Utiliser <object> => plus fiable que <iframe>  => ~hauteur A4 + marge  (Pour le moment : !vue )
-                                const pdfHtml = '<div class="pdf-embed" style="width:100%; height:1123px; margin:1rem 0;">' +
-                                    '<object data="' + pdfUrl + '" type="application/pdf" style="width:100%; height:100%; border:none;">' +
-                                    'Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>' +
-                                    '</object></div>';
+                                const pdfHtml = '<div class="pdf-embed" style="width:100%; height:1122px; margin:1rem 0;" data-mce-fragment="1">' +
+                                    '<iframe src="' + pdfUrl + '" width="100%" height="1122px" style="border:none;" allowfullscreen data-mce-fragment="1"></iframe>' +
+                                    '</div>';
                                 editor.insertContent(pdfHtml);
+
+                                // Attendre que TinyMCE finisse de traiter le contenu
+                                setTimeout(() => {
+                                    const pdfEmbeds = editor.getBody().querySelectorAll('.pdf-embed:not(:has(.pdf-validation-message, .pdf-error-message))');
+                                    pdfEmbeds.forEach(embed => {
+                                        showPdfMessage(embed, '✓ PDF validé - Vous pouvez sauvegarder.', true);
+                                    });
+                                }, 100);
                             }
                         })
                         .catch(error => {
@@ -68,31 +141,43 @@
             });
         });
 
+        //* Initialisation de TinyMCE *//
         tinymce.init({
+            elementpath: false, // Désactiver les div en bas de l'éditeur
             selector: '.tinymce',
             license_key: 'gpl',
             base_url: '/bundles/tinymce/ext/tinymce/',
+            /* URLs et liens */
             relative_urls: false,
             remove_script_host: false,
-            // Désactiver TOUTE modification du HTML
+            link_default_target: '_blank',
+            /* Nettoyer le HTML / Valider */
+            extended_valid_elements: 'object[data|type|width|height|style],param[name|value],iframe[src|width|height|style|frameborder|allowfullscreen]',
+            valid_children: '+body[style|object|iframe],+object[param|#text],+iframe[#text]',
+            allow_html_in_named_anchor: true,
+            allow_conditional_comments: false,
+            allow_script_urls: true,
+            allow_svg: true,
+            /* Désactiver le nettoyage automatique du HTML */
             cleanup_on_startup: false,
             trim_span_elements: false,
             entity_encoding: 'raw',
             forced_root_block: '',
             forced_root_block_attrs: {},
-            // Autoriser TOUTES les balises et attributs (y compris <object>)
             valid_elements: '*[*]',
             valid_children: '+body[*]',
             extended_valid_elements: '*[*]',
             verify_html: false,
-            cleanup: false,
+            cleanup: false, // Désactiver le nettoyage automatique
             plugins: ["link", "image", "pdf", "code"],
+            /* Plugins et barre d'outils */
             toolbar: [
                 "cut copy | undo redo | bold italic strikethrough underline | forecolor backcolor | blockquote | removeformat | pdf | link image | code",
                 "formatselect | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent"
             ],
+            /* Interface */
             height: 1000,
-            link_default_target: '_blank',
+            /* Uploads d'images */
             images_upload_url: '{{ path('api_tinymce_upload_image') }}',
             images_upload_handler: function (blobInfo, success, failure) {
                 let formData = new FormData();
@@ -103,23 +188,36 @@
                 })
                 .then(response => response.json())
                 .then(function(jsonData) {
-                    if (jsonData.location) {
-                        success(jsonData.location);
-                    } else {
-                        failure('Réponse inattendue du serveur.');
-                    }
+                    if (jsonData.location) success(jsonData.location);
+                    else failure('Réponse inattendue du serveur.');
                 })
-                .catch(error => { failure('Erreur : ' + error.message); });
+                .catch(error => failure('Erreur : ' + error.message));
             },
+            /* Gestion du copier-coller des PDF */
             setup: function(editor) {
-                editor.on('BeforeSetContent', function(e) {
-                    // Ne pas modifier le contenu
-                    e.content = e.content;
+                // Écouteur pour le copier-coller de PDF
+                editor.on('PastePostProcess', function(e) {
+                    // Vérifier si le contenu collé contient un iframe avec un PDF
+                    if (e.node && e.node.innerHTML.includes('<iframe') && e.node.innerHTML.includes('.pdf')) {
+                        setTimeout(() => {
+                            const pdfEmbeds = editor.getBody().querySelectorAll('.pdf-embed:not(:has(.pdf-validation-message, .pdf-error-message))');
+                            pdfEmbeds.forEach(embed => {
+                                // Vérifier si l'iframe a une source PDF valide
+                                const iframe = embed.querySelector('iframe[src$=".pdf"], iframe[src*="uploads/"]');
+                                if (iframe && iframe.src) {
+                                    showPdfMessage(embed, '✓ PDF validé - Vous pouvez sauvegarder.', true); // Succès
+                                } else {
+                                    showPdfMessage(embed, 'Upload du PDF non abouti. Veuillez vérifier le format.', false); // Échec
+                                }
+                            });
+                        }, 100);
+                    }
                 });
-                editor.on('PostProcess', function(e) {
-                    // Ne pas modifier le contenu
-                    e.content = e.content;
-                });
+
+                //* Écouteurs pour le drag & drop *//
+                editor.on('BeforeSetContent', function(e) { e.content = e.content; });
+                editor.on('PostProcess', function(e) { e.content = e.content; });
+                // Style visuel pendant le drag
                 editor.on('dragend', function(e) { e.preventDefault(); });
                 editor.on('dragover', function(e) {
                     e.preventDefault();
@@ -130,6 +228,7 @@
                     e.preventDefault();
                     editor.getBody().style.backgroundColor = '';
                 });
+                // Gestion du drop (dépôt de fichier)
                 editor.on('drop', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -142,36 +241,46 @@
                         if (isImage || isPdf) {
                             let formData = new FormData();
                             formData.append('file', file);
+                            // URL d'upload selon le type de fichier
                             let url = isImage ? '{{ path('api_tinymce_upload_image') }}' : '{{ path('api_tinymce_upload_file') }}';
                             fetch(url, { method: 'POST', body: formData })
                             .then(response => response.json())
                             .then(function(jsonData) {
-                                if (jsonData.error) { alert(jsonData.error); }
-                                else if (jsonData.location) {
+                                if (jsonData.error) {
+                                    alert(jsonData.error);
+                                } else if (jsonData.location) {
                                     if (isImage) {
+                                        // Insérer une image
                                         editor.insertContent('<img src="' + jsonData.location + '" alt="' + file.name + '">');
                                     } else {
+                                        // Sinon insérer un PDF
                                         let pdfUrl = jsonData.location;
-                                        // 2. Insérer un pdf avec glisser-déposer
-                                        const pdfHtml = '<div class="pdf-embed" style="width:100%; height:1123px; margin:1rem 0;">' +
-                                            '<object data="' + pdfUrl + '" type="application/pdf" style="width:100%; height:100%; border:none;">' +
-                                            'Votre navigateur ne supporte pas les PDFs. <a href="' + pdfUrl + '">Télécharger le PDF</a>' +
-                                            '</object></div>';
+                                        const pdfHtml = '<div class="pdf-embed" style="width:100%; height:1122px; margin:1rem 0;" data-mce-fragment="1">' +
+                                            '<iframe src="' + pdfUrl + '" width="100%" height="1122px" style="border:none;" allowfullscreen data-mce-fragment="1"></iframe>' +
+                                            '</div>';
                                         editor.insertContent(pdfHtml);
+                                        // Afficher un message temporaire après insertion
+                                        setTimeout(() => {
+                                            const pdfEmbeds = editor.getBody().querySelectorAll('.pdf-embed:not(:has(.pdf-validation-message, .pdf-error-message))');
+                                            pdfEmbeds.forEach(embed => {
+                                                showPdfMessage(embed, '✓ PDF validé - Vous pouvez sauvegarder.', true);
+                                            });
+                                        }, 100);
                                     }
                                 }
                             })
-                            .catch(error => { alert('Erreur : ' + error.message); });
+                            .catch(error => alert('Erreur : ' + error.message));
                         } else {
                             alert('Seuls les fichiers images (JPEG, JPG, PNG, GIF) et PDF sont autorisés.');
                         }
                     }
                 });
             },
+            // Initialisaton de TinyMCE terminée => charger le contenu et afficher le PDF
             init_instance_callback: function(editor) {
                 editor.on('LoadContent', function() {
                     const content = editor.getContent();
-                    editor.setContent(content, { format: 'raw' });
+                    editor.setContent(content, { format: 'raw' });  // Conserver le format brut du contenu
                 });
             }
         });
