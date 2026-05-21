@@ -1,12 +1,6 @@
 <?php
 
-/**
- * Écoute les événements pour créer/modifier un article
- * Objectif : Nettoyer le contenu pour les PDFs insérés => CONTRER les erreurs générées par TinyMCE
- *  -> Supprimer les attributs sandbox="",
- *  -> Remplacer les <iframe> PDF par des <object> pour assurer la compatibilité,
- *  -> Supprimer les imbrications et div.pdf-embed vides générées automatiquement.
- */
+/* Écouter les événements pour créer/modifier un pdf dans un article =  contrer les erreurs  générées par TinyMCE */
 
 namespace App\EventListener;
 
@@ -25,6 +19,7 @@ class PostContentListener implements EventSubscriberInterface
         ];
     }
 
+    //* Nettoyer le contenu HTML d'un article avant sauvegarde *//
     public function cleanPostContent($event): void
     {
         $entity = $event->getEntityInstance();
@@ -39,11 +34,12 @@ class PostContentListener implements EventSubscriberInterface
             return;
         }
 
-        // Nettoyer le HTML => supprimer sandbox="" et les imbrications (div à la volée...)
+        // Nettoyer le HTML => supprimer sandbox="" et les imbrications vides générées par TinyMCE
         $cleanedContent = $this->cleanPdfHtml($content);
         $entity->setContent($cleanedContent);
     }
 
+    //* Nettoyer le HTML pour les PDFs insérés via TinyMCE *//
     private function cleanPdfHtml(string $html): string
     {
         // Remplacer les <iframe> par des <object>
@@ -51,7 +47,7 @@ class PostContentListener implements EventSubscriberInterface
             '/<iframe[^>]+src="([^"]+\.pdf)"[^>]*><\/iframe>/i',
             function ($matches) {
                 $pdfUrl = $matches[1];
-                return '<div class="pdf-embed"><object data="' . $pdfUrl . '" type="application/pdf" width="100%" height="600px" style="border:none;">Votre navigateur ne supporte pas les PDFs. <a href="' . $pdfUrl . '">Télécharger le PDF</a>.</object></div>';
+                return '<div class="pdf-embed"><object data="' . $pdfUrl . '" type="application/pdf" width="100%" height="1122px" style="border:none;">Votre navigateur ne supporte pas les PDFs. <a href="' . $pdfUrl . '">Télécharger le PDF</a>.</object></div>';
             },
             $html
         );

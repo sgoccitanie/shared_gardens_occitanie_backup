@@ -1,4 +1,4 @@
-{# Affiche soit la liste des articles (avec postsList.php), soit un article unique avec son contenu complet #}
+{# Affiche soit la liste des articles (postsList.php), soit un article unique avec son contenu complet #}
 {% extends 'base.html.twig' %}
 
 {% block title %} {{ pageTitle|default('Accueil | Réseau des Semeurs de Jardins') }}{% endblock %}
@@ -7,6 +7,7 @@
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('styles/calendar.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/stylePdf.css') }}">
 {% endblock %}
 
 {% block content %}

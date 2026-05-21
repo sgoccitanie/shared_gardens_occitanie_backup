@@ -159,12 +159,6 @@ class PostsCrudController extends AbstractCrudController
             FormField::addColumn(10),
             TextField::new('title', 'Titre de l\'article'),
             DateField::new('postedAt')->setFormat('short')->setDisabled(true),
-            TextareaField::new('content', 'Contenu')
-                ->hideOnIndex()
-                ->setFormTypeOptions([
-                    'block_name' => 'content',
-                ])
-                ->setFormTypeOption('attr', ['class' => 'tinymce']),
             FormField::addColumn(2),
             SlugField::new('slug')->setTargetFieldName(['title', 'postedAt'])->setFormTypeOption('attr', ['readonly' => true])->setUnlockConfirmationMessage(
                 'Il est recommandé d\'utiliser les slugs automatiques, mais vous pouvez les personnaliser'
@@ -184,18 +178,16 @@ class PostsCrudController extends AbstractCrudController
                 ->setFormTypeOption('by_reference', false),
             AssociationField::new('tab', 'Pages')->setFormTypeOption('choice_label', 'label'),
             AssociationField::new('keywords', 'Mots clés')->setFormTypeOption('choice_label', 'label'),
+
+            // Formulaire pour créer un article avec TinyMCE (templates\admin\posts\form.html.twig)
+            TextareaField::new('content', 'Contenu')
+                ->hideOnIndex()
+                ->setFormTypeOptions([
+                    'block_name' => 'content',
+                ])
+                ->setFormTypeOption('attr', ['class' => 'tinymce']),
         ];
     }
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Nettoyer le contenu HTML pour éviter les balises parasites
@@ -208,26 +200,14 @@ class PostsCrudController extends AbstractCrudController
             return '';
         }
 
-        // Supprimer UNIQUEMENT les paragraphes VRAIMENT vides et les commentaires HTML => TinyMCE gère les div 
-        $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);   // Paragraphes VRAIMENT vides
+        // Supprimer UNIQUEMENT les paragraphes vides et les commentaires HTML => TinyMCE gère les div 
+        $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);   // Paragraphes vides
         $content = preg_replace('/<!--[^\[>](.*?)-->/', '', $content); // Commentaires HTML
 
         return $content;
     }
 
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Nettoyer le contenu avant de l'envoyer au template
-     */
+    /* Nettoyer le contenu avant de l'envoyer au template */
     public function editEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         /** @var Posts $entityInstance */

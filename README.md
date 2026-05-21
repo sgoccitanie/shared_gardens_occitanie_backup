@@ -18,7 +18,7 @@
 
 <strong>⚠️ Objectif :</strong> <span style="font-weight:normal;"> Finaliser la refonte du site **débutée en Symfony 7**, améliorer son design, ses fonctionnalités et sa performance.</span>
 
-<br><br>
+<br>
 
 <div align="center">
 <img src="public/img/logos/logo_SDJ.png" alt="Logo SDJ" width="400"/>
