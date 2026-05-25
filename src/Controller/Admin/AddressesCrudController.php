@@ -2,7 +2,6 @@
 
 namespace App\Controller\Admin;
 
-
 use App\Entity\Addresses;
 use App\Entity\Cities;
 use App\Entity\Countries;
@@ -15,9 +14,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
+use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 
 class AddressesCrudController extends AbstractCrudController
 {
+    use EasyAdminAssetsTrait;
+    use EasyAdminActionsTrait;
+
     public static function getEntityFqcn(): string
     {
         return Addresses::class;
@@ -34,42 +38,12 @@ class AddressesCrudController extends AbstractCrudController
             ->setFormThemes(['@EasyAdmin/crud/form_theme.html.twig', 'admin/posts/form.html.twig'])
         ;
     }
+
     public function configureAssets(Assets $assets): Assets
     {
-        return $assets
-            ->addAssetMapperEntry('app')
-            ->addCssFile('styles/admin.css')
-            ->addCssFile('styles/form_admin.css')
+        return $this->configureCommonAssets($assets, '5px 30px')
             ->addHtmlContentToBody('
             <style>
-            /***** Bouton "Créer Réseau" *****/
-            .page-actions .btn,
-            .page-actions .btn.btn-primary {
-                background-color: #99cd47 !important;
-                --bs-btn-bg: #99cd47 !important;
-                --bs-btn-hover-bg: #99cd47 !important;
-                --bs-btn-active-bg: #99cd47 !important;
-                --button-bg: #99cd47 !important;
-                --button-primary-bg: #99cd47 !important;
-                --button-primary-hover-bg: #99cd47 !important;
-                border: none !important;
-                padding:5px 30px !important;
-                padding-bottom:26px !important;
-                box-shadow : 4px 6px 4px 0 rgba(0, 0, 0, 0.25) !important;
-                margin-bottom : 20px !important;
-                text-decoration : none !important;
-                color:white !important;
-            }
-            .page-actions .btn:focus,
-            .page-actions .btn.btn-primary:focus,
-            .page-actions .btn:active,
-            .page-actions .btn.btn-primary:active,
-            .page-actions .btn:focus-visible,
-            .page-actions .btn.btn-primary:focus-visible {
-                border: none !important;
-                outline: none !important;
-            }
-
             /***** Tableau responsive *****/
             .datagrid-wrapper {
                 overflow-x: auto;
@@ -81,19 +55,9 @@ class AddressesCrudController extends AbstractCrudController
             }
             .datagrid td,
             .datagrid th {
-                max-width: 200px; /* ajuster si besoin */
+                max-width: 200px;
                 white-space: normal;
                 word-wrap: break-word;
-            }
-            .datagrid th {
-                font-weight: 600;
-                text-transform: uppercase;
-                font-size: 0.9rem;
-                letter-spacing: 0.5px;
-                background-color: #f8f9fa;
-            }
-            .datagrid tr:nth-child(even) {
-                background-color: #f9f9f9;
             }
             </style>
             ');
@@ -102,11 +66,8 @@ class AddressesCrudController extends AbstractCrudController
     // Supprimer les cases à cocher
     public function configureActions(Actions $actions): Actions
     {
-        return $actions
-            ->disable(Action::SAVE_AND_CONTINUE)
-            ->disable('batchDelete')
-            ->setPermission('batchDelete', 'NO_ACCESS')
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER);
+        return $this->configureCommonActions($actions)
+            ->disable(Action::SAVE_AND_CONTINUE);
     }
 
     public function configureFields(string $pageName): iterable

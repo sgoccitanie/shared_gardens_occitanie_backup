@@ -21,9 +21,12 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
-
+use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
+use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 class Association2CrudController extends AbstractCrudController
 {
+    use EasyAdminAssetsTrait;
+    use EasyAdminActionsTrait;
 
     public function __construct(private ManagerRegistry $doctrine) {}
 
@@ -31,22 +34,7 @@ class Association2CrudController extends AbstractCrudController
     {
         return Association::class;
     }
-    // public static function getSubscribedEvents()
-    // {
-    //     return [
-    //         BeforeEntityPersistedEvent::class => ['setAssociation'],
-    //     ];
-    // }
-    // public function setAssociation(BeforeEntityPersistedEvent $event)
-    // {
-    //     $entity = $event->getEntityInstance();
-
-    //     if (!($entity instanceof Association)) {
-    //         return;
-    //     }
-
-    //     dump($entity);
-    // }
+ 
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -79,93 +67,22 @@ class Association2CrudController extends AbstractCrudController
 
     public function configureAssets(Assets $assets): Assets
     {
-        return $assets
-            ->addAssetMapperEntry('app')
-            ->addCssFile('styles/admin.css')
-            ->addCssFile('styles/form_admin.css')
-            ->addHtmlContentToBody('
-            <style>
-            /***** Bouton "Créer Réseau" *****/
-            .page-actions .btn,
-            .page-actions .btn.btn-primary {
-                background-color: #99cd47 !important;
-                --bs-btn-bg: #99cd47 !important;
-                --bs-btn-hover-bg: #99cd47 !important;
-                --bs-btn-active-bg: #99cd47 !important;
-                --button-bg: #99cd47 !important;
-                --button-primary-bg: #99cd47 !important;
-                --button-primary-hover-bg: #99cd47 !important;
-                border: none !important;
-                padding:10px 20px !important;
-                padding-bottom:26px !important;
-                box-shadow : 4px 6px 4px 0 rgba(0, 0, 0, 0.25) !important;
-                margin-bottom : 20px !important;
-                text-decoration : none !important;
-                color:white !important;
-            }
-            .page-actions .btn:focus,
-            .page-actions .btn.btn-primary:focus,
-            .page-actions .btn:active,
-            .page-actions .btn.btn-primary:active,
-            .page-actions .btn:focus-visible,
-            .page-actions .btn.btn-primary:focus-visible {
-                border: none !important;
-                outline: none !important;
-            }
-
-            /***** Style pour le tableau  *****/
-            .datagrid {
-                width: 100%;
-                table-layout: auto;
-            }
-            .datagrid td,
-            .datagrid th {
-                padding: 12px 15px !important;
-                vertical-align: middle !important;
-                word-wrap: break-word;
-                max-width: 300px;
-            }
-            .datagrid th {
-                font-weight: 600;
-                text-transform: uppercase;
-                font-size: 0.9rem;
-                letter-spacing: 0.5px;
-                background-color: #f8f9fa;
-            }
-            .datagrid tr:nth-child(even) {
-                background-color: #f9f9f9;
-            }
-            </style>
-            ');
+        return $this->configureCommonAssets($assets, '5px 30px');
     }
-
-    /*
-    function configureActions(Actions $actions): Actions
-    {
-        return $actions
-            ->disable('new')
-            ->disable('delete')
-        ;
-    }
-        */
 
     // Supprimer les cases à cocher
     public function configureActions(Actions $actions): Actions
     {
+        $actions = $this->configureCommonActions($actions);
 
-        // Supprimer la ligne avec logo et banner
         $deleteBannerAndLogo = Action::new('deleteBannerAndLogo', 'Supprimer', 'fa fa-trash')
             ->linkToCrudAction('deleteBannerAndLogo')
             ->setCssClass('btn btn-danger')
-            ->setHtmlAttributes(['onclick' => 'return confirm("Confirmer la suppression ?");']); // confirmation
+            ->setHtmlAttributes(['onclick' => 'return confirm("Confirmer la suppression ?");']);
 
         return $actions
             ->add(Crud::PAGE_INDEX, $deleteBannerAndLogo)
-            ->remove(Crud::PAGE_INDEX, Action::DELETE)   // retire le DELETE par défaut
-            ->disable('batchDelete')
-            ->setPermission('batchDelete', 'NO_ACCESS')
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER);
+            ->remove(Crud::PAGE_INDEX, Action::DELETE);
     }
 
 

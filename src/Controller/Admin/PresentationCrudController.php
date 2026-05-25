@@ -15,10 +15,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use Symfony\Component\HttpFoundation\Response;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
+use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 
 #[IsGranted('ROLE_ADMIN')]
 class PresentationCrudController extends AbstractCrudController
 {
+    use EasyAdminAssetsTrait;
+    use EasyAdminActionsTrait;
+
     public static function getEntityFqcn(): string
     {
         return Presentation::class;
@@ -45,11 +50,7 @@ class PresentationCrudController extends AbstractCrudController
 
     public function configureAssets(Assets $assets): Assets
     {
-        return $assets
-            ->addAssetMapperEntry('app')
-            ->addCssFile('styles/admin.css')
-            ->addCssFile('styles/form_admin.css');
-        //->addHtmlContentToHead('<style>.datagrid th:first-child, .datagrid td:first-child { display: none !important; }</style>');
+        return $this->configureCommonAssets($assets);
     }
 
     public function configureFields(string $pageName): iterable
@@ -65,14 +66,14 @@ class PresentationCrudController extends AbstractCrudController
                 ->setTemplatePath('admin/presentation/field_excerpt.html.twig')
                 ->onlyOnIndex(),*/
         ];
+        
     }
 
     public function configureActions(Actions $actions): Actions
     {
-        return $actions
+        return $this->configureCommonActions($actions)
             ->disable(Action::SAVE_AND_CONTINUE)
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
+            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER);
     }
 }
 

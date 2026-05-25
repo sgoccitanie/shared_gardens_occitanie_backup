@@ -19,10 +19,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
+use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 
 #[IsGranted('ROLE_EDITOR')] // Réservé aux éditeurs et admins
 class CommentCrudController extends AbstractCrudController
 {
+    use EasyAdminAssetsTrait;
+    use EasyAdminActionsTrait;
+
     private UserRepository $userRepository;
 
     public function __construct(UserRepository $userRepository)
@@ -67,44 +72,20 @@ class CommentCrudController extends AbstractCrudController
     // Style des boutons
     public function configureAssets(Assets $assets): Assets
     {
-        return $assets
-            ->addAssetMapperEntry('app')
-            ->addCssFile('styles/admin.css')
-            ->addCssFile('styles/form_admin.css')
+        return $this->configureCommonAssets($assets, '10px', '#729D2D')
             ->addHtmlContentToBody('
-        <style>
-        /***** Bouton "Créer Commentaire" *****/
-        .page-actions .btn,
-        .page-actions .btn.btn-primary {
-            background-color: #99cd47 !important;
-            --bs-btn-bg: #99cd47 !important;
-            --bs-btn-hover-bg: #729D2D !important; /* Couleur au survol */
-            --bs-btn-active-bg: #729D2D !important;
-            --button-bg: #99cd47 !important;
-            --button-primary-bg: #99cd47 !important;
-            --button-primary-hover-bg: #729D2D !important;
-            border: none !important;
-            padding: 10px !important;
-            padding-bottom: 26px !important;
-            box-shadow: 4px 6px 4px 0 rgba(0, 0, 0, 0.25) !important;
-            margin-bottom: 20px !important;
-            text-decoration: none !important;
-            color: white !important; 
-        }
-
-        .page-actions .btn:focus,
-        .page-actions .btn.btn-primary:focus,
-        .page-actions .btn:active,
-        .page-actions .btn.btn-primary:active,
-        .page-actions .btn:focus-visible,
-        .page-actions .btn.btn-primary:focus-visible {
-            border: none !important;
-            outline: none !important;
-            background-color: #729D2D !important; /* Couleur au clic */
-            color: white !important;
-        }
-        </style>
-        ');
+            <style>
+                .page-actions .btn:focus,
+                .page-actions .btn.btn-primary:focus,
+                .page-actions .btn:active,
+                .page-actions .btn.btn-primary:active,
+                .page-actions .btn:focus-visible,
+                .page-actions .btn.btn-primary:focus-visible {
+                    background-color: #729D2D !important;
+                    color: white !important;
+                }
+            </style>
+            ');
     }
 
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
