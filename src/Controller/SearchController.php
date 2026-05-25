@@ -56,7 +56,7 @@ class SearchController extends AbstractController
                 if (!empty($query)) {
 
                     // Sécurisation
-                    $safeQuery = addslashes($query);
+                    $safeQuery = urlencode($query);
 
                     // Syntaxe Google Drive
                     $baseQuery .= " and name contains '" . $safeQuery . "'";

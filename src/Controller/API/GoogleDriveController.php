@@ -119,19 +119,15 @@ class GoogleDriveController extends AbstractController
                 'supportsAllDrives' => 'false'
             );
 
-            // dd($optParams);
-
             if ($keywords !== null) {
-                $keywordssplited = str_replace("'", "\'", $keywords);
-                $keywordssplited = str_replace(' ', "' and fullText contains '", $keywordssplited);
+                $keywordssplited = urlencode($keywords);
+                $keywordssplited = str_replace('%20', "' and fullText contains '", $keywordssplited);
                 $optParams['q'] = "(" . $option . ") and trashed = false and mimeType != 'application/vnd.google-apps.folder' and fullText contains '" . $keywordssplited . "'";
-                // dd($optParams['q']);
             }
-            // dd($optParams);
             $optParams['pageToken'] = null;
             // loop through the files
             do {
-                // dd($optParams);
+
                 try {
                     $results = $this->service->files->listFiles($optParams);
                     $files = $results->getFiles();
