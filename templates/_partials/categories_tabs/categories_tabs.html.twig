@@ -11,12 +11,24 @@
                 {% if categoryWithTabs.tabs|length > 0 %}
                     <div class="tabs-list">
                         {% for tab in categoryWithTabs.tabs %}
+                            {# Trouver le Post associé à ce Tab via tab_id #}
+                            {% set postForTab = null %}
+                            {% for postWithUrl in allPostsWithUrls %}
+                                {% if postWithUrl.post.tab and postWithUrl.post.tab.id == tab.id and postForTab is null %}
+                                    {% set postForTab = postWithUrl %}
+                                {% endif %}
+                            {% endfor %}
+
                             <a
-                                href="{{ path('app_home_with_slug_and_id', {
-                                    'slug': tab.slug,
-                                    'id': tab.pages.id
-                                }) }}"
+                                href="
+                                    {% if postForTab is not null %}
+                                        {{ path('app_home_with_id', {'id': postForTab.post.id}) }}
+                                    {% else %}
+                                        {{ path('app_articles') }}?category={{ categoryWithTabs.category.id }}
+                                    {% endif %}
+                                "
                                 class="tab-link"
+                                title="{{ tab.label }}"
                             >
                                 {{ tab.label }}
                             </a>
