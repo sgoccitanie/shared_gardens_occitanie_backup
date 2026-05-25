@@ -29,6 +29,12 @@ class PostContentListener implements EventSubscriberInterface
             return;
         }
 
+        // Décoder le titre pour éviter les entités HTML (ex: &#039; pour l'apostrophe)
+        $title = $entity->getTitle();
+        if (!empty($title)) {
+            $entity->setTitle(html_entity_decode($title, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        }
+
         $content = $entity->getContent();
         if (empty($content)) {
             return;

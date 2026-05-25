@@ -119,8 +119,13 @@ class Posts
 
     public function setContent(string $content): static
     {
-        $this->content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        // Décoder une première fois
+        $content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
+        // Décoder une deuxième fois (cas oùle contenu est double-encodé)
+        $content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        $this->content = $content;
         return $this;
     }
 

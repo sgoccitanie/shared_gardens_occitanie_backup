@@ -12,9 +12,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-
+use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
+use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 class CategoriesCrudController extends AbstractCrudController
 {
+    use EasyAdminAssetsTrait;
+    use EasyAdminActionsTrait;
+
     public function __construct(
         private EntityManagerInterface $entityManager
     ) {}
@@ -34,80 +38,16 @@ class CategoriesCrudController extends AbstractCrudController
         ;
     }
 
-    public function configureAssets(Assets $assets): Assets
+   public function configureAssets(Assets $assets): Assets
     {
-        return $assets
-            ->addAssetMapperEntry('app')
-            ->addCssFile('styles/admin.css')
-            ->addCssFile('styles/form_admin.css')
+        return $this->configureCommonAssets($assets)
             ->addHtmlContentToBody('
             <style>
-            /***** Bouton "Créer Article" *****/
-            .page-actions .btn,
-            .page-actions .btn.btn-primary {
-                background-color: #99cd47 !important;
-                --bs-btn-bg: #99cd47 !important;
-                --bs-btn-hover-bg: #99cd47 !important;
-                --bs-btn-active-bg: #99cd47 !important;
-                --button-bg: #99cd47 !important;
-                --button-primary-bg: #99cd47 !important;
-                --button-primary-hover-bg: #99cd47 !important;
-                border: none !important;
-                padding:10px  !important;
-                padding-bottom:26px !important;
-                box-shadow : 4px 6px 4px 0 rgba(0, 0, 0, 0.25) !important;
-                margin-bottom : 20px !important;
-                text-decoration : none !important;
-                color:white !important;
-            }
-            .page-actions .btn:focus,
-            .page-actions .btn.btn-primary:focus,
-            .page-actions .btn:active,
-            .page-actions .btn.btn-primary:active,
-            .page-actions .btn:focus-visible,
-            .page-actions .btn.btn-primary:focus-visible {
-                border: none !important;
-                outline: none !important;
-            }
-
-            /***** Bouton \'Sauvegarder les modification\' de la page d\'édition *****/
-            .btn.btn-primary,
-            .btn.btn-success,
-            .btn.btn--light,
-            .btn.btn--success,
-            .ea-crud-form .form-actions .btn,
-            .ea-crud-form .form-actions .btn-primary {
-                color: black !important;
-            }
-            /***** Style pour le tableau  *****/
-            .datagrid {
-                width: 100%;
-                table-layout: auto;
-            }
-            .datagrid td,
-            .datagrid th {
-                padding: 12px 50px !important;
-                vertical-align: middle !important;
-                word-wrap: break-word;
-                max-width: 300px;
-            }
-            .datagrid th {
-                font-weight: 600;
-                text-transform: uppercase;
-                font-size: 0.9rem;
-                letter-spacing: 0.5px;
-                background-color: #f8f9fa;
-            }
-            .datagrid tr:nth-child(even) {
-                background-color: #f9f9f9;
-            }
-        </style>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const createButton = document.querySelector(\'.page-actions .btn\');
-            });
-        </script>
-        ');
+                .datagrid td, .datagrid th {
+                    padding: 12px 50px !important;
+                }
+            </style>
+            ');
     }
 
     // Supprimer les cases à cocher
