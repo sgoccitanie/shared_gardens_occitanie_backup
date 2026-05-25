@@ -13,7 +13,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_EDITOR')]
 class LinksCrudController extends AbstractCrudController
 {
     use EasyAdminAssetsTrait;

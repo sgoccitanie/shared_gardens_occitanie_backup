@@ -23,6 +23,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+#[IsGranted('ROLE_ADMIN')]
 class Association2CrudController extends AbstractCrudController
 {
     use EasyAdminAssetsTrait;
