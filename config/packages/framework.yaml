@@ -1,9 +1,10 @@
 framework:
     session:
         handler_id: null
-        cookie_secure: auto      # "auto" pour éviter les problèmes en local (HTTP)
+        cookie_secure: auto      # "auto" pour éviter les problèmes en local (HTTP) --> en production, il passera automatiquement à "true" (HTTPS)
         cookie_samesite: lax     # "lax" pour permettre les redirections
-        cookie_httponly: true
+        cookie_httponly: true    # Cookie inaccessible via JavaScript
+        use_cookies: true
 # framework:
 #     session:
 #         enabled: true
