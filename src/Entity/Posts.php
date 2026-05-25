@@ -119,7 +119,7 @@ class Posts
 
     public function setContent(string $content): static
     {
-        $this->content = $content;
+        $this->content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
         return $this;
     }

@@ -32,7 +32,7 @@ class Comment
         $this->createdAt = new \DateTimeImmutable();
     }
 
-    // Méthode __toString() pour que EasyAdmin puisse afficher le titre du commentaire dans la liste
+    // Afficher le titre du commentaire dans la liste
     public function __toString(): string
     {
         return substr($this->content, 0, 30) . (strlen($this->content) > 30 ? '...' : '');
@@ -51,7 +51,7 @@ class Comment
 
     public function setContent(string $content): self
     {
-        $this->content = $content;
+        $this->content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
         return $this;
     }
