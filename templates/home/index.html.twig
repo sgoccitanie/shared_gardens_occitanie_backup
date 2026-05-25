@@ -52,9 +52,10 @@
                     {% if postsWithUrls|length == 1 %}
                         {% set postWithUrl = postsWithUrls[0] %}
                         <div class="post-container">
-                            <h2 style="margin-top:40px;">{{ postWithUrl.post.title|raw }}</h2>
+                        {# |raw => Risque XSS sur du contenu non fiable #}
+                            <h2 style="margin-top:40px;">{{ postWithUrl.post.title }}</h2>
                             {# Affichage du contenu : texte, image, PDF #}
-                            <div class="post-content" style="margin-top:20px;">{{ postWithUrl.post.content|raw }}</div>
+                            <div class="post-content" style="margin-top:20px;">{{ postWithUrl.post.content }}</div>
                         </div>
                         {% if id %}
                             <div class="col-12 m-auto comments-section my-3">
