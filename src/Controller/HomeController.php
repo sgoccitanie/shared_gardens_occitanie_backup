@@ -40,7 +40,8 @@ class HomeController extends AbstractController
         private EntityManagerInterface $entityManager,
         private CategoriesRepository $categoriesRepository,
         private AddressesRepository $addressesRepository,
-        private PresentationRepository $presentationRepository
+        private PresentationRepository $presentationRepository,
+        private CommentRepository $commentRepository,
     ) {}
 
     // Carte des jardins
@@ -401,8 +402,8 @@ class HomeController extends AbstractController
 
                 $this->entityManager->persist($comment);
 
-                $currentCount = $post->getCommentCounter() ?? 0;
-                $post->setCommentCounter($currentCount + 1);
+                // $currentCount = $post->getCommentCounter() ?? 0;
+                // $post->setCommentCounter($currentCount + 1);
                 $this->entityManager->persist($post);
 
                 $this->entityManager->flush();
@@ -412,8 +413,9 @@ class HomeController extends AbstractController
 
             $commentForm = $form->createView();
 
-            $comments = $this->entityManager->getRepository(Comment::class)->findBy(['post' => $post], ['createdAt' => 'ASC']);
-            $commentCount = $post->getCommentCounter() ?? count($comments);
+            $comments = $this->entityManager->getRepository(Comment::class)
+            ->findBy(['post' => $post], ['createdAt' => 'ASC']);
+            $commentCount = count($comments);  // Nb de commentaires
         }
 
 
@@ -495,8 +497,8 @@ class HomeController extends AbstractController
             $this->entityManager->persist($comment);
 
             // Mettre à jour le compteur des commentaires
-            $currentCount = $post->getCommentCounter() ?? 0;
-            $post->setCommentCounter($currentCount + 1);
+            // $currentCount = $post->getCommentCounter() ?? 0;
+            // $post->setCommentCounter($currentCount + 1);
             $this->entityManager->persist($post);
 
             $this->entityManager->flush();

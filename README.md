@@ -1,6 +1,8 @@
-[![](https://img.shields.io/badge/Symfony-black?style=for-the-badge)](https://github.com/hamzamohdzubair/redant)
-[![](https://img.shields.io/badge/PHP-blue?style=for-the-badge)](https://hamzamohdzubair.github.io/redant/)
-[![](https://img.shields.io/badge/Bootstrap-blueviolet?style=for-the-badge)](https://hamzamohdzubair.github.io/redant/)
+[![Symfony](https://img.shields.io/badge/Symfony-000000?style=for-the-badge&logo=symfony)](https://symfony.com)
+[![EasyAdmin](https://img.shields.io/badge/EasyAdmin-1A1A1A?style=for-the-badge)](https://github.com/EasyCorp/EasyAdminBundle)
+[![TinyMCE](https://img.shields.io/badge/TinyMCE-f7df1e?style=for-the-badge&logo=tinymce&logoColor=white)](https://www.tiny.cloud/)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com)
+
 
 <div align="center">
   
@@ -16,7 +18,7 @@
 
 <br><br>
 
-<strong>⚠️ Objectif :</strong> <span style="font-weight:normal;"> Finaliser la refonte du site **débutée en Symfony 7**, améliorer son design, ses fonctionnalités et sa performance.</span>
+<strong>⚠️ Objectif :</strong> <span style="font-weight:normal;"> Finaliser la refonte du site **débutée en Symfony 7** et lancer en production.</span>
 
 <br>
 
@@ -140,6 +142,17 @@
 
 <br>
 
+## 🔐 Sécurisation
+
+    🟩 **Protéger des injections SQL**
+    🟩 **Générer un token CSRF**
+    🟩 **Mots de passe hachés**
+    🟩 **Contrer les attaques XSS**
+    🟩 **Sécuriser  les uploads de fichiers (PDFs, images)**
+    🟩 **Sécuriser les routes selon les rôles**
+
+<br>
+
 ## 🌐 Front-end
 
     🟩 Résoudre les problèmes d'affichages (logo, mantra, articles, PDF) et de navigation
@@ -154,7 +167,7 @@
 ## 🔧 Finaliser le projet
 
     🟩 Finir le design suivant les consignes
-    🚧 Tester/Corriger les bugs
-    🚧 Vérifier la sécurité avant de charger la base de données
+    🟩 Tester/Corriger les bugs
+    🟩 Vérifier la sécurité avant de charger la base de données
     🚧 Charger/Tester/Corriger la base
     🚧 Mettre en production/Tester : nom de domaine et hébergeur

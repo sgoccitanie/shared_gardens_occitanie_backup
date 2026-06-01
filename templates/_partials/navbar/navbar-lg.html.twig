@@ -40,7 +40,7 @@
                         Carte des jardins
                     </a>
                 </nav>
-                <div class="coordinates-asso align-content-end justify-content-center h-100 px-3 py-5">
+                <div class="coordinates-asso align-content-end justify-content-center px-3 mt-3">
                 {# Mini carte uMap #}
                 {% include '_partials/navbar/_mini-map.html.twig' %}
                     <p class="contact-us text-center fw-bolder fs-5">Contactez-nous</p>
@@ -56,7 +56,7 @@
                             {{ headerData.assoEmail|default('Email non disponible') }}
                         </a>
                     </p>
-                    <p class="phone">
+                    <p class="phone mb-4">
                         <i class="fa-solid fa-phone"></i>
                         {{ headerData.assoPhone|default('Téléphone non disponible') }}
                     </p>

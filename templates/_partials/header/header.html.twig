@@ -49,7 +49,8 @@
                             {% if currentRoute != 'app_login' %}
                                 <div class="buttons-header row col">
                                     <div class="support-us col-4">
-                                        <button class="main-button" onclick="window.open('{{ adhesionUrl|default('https://default-url.com') }}', '_blank')">J'adhère</button>
+                                    {# https://www.helloasso.com/associations/le-reseau-des-semeurs-de-jardins/adhesions/adhesion-annuelle-au-reseau-des-semeurs-de-jardins-2026 #}
+                                        <button class="main-button" onclick="window.open('{{ adhesionUrl|default('https://www.helloasso.com/associations/le-reseau-des-semeurs-de-jardins/adhesions/adhesion-annuelle-au-reseau-des-semeurs-de-jardins-2026') }}', '_blank')">J'adhère</button>
                                     </div>
                                     <div class="contact-us col-8">
                                         <button class="main-button" onclick="window.location.href='{{ path('app_contact') }}'">Nous contacter</button>

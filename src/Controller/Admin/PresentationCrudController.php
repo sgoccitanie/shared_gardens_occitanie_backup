@@ -72,8 +72,8 @@ class PresentationCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $this->configureCommonActions($actions)
-            ->disable(Action::SAVE_AND_CONTINUE)
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER);
+            ->disable(Action::SAVE_AND_CONTINUE);
+        // ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER);  // EasyAdminActionsTrait supprrime déjà l'action "Ajouter un autre" sur la page de création
     }
 }
 
