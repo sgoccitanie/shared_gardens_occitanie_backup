@@ -10,6 +10,7 @@ use App\Service\MessagerieService;
 use App\Service\HeaderService;
 use App\Repository\AssociationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,15 +25,18 @@ class SecurityController extends AbstractController
     private VerifyEmailHelperInterface $verifyEmailHelper;
     private HeaderService $headerService;
     private AssociationRepository $assoRepo;
+    private $logger;
 
     public function __construct(
         VerifyEmailHelperInterface $verifyEmailHelper,
         HeaderService $headerService,
-        AssociationRepository $assoRepo
+        AssociationRepository $assoRepo,
+        LoggerInterface $logger
     ) {
         $this->verifyEmailHelper = $verifyEmailHelper;
         $this->headerService = $headerService;
         $this->assoRepo = $assoRepo;
+        $this->logger = $logger;
     }
 
     #[Route(path: '/login', name: 'app_login')]
@@ -56,8 +60,12 @@ class SecurityController extends AbstractController
             $user = $repository->findOneBy(['email' => $lastUsername]);
             if ($user && $user->isGhosted()) {
                 $this->addFlash('error', 'Cet espace est réservé aux administrateurs du site.');
+                $this->logger->warning('Tentative de connexion par un utilisateur ghosté: {email}', ['email' => $lastUsername]);
                 return $this->redirectToRoute('app_login');
             }
+        }
+        if ($error) {
+            $this->logger->warning('Tentative de connexion échouée pour: {email}', ['email' => $lastUsername ?? 'inconnu']);
         }
 
         // Récupérer les données de l'association

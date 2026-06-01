@@ -28,4 +28,13 @@ class CommentRepository extends ServiceEntityRepository
     }
 
     // Ajouter ici des méthodes personnalisées si besoin
+    public function countByPost(int $postId): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->andWhere('c.post = :postId')
+            ->setParameter('postId', $postId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
