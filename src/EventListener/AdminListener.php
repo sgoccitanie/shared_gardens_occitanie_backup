@@ -1,5 +1,4 @@
 <?php
-// src/EventListener/AdminListener.php
 
 namespace App\EventListener;
 

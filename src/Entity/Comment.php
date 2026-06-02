@@ -16,6 +16,12 @@ class Comment
     #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
     private ?string $content = null;
 
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'Le pseudo est obligatoire')]
+    #[Assert\Length( min: 2, max: 100, minMessage: 'Le pseudo doit contenir au moins 2 caractères', maxMessage: 'Le pseudo ne peut pas dépasser 100 caractères'
+    )]
+    private ?string $pseudo = null;
+
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -52,6 +58,18 @@ class Comment
     public function setContent(string $content): self
     {
         $this->content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        return $this;
+    }
+
+    public function getPseudo(): ?string
+    {
+        return $this->pseudo;
+    }
+
+    public function setPseudo(string $pseudo): self
+    {
+        $this->pseudo = trim($pseudo);
 
         return $this;
     }
