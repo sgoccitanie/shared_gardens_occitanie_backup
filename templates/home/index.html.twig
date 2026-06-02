@@ -64,9 +64,25 @@
                                 {% if commentForm %}
                                     <h4 class="my-4 fw-light" style="margin-left:12.5%"> Ajouter un commentaire</h4>
                                     <form action="{{ path('app_comment_post', {'id': id}) }}" method="post" class="w-75 m-auto my-4 text-end">
+                                        {# Obliger un pseudo pour les commentaires des visiteurs #}
                                         {{ form_start(commentForm) }}
+                                            <div class="d-flex align-items-center mt-5 mb-3">
+                                                <div class="d-flex align-items-center">
+                                                    {{ form_label(commentForm.pseudo, null, {'label_attr': {'class': 'me-2 mb-0'}}) }}
+                                                    <div style="width:250px;">
+                                                        {{ form_widget(commentForm.pseudo) }}
+                                                    </div>
+                                                    {{ form_errors(commentForm.pseudo) }}
+                                                </div>
+                                                <div class="ms-auto">
+                                                    {{ form_label(commentForm.content, null, {'label_attr': {'class': 'mb-0'}}) }}
+                                                </div>
+                                            </div>
                                             {{ form_widget(commentForm.content) }}
-                                            <button class="button btn-secondary-green mx-5 my-3" type="submit">Envoyer</button>
+                                            {{ form_errors(commentForm.content) }}
+                                            <button class="button btn-secondary-green mx-5 my-3" type="submit">
+                                                Envoyer
+                                            </button>
                                         {{ form_end(commentForm) }}
                                     </form>
                                 {% endif %}
@@ -81,12 +97,14 @@
                                             {% else %}
                                                 {% set role_label = '' %}
                                             {% endif %}
+
                                             {% if comment.user %}
                                                 {{ comment.user.firstname }} {{ comment.user.lastname }}
                                                 {% if role_label != '' %}, {{ role_label }}{% endif %}
                                             {% else %}
-                                                Anonyme
+                                                {{ comment.pseudo }}
                                             {% endif %}
+
                                             ({{ comment.createdAt|date('d/m/Y H:i') }})
                                         </p>
                                         <p class="mx-4 text-secondary">{{ comment.content }}</p>
