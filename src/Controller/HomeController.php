@@ -391,13 +391,19 @@ class HomeController extends AbstractController
             $comment = new Comment();
             $comment->setPost($post);
 
-            $form = $this->createForm(CommentType::class, $comment);
+            $form = $this->createForm(CommentType::class, $comment, [
+                'show_pseudo' => !$this->getUser(),
+            ]);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $user = $this->getUser();
                 if ($user) {
                     $comment->setUser($user);
+
+                    if ($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_EDITOR')) {
+                        $comment->setPseudo((string) $user);
+                    }
                 }
 
                 $this->entityManager->persist($comment);
@@ -486,7 +492,9 @@ class HomeController extends AbstractController
         // Formulaire des commentaires
         $comment = new Comment();
         $comment->setPost($post);
-        $form = $this->createForm(CommentType::class, $comment);
+        $form = $this->createForm(CommentType::class, $comment, [
+            'show_pseudo' => !$this->getUser(),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
