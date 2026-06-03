@@ -16,7 +16,7 @@ class Comment
     #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
     private ?string $content = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, nullable: true)]
     #[Assert\NotBlank(message: 'Le pseudo est obligatoire')]
     #[Assert\Length( min: 2, max: 100, minMessage: 'Le pseudo doit contenir au moins 2 caractères', maxMessage: 'Le pseudo ne peut pas dépasser 100 caractères'
     )]
@@ -67,9 +67,9 @@ class Comment
         return $this->pseudo;
     }
 
-    public function setPseudo(string $pseudo): self
+    public function setPseudo(?string $pseudo): self
     {
-        $this->pseudo = trim($pseudo);
+        $this->pseudo = $pseudo ? trim($pseudo) : null;
 
         return $this;
     }
