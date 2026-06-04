@@ -48,7 +48,7 @@ class HomeController extends AbstractController
     #[Route('/map/jardins', name: 'app_jardins')]
     public function map(): Response
     {
-        // Récupèrer les adresses avec des coordonnées valides
+        // Adresses : coordonnées valides
         $addresses = $this->addressesRepository->findValidAddresses();
 
         return $this->render('home/map.html.twig', [
@@ -84,13 +84,13 @@ class HomeController extends AbstractController
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        // lecture propre + validation stricte
+        // Tri chronologique
         $order = strtoupper($request->query->get('order', 'DESC'));
         if (!in_array($order, ['ASC', 'DESC'])) {
             $order = 'DESC';
         }
 
-        // Récupération du filtre catégorie
+        // Filtrer catégorie
         $categoryId = $request->query->get('category');
 
         try {
@@ -142,8 +142,6 @@ class HomeController extends AbstractController
             ];
         }
 
-
-
         // Récupérer les catégories avec leurs tabs associés
         $categoriesWithTabs = [];
         $categories = $this->categoriesRepository->findAll();
@@ -154,7 +152,6 @@ class HomeController extends AbstractController
                 'tabs' => $tabs,
             ];
         }
-
 
         $firstAssociation = $this->assoRepo->findOneBy([], ['id' => 'ASC']);
         $assoId = $firstAssociation ? $firstAssociation->getId() : 1;
@@ -201,7 +198,7 @@ class HomeController extends AbstractController
             'categoriesWithTabs' => $categoriesWithTabs,
         ]);
     }
-    
+
     #[Route('/{id}', name: 'app_home_with_id', methods: ['GET'], requirements: ['id' => '\d+'])]
     #[Route('/{slug?}/{id?}', name: 'app_home_with_slug_and_id', methods: ['GET'])]
     #[Route('/', name: 'app_home', methods: ['GET'])]
@@ -234,12 +231,6 @@ class HomeController extends AbstractController
             ];
         }
 
-
-
-
-
-
-
         // Récupérer les catégories avec leurs tabs associés
         $categoriesWithTabs = [];
         $categories = $this->categoriesRepository->findAll();
@@ -250,14 +241,6 @@ class HomeController extends AbstractController
                 'tabs' => $tabs,
             ];
         }
-
-
-
-
-
-
-
-
 
         // Page présentation
         if ($slug === null && $id === null) {
@@ -391,8 +374,10 @@ class HomeController extends AbstractController
             $comment = new Comment();
             $comment->setPost($post);
 
+            $isEditorOrAdmin = $this->isGranted('ROLE_EDITOR') || $this->isGranted('ROLE_ADMIN');
+
             $form = $this->createForm(CommentType::class, $comment, [
-                'show_pseudo' => !$this->getUser(),
+                'is_editor_or_admin' => $isEditorOrAdmin,
             ]);
             $form->handleRequest($request);
 
@@ -407,11 +392,7 @@ class HomeController extends AbstractController
                 }
 
                 $this->entityManager->persist($comment);
-
-                // $currentCount = $post->getCommentCounter() ?? 0;
-                // $post->setCommentCounter($currentCount + 1);
                 $this->entityManager->persist($post);
-
                 $this->entityManager->flush();
 
                 return $this->redirectToRoute('app_home_with_id', ['id' => $id]);
@@ -420,14 +401,10 @@ class HomeController extends AbstractController
             $commentForm = $form->createView();
 
             $comments = $this->entityManager->getRepository(Comment::class)
-            ->findBy(['post' => $post], ['createdAt' => 'ASC']);
+                ->findBy(['post' => $post], ['createdAt' => 'ASC']);
+
             $commentCount = count($comments);  // Nb de commentaires
         }
-
-
-
-
-
 
         return $this->render('home/index.html.twig', array_merge($context, [
             'headerData' => $headerData,
@@ -492,8 +469,10 @@ class HomeController extends AbstractController
         // Formulaire des commentaires
         $comment = new Comment();
         $comment->setPost($post);
+        $isEditorOrAdmin = $this->isGranted('ROLE_EDITOR') || $this->isGranted('ROLE_ADMIN');
+
         $form = $this->createForm(CommentType::class, $comment, [
-            'show_pseudo' => !$this->getUser(),
+            'is_editor_or_admin' => $isEditorOrAdmin,
         ]);
         $form->handleRequest($request);
 
@@ -505,8 +484,6 @@ class HomeController extends AbstractController
             $this->entityManager->persist($comment);
 
             // Mettre à jour le compteur des commentaires
-            // $currentCount = $post->getCommentCounter() ?? 0;
-            // $post->setCommentCounter($currentCount + 1);
             $this->entityManager->persist($post);
 
             $this->entityManager->flush();

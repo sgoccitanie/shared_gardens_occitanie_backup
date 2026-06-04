@@ -17,8 +17,7 @@ class Comment
     private ?string $content = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Assert\NotBlank(message: 'Le pseudo est obligatoire')]
-    #[Assert\Length( min: 2, max: 100, minMessage: 'Le pseudo doit contenir au moins 2 caractères', maxMessage: 'Le pseudo ne peut pas dépasser 100 caractères'
+    #[Assert\Length(min: 2, max: 100, minMessage: 'Le pseudo doit contenir au moins 2 caractères', maxMessage: 'Le pseudo ne peut pas dépasser 100 caractères'
     )]
     private ?string $pseudo = null;
 
@@ -44,7 +43,7 @@ class Comment
         return substr($this->content, 0, 30) . (strlen($this->content) > 30 ? '...' : '');
     }
 
-    // Getters et setters ...
+    // Getters et setters
     public function getId(): ?int
     {
         return $this->id;
