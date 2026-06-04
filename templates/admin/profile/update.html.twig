@@ -27,10 +27,18 @@
 				{{form_row(form.login)}}
 				{{form_row(form.firstname)}}
 				{{form_row(form.lastname)}}
-				{# Debrief : supprimer les champs téléphone et image pour tous les roles #}
-				{# {{form_row(form.mobile)}} #}
-				{# {{form_row(form.img)}} #}
-				<div class="py-2">
+				{# Password #}
+				<div class="my-4 pt-3">
+					<h5 class="mb-3 text-muted">Changer le mot de passe</h5>
+					<div class="mb-3 mx-5">
+						{{ form_row(form.plainPassword.first) }}
+					</div>
+					<div class="mx-5">
+						{{ form_row(form.plainPassword.second) }}
+					</div>
+				</div>
+
+				<div class="py-2 mt-4">
 					{{ form_row(form.submit) }}
 				</div>
 				{{ form_end(form) }}
