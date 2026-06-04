@@ -30,7 +30,7 @@
 
         <div class="content_main">
             <div class="d-flex flex-column p-2">
-                {# => Liste de tous les articles #}
+                {# => Tous les articles #}
                 {% if displayList %}
                     {% if postsWithUrls|length > 0 %}
                         <div class="d-flex justify-content-end p-lg-2">
@@ -52,7 +52,6 @@
                     {% if postsWithUrls|length == 1 %}
                         {% set postWithUrl = postsWithUrls[0] %}
                         <div class="post-container">
-                        {# |raw => Risque XSS sur du contenu non fiable #}
                             <h2 style="margin-top:40px;">{{ postWithUrl.post.title }}</h2>
                             {# Affichage du contenu : texte, image, PDF => |raw nécessaire avec TinyMCE 
                             => nettoyé avant sauvegarde (via PostContentListener et cleanContent() dans PostsCrudController #}
@@ -64,17 +63,19 @@
                                 {% if commentForm %}
                                     <h4 class="my-4 fw-light" style="margin-left:12.5%"> Ajouter un commentaire</h4>
                                     <form action="{{ path('app_comment_post', {'id': id}) }}" method="post" class="w-75 m-auto mb-4 text-end">
-                                        {# Obliger un pseudo pour les commentaires des visiteurs #}
+                                        {# Obliger un pseudo pour les commentaires uniquement pour les visiteurs #}
                                         {{ form_start(commentForm) }}
                                             <div class="d-flex align-items-center mb-0">
-                                                <div class="d-flex align-items-center">
-                                                    {{ form_label(commentForm.pseudo, null, {'label_attr': {'class': 'me-2 mb-0'}}) }}
-                                                    <div style="width:250px;">
-                                                        {{ form_widget(commentForm.pseudo) }}
+                                                {% if not (app.user and (app.user.roles|join(',') matches '/ROLE_EDITOR|ROLE_ADMIN/')) %}
+                                                    <div class="d-flex align-items-center">
+                                                        {{ form_label(commentForm.pseudo, null, {'label_attr': {'class': 'me-2 mb-0'}}) }}
+                                                        <div style="width:250px;">
+                                                            {{ form_widget(commentForm.pseudo) }}
+                                                        </div>
+                                                        {{ form_errors(commentForm.pseudo) }}
                                                     </div>
-                                                    {{ form_errors(commentForm.pseudo) }}
-                                                </div>
-                                                <div class="ms-auto">
+                                                {% endif %}
+                                                <div class="{% if not (app.user and (app.user.roles|join(',') matches '/ROLE_EDITOR|ROLE_ADMIN/')) %}ms-auto{% else %}m-0{% endif %}">
                                                     {{ form_label(commentForm.content, null, {'label_attr': {'class': 'mb-0'}}) }}
                                                 </div>
                                             </div>
