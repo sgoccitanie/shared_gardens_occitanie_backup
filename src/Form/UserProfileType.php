@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 
 class UserProfileType extends AbstractType
 {
@@ -26,6 +28,7 @@ class UserProfileType extends AbstractType
                     'class' => 'form-control',
                 ],
             ])
+
             ->add('firstname', null, [
                 'label' => 'Prénom',
                 'required' => true,
@@ -35,6 +38,7 @@ class UserProfileType extends AbstractType
                     'class' => 'form-control',
                 ],
             ])
+
             ->add('lastname', null, [
                 'label' => 'Nom',
                 'required' => true,
@@ -44,46 +48,36 @@ class UserProfileType extends AbstractType
                     'class' => 'form-control',
                 ],
             ])
-            /********************* Debrief : supprimer les champs téléphone et image pour tous les roles
-            ->add('mobile', TelType::class, [
-                'label' => 'Téléphone',
-                'required' => false,
-                'data' => $options['data']->getMobile() ?? 'Votre téléphone',
-                'attr' => [
-                    'placeholder' => 'Votre téléphone',
-                    'class' => 'form-control',
-                ],
-            ])
-            ->add('img', FileType::class, [
-                'label' => 'Image de profil',
+
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
                 'mapped' => false,
-                'attr' => [
-                    'accept' => 'image/png, image/jpeg, image/webp, image/jpg'
+                'required' => false, // Non obligatoire (pour permettre de ne pas changer le mot de passe)
+                'first_options' => [
+                    'label' => 'Nouveau mot de passe',
+                    'attr' => [
+                        'placeholder' => 'Laissez vide pour ne pas changer',
+                        'class' => 'form-control',
+                        'autocomplete' => 'new-password',
+                    ],
                 ],
-                'required' => false,
-                'constraints' => [
-                    new Image(
-                        minWidth: 300,
-                        maxWidth: 1400,
-                        minHeight: 300,
-                        maxHeight: 1400,
-                        mimeTypes: [
-                            'image/jpeg',
-                            'image/png',
-                            'image/webp',
-                            'image/jpg'
-                        ]
-                    )
-                ]
-            ]) 
-                */
+                'second_options' => [
+                    'label' => 'Confirmer le nouveau mot de passe',
+                    'attr' => [
+                        'placeholder' => 'Confirmez le nouveau mot de passe',
+                        'class' => 'form-control',
+                        'autocomplete' => 'new-password',
+                    ],
+                ],
+                'invalid_message' => 'Les deux mots de passe doivent être identiques.',
+            ])
+
             ->add('submit', SubmitType::class, [
                 'label' => 'Enregistrer',
                 'attr' => [
                     'class' => 'button btn-secondary-green py-2',
                 ],
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

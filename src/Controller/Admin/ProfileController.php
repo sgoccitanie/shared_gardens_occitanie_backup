@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request as Request;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 class ProfileController extends AbstractController
@@ -64,22 +65,27 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/admin/profile/update', name: 'app_admin_profile_update', methods: ['GET', 'POST'])]
-    public function update(Request $request, EntityManagerInterface $entityManager): Response
+    public function update(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         $form = $this->createForm(UserProfileType::class, $this->getUser());
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $form->getData();
             $user->setUpdatedAt(new \DateTimeImmutable());
-            /*$featuredImage = $form->get('img')->getData();
-            if ($featuredImage != null) {
-                $image = $this->pictureService->square($featuredImage, 'profiles/users', 300);
-                $user->setImg($image);
-            }*/
-            /*$user->setMobile(Utils::cleanInputStatic($form->get('mobile')->getData()));*/
+
+            // Mise à jour des champs de base du profil
             $user->setLogin(Utils::cleanInputStatic($form->get('login')->getData()));
             $user->setFirstname(Utils::cleanInputStatic($form->get('firstname')->getData()));
             $user->setLastname(Utils::cleanInputStatic($form->get('lastname')->getData()));
+
+            // Modifier le pwd
+            $plainPassword = $form->get('plainPassword')->getData();
+            if (!empty($plainPassword)) {
+                $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+                $user->setPassword($hashedPassword);
+            }
+
             try {
                 $entityManager->persist($user);
                 $entityManager->flush();
@@ -90,6 +96,7 @@ class ProfileController extends AbstractController
             }
             return $this->redirectToRoute('app_admin_profile');
         }
+
         $pageTitle = 'Gestion du profil';
         return $this->render('admin/profile/update.html.twig', [
             'controller_name' => 'ProfileController',
