@@ -16,12 +16,6 @@ trait ReadOnlyTraits
         return $this->addPasswordEventListener($formBuilder);
     }
 
-    // public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
-    // {
-    //     $formBuilder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
-    //     return $this->addPasswordEventListener($formBuilder);
-    // }
-
     private function addPasswordEventListener(FormBuilderInterface $formBuilder): FormBuilderInterface
     {
         return $formBuilder->addEventListener(FormEvents::POST_SUBMIT, $this->hashPassword());

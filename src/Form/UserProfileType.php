@@ -52,7 +52,7 @@ class UserProfileType extends AbstractType
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
-                'required' => false, // Non obligatoire (pour permettre de ne pas changer le mot de passe)
+                'required' => false, // Possible de ne pas changer le mot de passe
                 'first_options' => [
                     'label' => 'Nouveau mot de passe',
                     'attr' => [

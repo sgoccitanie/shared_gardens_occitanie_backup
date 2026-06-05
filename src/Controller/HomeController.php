@@ -403,7 +403,7 @@ class HomeController extends AbstractController
             $comments = $this->entityManager->getRepository(Comment::class)
                 ->findBy(['post' => $post], ['createdAt' => 'ASC']);
 
-            $commentCount = count($comments);  // Nb de commentaires
+            $commentCount = count($comments);
         }
 
         return $this->render('home/index.html.twig', array_merge($context, [

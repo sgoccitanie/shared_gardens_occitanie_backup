@@ -32,13 +32,6 @@ class PageController extends AbstractController
         return $this->render('page/cookies.html.twig');
     }
 
-    /* Pour le moment renvoie à app_home : créer template/page/apropos.html.twig si nécessaiiire
-    #[Route('/qui-sommes-nous', name: 'app_about', priority: 10)]
-    public function about(): Response
-    {
-        return $this->render('page/about.html.twig');
-    }
-        */
     #[Route('/qui-sommes-nous', name: 'app_home', priority: 10)]
     public function about(): Response
     {

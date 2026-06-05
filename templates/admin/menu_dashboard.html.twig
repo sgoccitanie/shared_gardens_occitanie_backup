@@ -49,7 +49,7 @@
                         </div>
                     </div>
                 </a>
-                {#  Rediriger vers la gestion des notifications (=commentaires)  #}
+                {#  Notifications (=commentaires)  #}
                 <a href="{{ path('admin_comments') }}">
                     <div class="col h-100">
                         <div class="card card-profile flex-row h-100">
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                 </a>
-                {#  Rediriger vers la gestion de présentation de l'association => UNIQUEMENT POUR LES ADMINS #}
+                {#  Présentation de l'association => pour les admins #}
                 {% if 'ROLE_ADMIN' in app.user.roles %}
                 <a href="{{ path('admin_presentation_index') }}">
                     <div class="col h-100">

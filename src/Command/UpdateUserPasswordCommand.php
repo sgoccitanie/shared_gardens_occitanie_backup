@@ -1,9 +1,5 @@
 <?php
-// Cette commande sert à remplacer le mot de passe existant avec un mot de passe haché (mode env)
-// Étapes: 
-// 1) vider le cache
-// 2) Éxécuter la commande bin/console dans le terminal pour générer le nouveau mot de passe haché
-// 3) Vérifier/Tester
+// Commande de mise à jour du mot de passe utilisateur
 
 namespace App\Command;
 

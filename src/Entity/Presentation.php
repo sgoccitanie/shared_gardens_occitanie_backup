@@ -1,5 +1,5 @@
 <?php
-// src/Entity/Presentation.php
+
 namespace App\Entity;
 
 use App\Repository\PresentationRepository;
@@ -40,7 +40,7 @@ class Presentation
     public function setContent(string $content): static
     {
         $this->content = $content;
-        $this->updatedAt = new \DateTime(); // Mise à jour automatique
+        $this->updatedAt = new \DateTime();
         return $this;
     }
 

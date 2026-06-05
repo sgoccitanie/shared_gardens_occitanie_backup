@@ -39,6 +39,7 @@ body.page-login .content_dashboard{
     padding: 0.75rem!important;
     border: 1.5px solid var(--gray-border)!important;
 }
+
 /* Surcharge des styles EasyAdmin */
 .ea-login-page {
     background: none !important;
@@ -62,7 +63,7 @@ body.page-login .content_dashboard{
     padding: 0.75rem;
 }
 
-/* BUTTONS style*/
+/* Buttons*/
 .btn.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited  {
     background-color: rgba(0, 0, 0, 0)!important;
     color: black!important;

@@ -13,7 +13,7 @@ class AddressesController extends AbstractController
     #[Route('/', name: 'app_addresses')]
     public function index(HttpClientInterface $client): Response
     {
-        // TODO: pour effectuer un appel sur l'API, il faut utiliser le client HTTP
+        // Appel sur l'API avec HTTP
         $response = $client->request('GET', 'https://api-adresse.data.gouv.fr/search/?q=8+bd+du+port&limit=15');
 
         return $this->render('addresses/index.html.twig', [

@@ -6,7 +6,6 @@
 
 {% block content %}
     <div class="container-fluid d-flex flex-column mt-lg-5">
-        {# Administrator page Content #}
         <div class="content_dashboard josefinSans">
             {% for message in app.flashes('success') %}
                 <div class="flash-notice alert alert-success">
@@ -43,16 +42,6 @@
                             <p>Nom : {{ user.lastname }}</p>
                             <p>Prénom : {{ user.firstname }}</p>
                             <p>Email : {{ user.email }}</p>
-                            <!-- <p>Téléphone :
-                                {#
-                                 {% if user.mobile is not null %}
-                                    {{ user.mobile }}
-                                {% else %}
-                                    <span class="text-muted">Non renseigné</span>
-                                {% endif %}
-                                #}
-                            </p>
-                            -->
                         </div>
                     </div>
                     <a href="{{ path('app_admin_profile_update') }}" class="button btn-secondary-green py-2">Modifier</a>

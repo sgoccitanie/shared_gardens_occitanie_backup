@@ -40,7 +40,7 @@ class TextAnalyzerService
         if ($lastSpace === false) {
             $nextSpace = strpos($text, ' ', $position);
             if ($nextSpace === false) {
-                return [$text, '']; // Retourne tout dans la première partie si pas d'espace
+                return [$text, ''];
             }
             return [
                 substr($text, 0, $nextSpace),
@@ -56,7 +56,7 @@ class TextAnalyzerService
 
     public function splitTextByWordCount(string $text, int $wordCount): array
     {
-        $words = str_word_count($text, 2); // Retourne un tableau avec positions
+        $words = str_word_count($text, 2);
         $positions = array_keys($words);
 
         if (count($positions) <= $wordCount) {

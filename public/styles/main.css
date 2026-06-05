@@ -103,7 +103,7 @@ p {
   min-height: 26em;
 }
 
-/* BUTTONS style*/
+/* Buttons */
 button.main-button {
   color: black;
   font-size: 16px;
@@ -146,11 +146,7 @@ button.main-button:hover:after {
   font-weight: 600;
 }
 
-/* 
-**
-** HOME PAGE
-**
-*/
+/* HOME PAGE */
 
 /* btn home */
 .button.btn-secondary-green {
@@ -183,12 +179,8 @@ button.main-button:hover:after {
 footer {
   font-size: 0.9em;
   line-height: normal;
-  /* position: absolute; */
-  /* bottom: 0; */
-  /* margin: 10px auto 10px auto; */
   justify-content: center;
   display: flex;
-  /* width: 80%; */
 }
 
 footer span {
@@ -207,11 +199,7 @@ footer span {
   margin-top: 10rem;
 }
 
-/* 
-**
-** SEARCH PAGE
-**
-*/
+/* SEARCH PAGE */
 .button.btn-secondary-turquoise {
   background-color: var(--turquoise);
   color: white;
@@ -243,11 +231,7 @@ footer span {
   }
 }
 
-/* 
-**
-** MEDIA QUERIES
-**
-*/
+/* MEDIA QUERIES */
 @media (max-width: 768px) {
   :root {
     --font-size-h1: 1.5em;

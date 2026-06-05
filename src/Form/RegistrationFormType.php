@@ -36,6 +36,7 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
+            
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
@@ -45,12 +46,15 @@ class RegistrationFormType extends AbstractType
                 ],
 
             ])
+
             ->add('firstname', TextType::class, [
                 'attr' => ['class' => 'register-input']
             ])
+
             ->add('lastname', TextType::class, [
                 'attr' => ['class' => 'register-input']
             ])
+
             ->add('login', TextType::class, [
                 'attr' => ['class' => 'register-input']
             ])
@@ -81,17 +85,19 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
+
             ->add('roles', ChoiceType::class, [
                 'choices' => [
                     'Éditeur' => 'ROLE_EDITOR',
                     'Administrateur' => 'ROLE_ADMIN'
                 ],
-                'expanded' => false, // Utiliser un menu déroulant
-                'multiple' => true, // Assurez-vous que cela est à false pour une seule sélection
+                'expanded' => false, // Menu déroulant
+                'multiple' => true, // false = une seule sélection
                 'label' => 'Rôles sur le site',
                 'required' => true,
-                'placeholder' => 'Sélectionnez un rôle', // Optionnel : ajoute un placeholder
+                'placeholder' => 'Sélectionnez un rôle',
             ])
+
             ->add('user_asso', EntityType::class, [
                 'class' => Association::class,
                 'label' => 'A quel réseau appartient l\'utilisateur ?',

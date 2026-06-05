@@ -42,7 +42,6 @@ class Association2CrudController extends AbstractCrudController
     {
         return $crud
 
-            // the labels used to refer to this entity in titles, buttons, etc.
             ->setEntityLabelInSingular('Association')
             ->setEntityLabelInPlural('Associations')
             ->setPageTitle('index', 'Gestion de l\'association')
@@ -73,7 +72,6 @@ class Association2CrudController extends AbstractCrudController
         return $this->configureCommonAssets($assets, '5px 30px');
     }
 
-    // Supprimer les cases à cocher
     public function configureActions(Actions $actions): Actions
     {
         $actions = $this->configureCommonActions($actions);

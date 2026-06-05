@@ -49,7 +49,7 @@ class PageLogicService
             if ($tab !== null) {
                 $slug = $tab->getSlug();
             } else {
-                $slug = null; // Peut être géré différemment si besoin
+                $slug = null;
             }
         }
 
@@ -73,7 +73,6 @@ class PageLogicService
             'backToList' => $backToList,
             'isHome' => $isHome,
             'currentRoute' => $currentRoute,
-            // Flags pour Twig
             'isHomePage' => $isHomePage,
             'isHomeRoute' => $isHomeRoute,
         ];

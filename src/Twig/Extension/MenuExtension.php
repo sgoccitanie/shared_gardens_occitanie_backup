@@ -39,7 +39,7 @@ class MenuExtension extends AbstractExtension
             ],
         ];
 
-        // Menu pour les associations (ROLE_EDITOR)
+        // Menu ROLE_EDITOR
         if ($this->security->isGranted('ROLE_EDITOR')) {
             $menu['association'] = [
                 'label' => 'Mon Association',
@@ -54,7 +54,7 @@ class MenuExtension extends AbstractExtension
             ];
         }
 
-        // Menu Admin (ROLE_ADMIN)
+        // Menu ROLE_ADMIN
         if ($this->security->isGranted('ROLE_ADMIN')) {
             $menu['admin'] = [
                 'label' => 'Administration',

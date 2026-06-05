@@ -1,5 +1,6 @@
 <?php
-// Pour les actions de l'administration EasyAdmin
+// Actions pour l'administration EasyAdmin
+
 namespace App\Controller\Admin\Traits;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -8,7 +9,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 
 trait EasyAdminActionsTrait
 {
-    /* actions pour les CRUD */
     public function configureCommonActions(Actions $actions): Actions
     {
         return $actions

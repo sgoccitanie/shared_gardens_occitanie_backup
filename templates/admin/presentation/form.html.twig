@@ -1,8 +1,8 @@
-{# "Modifier Présentation" #}
 {% extends '@EasyAdmin/crud/form_theme.html.twig' %}
+{# "Modifier Présentation" #}
 
 {% block _Presentation_content_widget %}
-{# Chargement asynchrone de TinyMCE via CDN => recharge améliorée de la page #}
+{# Chargement asynchrone de TinyMCE via CDN = recharge améliorée de la page #}
 <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     {{ tinymce_scripts() }}
     <textarea name="Presentation[content]" id="presentation_content" class="tinymce presentation-content" role="textbox">{{ data }}</textarea>

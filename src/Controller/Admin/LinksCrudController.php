@@ -49,7 +49,6 @@ class LinksCrudController extends AbstractCrudController
             ');
     }
 
-    // Supprimer les cases à cocher
     public function configureActions(Actions $actions): Actions
     {
         return $actions

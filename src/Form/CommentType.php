@@ -1,7 +1,8 @@
 <?php
-// Pseudo obligatoire : conditionnel selon le rôle
 
 namespace App\Form;
+// Pseudo obligatoire pour les non-authentifiés,
+// inutile pour les connectés
 
 use App\Entity\Comment;
 use Symfony\Component\Form\AbstractType;
