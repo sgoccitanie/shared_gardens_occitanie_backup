@@ -1,6 +1,5 @@
 {% extends '@!EasyAdmin/layout.html.twig' %}
 
-{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
 {% trans_default_domain ea.i18n.translationDomain %}
 
 {% block body %}
@@ -17,27 +16,11 @@
                 {{ include(ea.templatePath('flash_messages')) }}
             {% endblock flash_messages %}
 
-            {# dump à supprimer en production #}
-            {# {{ dump(formattedMantra) }} #}
-
-            {# Debrief : supprimer les avatars => supprimer user_menu_avatar #}
-            {# {% set user_menu_avatar %}
-                {% if null == ea.userMenu.avatarUrl %}
-                    <span class="user-avatar">
-                        <twig:ea:Icon name="internal:user"/>
-                    </span>
-                {% else %}
-                    <img class="user-avatar" src="{{ ea.userMenu.avatarUrl }}"/>
-                {% endif %}
-            {% endset %} #}
-
             {% set impersonator_permission = constant('Symfony\\Component\\Security\\Core\\Authorization\\Voter\\AuthenticatedVoter::IS_IMPERSONATOR') is defined ? 'IS_IMPERSONATOR' : 'ROLE_PREVIOUS_ADMIN' %}
 
-            {# Ici inclure/Afficher le header avec vérification des données ? #}
             {% set user_menu_dropdown %}
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li class="dropdown-user-details">
-                        {# <div>{{ user_menu_avatar }}</div> #}
                         <div>
                             <span class="user-label">{{ 'user.logged_in_as'|trans(domain = 'EasyAdminBundle') }}</span>
                             <span class="user-name">{{ ea.user is null ? 'user.anonymous'|trans(domain = 'EasyAdminBundle') : ea.userMenu.name }}</span>
@@ -150,13 +133,6 @@
                             </div>
 
                             <div class="dropdown user-menu-wrapper {{ is_granted(impersonator_permission) ? 'user-is-impersonated' }} ms-auto">
-                                {#<a class="user-details" type="button" data-bs-toggle="dropdown" data-bs-offset="0,5" aria-expanded="false">
-                                    {% if ea.userMenu.avatarDisplayed %}
-                                        {{ user_menu_avatar }}
-                                    {% else %}
-                                        <twig:ea:Icon class="user-avatar" name="{{ ea.user is not null ? 'internal:user' : 'internal:user-xmark' }}"/>
-                                    {% endif %}
-                                </a>#}
 
                                 {{ user_menu_dropdown }}
                             </div>
@@ -189,7 +165,7 @@
                                     <div id="sidebar-resizer-handler" class="resizer-handler resizer-handler-left"></div>
                                 </aside>
                             </div>
-                            {# CONTENT #}
+                            {# Content #}
                             <section class="main-content">
 							   <div class="previous-page">
                     				<a href="{{ path('admin') }}" class="nav-link py-lg-4 py-2"><img src="{{asset('img/icons/previous.png')}}" class="previous-icon" alt="Retour icône">Retour au tableau de bord</a>
@@ -270,7 +246,6 @@
                                                     {% block header_custom_menu %}
                                                         <div class="dropdown user-menu-wrapper {{ is_granted(impersonator_permission) ? 'user-is-impersonated' }}">
                                                             <a class="user-details" type="button" data-bs-toggle="dropdown" data-bs-offset="0,5" aria-expanded="false">
-                                                                {# {{ user_menu_avatar }} #}
                                                                 {% if ea.userMenu.isNameDisplayed %}
                                                                     <span class="user-name">{{ ea.userMenu.name }}</span>
                                                                 {% endif %}

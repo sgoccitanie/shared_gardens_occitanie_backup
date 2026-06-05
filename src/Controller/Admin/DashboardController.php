@@ -88,13 +88,7 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
 
-        /*************************************************
-         * Les editeurs peuvent uniquement :
-         *    - modifier leur propre profil, 
-         *    - CRUD leurs propres articles 
-         *    - Gérer les commentaires
-         **************************************************/
-
+        // Menu Dashboard selon le role : visible par 'editor' et 'admin'
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
 
         // Sous-élément 'Articles' du Blog :  visible par les roles 'editor' et 'admin'
@@ -115,7 +109,7 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::subMenu('Blog', 'fas fa-newspaper')->setSubItems($blogSubMenu);
 
-        // Menu Présentation : UNIQUEMENT pour les ADMINS
+        // Menu Présentation : uniquement pour les ADMINS
         if ($this->security->isGranted('ROLE_ADMIN')) {
             yield MenuItem::linkToCrud('Présentation', 'fas fa-home', Presentation::class)
                 ->setController(PresentationCrudController::class);

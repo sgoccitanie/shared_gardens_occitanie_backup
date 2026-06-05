@@ -40,7 +40,7 @@ class UserCrudController extends AbstractCrudController
 
     public function __construct(
         private readonly UserPasswordHasherInterface $userPasswordHasher,
-        // Ajouter une sécurité pour respecter les rôles
+
         private readonly Security $security,
         private readonly EntityManagerInterface $entityManager,
         private readonly AdminUrlGenerator $adminUrlGenerator
@@ -154,7 +154,6 @@ class UserCrudController extends AbstractCrudController
 
             FormField::addPanel('Informations de contact')
                 ->setIcon('fa fa-mobile')->addCssClass('required'),
-            // TelephoneField::new('mobile')->setLabel('Téléphone'),
             EmailField::new('email'),
 
             // User ghosté
@@ -163,21 +162,21 @@ class UserCrudController extends AbstractCrudController
                 ->onlyOnIndex(),
         ];
 
-        // Ajouter une sécurité pour que seuls les administrateurs puissent modifier les rôles
-        // 1) Si l'utilisateur connecté est strictement admin (ni éditeur, ni role inconnu)
+        // Seuls l'administrateur peut modifier les rôles
+        // Si l'utilisateur connecté est strictement admin
         if ($this->security->isGranted('ROLE_ADMIN')) {
             $roles = ['ROLE_EDITOR', 'ROLE_ADMIN'];
-            // 1) Ajouter le champ 'roles'...
+            // Ajouter le champ 'roles'
             $fields[] = ChoiceField::new('roles')
-                ->setChoices(array_combine($roles, $roles))  // 2)...avec les options 'éditeur' et 'admin'
-                ->allowMultipleChoices()  // 3)...plusieurs rôles possibles : 'éditeur' + 'admin'
-                ->renderExpanded()   // 4) Afficher les rôles sous forme de cases à cocher
-                ->setLabel('Rôles');  // Libellé du champ
+                ->setChoices(array_combine($roles, $roles))
+                ->allowMultipleChoices()
+                ->renderExpanded()
+                ->setLabel('Rôles');
         }
 
         if ($pageName === Crud::PAGE_NEW) {
             $password = TextField::new('password')
-                ->setFormType(RepeatedType::class) // Demander la confirmation du mot de passe
+                ->setFormType(RepeatedType::class) // Confirmer le mot de passe
                 ->setFormTypeOptions([
                     'type' => PasswordType::class,
                     'first_options' => ['label' => 'Mot de passe'],

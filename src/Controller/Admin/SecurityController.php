@@ -42,20 +42,18 @@ class SecurityController extends AbstractController
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils, UserRepository $repository, EntityManagerInterface $entityManager): Response
     {
-        // Si l'utilisateur est déjà connecté
+        // Si l'utilisateur est connecté
         if ($this->getUser()) {
-            // Si l'utilisateur a le rôle ROLE_EDITOR ou ROLE_ADMIN, rediriger vers /admin
             if ($this->isGranted('ROLE_EDITOR') || $this->isGranted('ROLE_ADMIN')) {
                 return $this->redirectToRoute('admin');
             }
-            // Sinon, rediriger vers l'accueil
             return $this->redirectToRoute('app_home');
         }
 
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        // Vérifier si un email a été soumis (après soumission du formulaire)
+        // Vérifier si un email a été soumis
         if ($lastUsername) {
             $user = $repository->findOneBy(['email' => $lastUsername]);
             if ($user && $user->isGhosted()) {

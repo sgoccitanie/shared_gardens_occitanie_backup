@@ -63,7 +63,6 @@ class AddressesCrudController extends AbstractCrudController
             ');
     }
 
-    // Supprimer les cases à cocher
     public function configureActions(Actions $actions): Actions
     {
         return $this->configureCommonActions($actions)

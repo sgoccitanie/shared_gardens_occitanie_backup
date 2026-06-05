@@ -37,6 +37,7 @@ class ContactPageFormType extends AbstractType
                     ]),
                 ],
             ])
+
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'attr' => [
@@ -54,6 +55,7 @@ class ContactPageFormType extends AbstractType
                     ]),
                 ],
             ])
+
             ->add('subject', null, [
                 'label' => 'Objet',
                 'attr' => [
@@ -68,6 +70,7 @@ class ContactPageFormType extends AbstractType
                     ]),
                 ],
             ])
+            
             ->add('message', TextareaType::class, [
                 'label' => 'Message',
                 'attr' => [

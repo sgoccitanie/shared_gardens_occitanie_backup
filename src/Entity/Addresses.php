@@ -51,17 +51,11 @@ class Addresses
     #[ORM\OneToMany(targetEntity: Association::class, mappedBy: 'address')]
     private Collection $asso_address;
 
-
-
-    // ==== Champs virtuels pour le formulaire (non persistés) ====
+    // Champs virtuels pour le formulaire (non persistés)
     private ?string $cityName = null;
     private ?string $cityPostalcode = null;
     private ?string $cityAreaName = null;
     private ?string $cityDptName = null;
-
-
-
-
 
     public function __construct()
     {
@@ -156,7 +150,7 @@ class Addresses
         return $this;
     }
 
-    // Champs virtuels pour gérer les addreesses
+    // Champs virtuels pour gérer les addresses
     public function getCityName(): ?string
     {
         return $this->cityName;

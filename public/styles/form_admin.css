@@ -59,31 +59,12 @@ body.page-login .content_dashboard{
     border-radius: 8px;
     padding: 0.75rem;
 }
-  
-/* .btn.btn-primary:after {
-    content: "";
-    background: var(--turquoise);
-    width: 100%;
-    z-index: -1;
-    position: absolute;
-    height: 100%;
-    top: 5px;
-    left: 5px;
-    transition: 0.2s;
-    transform: rotate(-1deg);
-} */
 
 .btn.btn-primary:hover {
     background: var(--turquoise)!important ;
     color: black!important;
     border: 1.5px solid black!important;
 }
-
-/* .btn.btn-primary:hover:after {
-    top: 0px;
-    left: 0px;    
-    transform: rotate(0deg);
-} */
 
 /* PASSWORD STRENGTH */
 .password-meter {
@@ -121,6 +102,5 @@ body.page-login .content_dashboard{
 
 .datagrid .actions a.btn-danger:hover {
     background-color: #dc3545 !important;
-    /*color: white !important;*/
 }
 

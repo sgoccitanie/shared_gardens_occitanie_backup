@@ -1,11 +1,10 @@
-{# Éditeur complet pour créer un article par l'admin #}
-
 {% extends '@EasyAdmin/crud/form_theme.html.twig' %}
+{# Éditeur pour créer un article #}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        /* Conteneur PDF hauteur A4 (297mm ≈ 1122px) */
+        /* Conteneur PDF hauteur A4 */
         .pdf-embed {
             width: 100%;
             height: 1122px !important;
@@ -84,7 +83,7 @@
                 if (message && message.parentNode) {
                     message.remove();
                 }
-            }, 8000); // 8 secondes
+            }, 8000); // Message affiché pendant 8 secondes
             message.dataset.timeoutId = timeoutId;
         }
 
@@ -115,7 +114,9 @@
                         .then(function(jsonData) {
                             if (jsonData.error) {
                                 alert(jsonData.error);
+
                             } else if (jsonData.location) {
+                                
                                 // Insérer le PDF dans l'éditeur
                                 let pdfUrl = jsonData.location;
                                 const pdfHtml = '<div class="pdf-embed" style="width:100%; height:1122px; margin:1rem 0;" data-mce-fragment="1">' +
@@ -170,13 +171,16 @@
             verify_html: false,
             cleanup: false, // Désactiver le nettoyage automatique
             plugins: ["link", "image", "pdf", "code"],
+
             /* Plugins et barre d'outils */
             toolbar: [
                 "cut copy | undo redo | bold italic strikethrough underline | forecolor backcolor | blockquote | removeformat | pdf | link image | code",
                 "formatselect | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent"
             ],
+
             /* Interface */
             height: 1000,
+
             /* Uploads d'images */
             images_upload_url: '{{ path('api_tinymce_upload_image') }}',
             images_upload_handler: function (blobInfo, success, failure) {
@@ -193,6 +197,7 @@
                 })
                 .catch(error => failure('Erreur : ' + error.message));
             },
+
             /* Gestion du copier-coller des PDF */
             setup: function(editor) {
                 // Écouteur pour le copier-coller de PDF
@@ -228,6 +233,7 @@
                     e.preventDefault();
                     editor.getBody().style.backgroundColor = '';
                 });
+
                 // Gestion du drop (dépôt de fichier)
                 editor.on('drop', function(e) {
                     e.preventDefault();
@@ -249,6 +255,7 @@
                                 if (jsonData.error) {
                                     alert(jsonData.error);
                                 } else if (jsonData.location) {
+
                                     if (isImage) {
                                         // Insérer une image
                                         editor.insertContent('<img src="' + jsonData.location + '" alt="' + file.name + '">');
@@ -276,6 +283,7 @@
                     }
                 });
             },
+
             // Initialisaton de TinyMCE terminée => charger le contenu et afficher le PDF
             init_instance_callback: function(editor) {
                 editor.on('LoadContent', function() {

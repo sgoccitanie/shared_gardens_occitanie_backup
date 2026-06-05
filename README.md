@@ -135,21 +135,22 @@
 
 ## 🗄️ Back-end
 
-    🟩 **Créer la base de données**
-    🟩 **Créer les tables**
-    🟩 **Remplir avec les fixtures**
-    🟩 **Forcer l'affichage du pdf contre les erreurs générées par TinyMCE, via un écouteur**
+    🟩 Créer la base de données
+    🟩 Créer les tables
+    🟩 Remplir avec les fixtures
+    🟩 Forcer l'affichage du pdf contre les erreurs générées par TinyMCE, via un écouteur
 
 <br>
 
 ## 🔐 Sécurisation
 
-    🟩 **Protéger des injections SQL**
-    🟩 **Générer un token CSRF**
-    🟩 **Mots de passe hachés**
-    🟩 **Contrer les attaques XSS**
-    🟩 **Sécuriser  les uploads de fichiers (PDFs, images)**
-    🟩 **Sécuriser les routes selon les rôles**
+    🟩 Protéger des injections SQL
+    🟩 Générer un token CSRF
+    🟩 Mots de passe hachés
+    🟩 Chaque rôle peut modifier son mot de passe
+    🟩 Contrer les attaques XSS
+    🟩 Sécuriser  les uploads de fichiers (PDFs, images)
+    🟩 Sécuriser les routes selon les rôles
 
 <br>
 
@@ -169,5 +170,8 @@
     🟩 Finir le design suivant les consignes
     🟩 Tester/Corriger les bugs
     🟩 Vérifier la sécurité avant de charger la base de données
-    🚧 Charger/Tester/Corriger la base
-    🚧 Mettre en production/Tester : nom de domaine et hébergeur
+    🚧 Vider proprement la base de ses fixtures
+    🚧 Charger les données de l'association/Tester/Corriger
+    🚧 Mettre en production : nom de domaine et hébergeur
+    🚧 Tester/Réajuster en production
+    🚧 Livrer : fournir outils et identifiants (site, GitHub)

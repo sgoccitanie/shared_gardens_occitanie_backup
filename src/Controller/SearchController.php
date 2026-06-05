@@ -21,7 +21,7 @@ class SearchController extends AbstractController
         $files = [];
         $message = null;
 
-        // Récupérer le mot-clé tapé
+        // Récupérer le mot-clé saisi
         $query = trim($request->query->get('q', ''));
 
         if ($credentialsPath && file_exists($credentialsPath)) {
@@ -39,8 +39,6 @@ class SearchController extends AbstractController
                 }
 
                 $service = new Drive($client);
-
-                // Requête
 
                 // Dossiers autorisés
                 $baseQuery = "(

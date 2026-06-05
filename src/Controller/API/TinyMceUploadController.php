@@ -16,6 +16,7 @@ class TinyMceUploadController extends AbstractController
 {
     const MAX_IMAGE_SIZE = 10000000; // 10 Mo
     const MAX_FILE_SIZE = 50000000; // 50 Mo
+
     private $logger;
 
     public function __construct(
@@ -25,7 +26,7 @@ class TinyMceUploadController extends AbstractController
         $this->logger = $logger;
     }
 
-    // Pour les images
+    // Images
     #[Route('/api/tinymce-upload/image', name: 'api_tinymce_upload_image', methods: ['POST'])]
     public function uploadImage(Request $request): Response
     {
@@ -73,7 +74,7 @@ class TinyMceUploadController extends AbstractController
         return new JsonResponse(['location' => $fileUrl]);
     }
 
-    // Pour les PDF : URL absolue + compatible PDF.js
+    // PDF : URL absolue + compatible PDF.js  ==> PDF.js à refaire...
     #[Route('/api/tinymce-upload/file', name: 'api_tinymce_upload_file', methods: ['POST'])]
     public function uploadFile(Request $request): Response
     {
@@ -111,7 +112,7 @@ class TinyMceUploadController extends AbstractController
         // URL absolue pour le PDF
         $fileUrl = $this->generateUrl('app_home', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'uploads/files/' . $fileName;
 
-        // Retourner un lien vers le PDF (au lieu d'un iframe avec PDF.js)
+        // Retourner un lien vers le PDF
         return new JsonResponse([
             'location' => $fileUrl,
             'html' => '<a href="' . $fileUrl . '" target="_blank" class="pdf-link">' . $file->getClientOriginalName() . '</a>'

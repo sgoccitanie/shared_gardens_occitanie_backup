@@ -30,16 +30,13 @@ class ProfileController extends AbstractController
         $user = $this->getUser();
         $pageTitle = 'Gestion du profil';
 
-        // Récupérer l'ID de l'association active
         $firstAssociation = $this->assoRepo->findOneBy([], ['id' => 'ASC']);
         $assoId = $firstAssociation ? $firstAssociation->getId() : 1;
-
-        // Récupérer les données de l'association
         $headerData = $this->headerService->getHeaderData($assoId);
         $logoPath = $this->headerService->getLogoPath($headerData['assoLogo']);
         $formattedMantra = $this->headerService->getFormattedMantra($headerData['assoMantra']);
 
-        // Déterminer le rôle principal de l'utilisateur
+        // Rôle de l'utilisateur
         $userRole = $this->getUserRole($user);
 
         return $this->render('admin/profile/index.html.twig', [

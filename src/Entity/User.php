@@ -30,9 +30,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     #[ORM\Column]
-    #[Assert\All([  // Valider chaque élément du tableau $roles 
-        new Assert\Choice([  // Vérifier que chaque rôle est dans la liste autorisée
-            'choices' => ['ROLE_EDITOR', 'ROLE_ADMIN'],   // Rôles valides
+    #[Assert\All([
+        new Assert\Choice([
+            'choices' => ['ROLE_EDITOR', 'ROLE_ADMIN'],
             'message' => 'Le rôle "{{ value }}" n\'est pas valide.',
         ]),
     ])]
@@ -58,13 +58,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
-    /***********  Debrief :  supprimer les champs téléphone et image pour tous les roles
-     #[ORM\Column(length: 50, nullable: true)]
-    private ?string $mobile = null; 
-
-   #[ORM\Column(length: 255, nullable: true)]
-    private ?string $img = null; */
-
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
@@ -87,7 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: true)]
     private ?Association $user_asso = null;
 
-    /* Éviter le risque de supprimer en cascade : ghoster un utilisateur */
+    /* Ghoster un utilisateur */
     #[ORM\Column]
     private bool $isGhosted = false;
 
@@ -179,7 +172,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // Convertir en string/tableau
         if (is_string($roles)) {
-            $this->roles = [$roles];  // Convertit la chaîne en tableau
+            $this->roles = [$roles];
         } else {
             $this->roles = $roles;
         }
@@ -196,7 +189,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setPassword(string $password): static
     {
-        if ($password) { // Vérifiez si le mot de passe n'est pas vide
+        if ($password) {
             $this->password = $password;
         }
 
@@ -247,32 +240,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
-    /*
-    public function getMobile(): ?string
-    {
-        return $this->mobile;
-    }
-
-    public function setMobile(?string $mobile): static
-    {
-        $this->mobile = $mobile;
-
-        return $this;
-    }
-
-    public function getImg(): ?string
-    {
-        return $this->img;
-    }
-
-    public function setImg(string $img): static
-    {
-        $this->img = $img;
-
-        return $this;
-    }
-*/
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
@@ -364,7 +331,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->isGhosted;
     }
 
-    // Ghoster pour ne pas supprimer en cascade
+    // Ghoster pour ne pas supprimer en cascade et en cas du retour de l'utilisateur
     public function setIsGhosted(bool $isGhosted): static
     {
         $this->isGhosted = $isGhosted;

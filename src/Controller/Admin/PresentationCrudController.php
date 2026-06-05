@@ -44,7 +44,6 @@ class PresentationCrudController extends AbstractCrudController
                 ->setController(self::class)
                 ->setAction(Action::EDIT)
                 ->setEntityId(1)
-            // ->generateUrl()
         );
     }
 
@@ -60,11 +59,6 @@ class PresentationCrudController extends AbstractCrudController
                 ->setFormTypeOption('block_name', 'content')
                 ->setFormTypeOption('attr', ['class' => 'tinymce'])
                 ->setColumns(12),
-            // ->hideOnIndex(),
-            // Arrivée immédiate sur le formulaire de modification
-            /*Field::new('content', 'Extrait')
-                ->setTemplatePath('admin/presentation/field_excerpt.html.twig')
-                ->onlyOnIndex(),*/
         ];
         
     }
@@ -73,7 +67,6 @@ class PresentationCrudController extends AbstractCrudController
     {
         return $this->configureCommonActions($actions)
             ->disable(Action::SAVE_AND_CONTINUE);
-        // ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER);  // EasyAdminActionsTrait supprrime déjà l'action "Ajouter un autre" sur la page de création
     }
 }
 

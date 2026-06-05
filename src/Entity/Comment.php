@@ -37,7 +37,7 @@ class Comment
         $this->createdAt = new \DateTimeImmutable();
     }
 
-    // Afficher le titre du commentaire dans la liste
+    // Titre du commentaire
     public function __toString(): string
     {
         return substr($this->content, 0, 30) . (strlen($this->content) > 30 ? '...' : '');

@@ -6,7 +6,6 @@
     {{ parent() }}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        /* Conteneur de la carte */
         .map-container {
             margin-top: 120px;
             padding: 10px;
@@ -48,7 +47,6 @@
 
 {% block js %}
     {{ parent() }}
-    <!-- Utiliser la bibliothèque "Leaflet" -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

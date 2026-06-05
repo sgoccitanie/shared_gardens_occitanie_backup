@@ -1,6 +1,5 @@
-{# Enregistrer un nouveau réseau #}
 {% extends 'base.html.twig' %}
-
+{# Enregistrer un nouveau réseau #}
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/form_contact.css') }}">
 {% endblock %}
@@ -27,9 +26,7 @@
     {{ form_errors(registrationForm) }}
 
 	{{ form_start(registrationForm, {'method': 'POST', 'action': path('admin_registration'), 'attr': { 'class': 'w-75 m-auto'}}) }}
-        {# RETOUR TEMPORAIRE AVANT BILAN AVEC JULIE SUR LE DESIGN DU FORMULAIRE #}
     <div class="previous-page">
-        {# Ajout du bouton retour #}
         <a href="{{ path('app_home') }}" class="nav-link py-lg-4 py-2"><img src="{{asset('img/icons/previous.png')}}" class="previous-icon" alt="Retour icône">Retour à l'accueil</a>
     </div>
         <h1 class="kgSecondChancesSolid text-center py-5">Enregistrer un nouveau réseau</h1>
@@ -58,13 +55,6 @@
                 <label for="password">Mot de passe</label>
                 {{ form_widget(registrationForm.password, { 'attr': { 'class': 'form-control py-2 mb-4' } }) }}
             </div>
-            {# Supprimer le champ "roles" pour les non-admins #}
-            {# {% if app.user and is_granted('ROLE_ADMIN') %}
-                <div class="form-group">
-                    <label for="roles">Rôle</label>
-                    {{ form_widget(registrationForm.roles, { 'attr': { 'class': 'form-control py-2 mb-4' } }) }}
-                </div>
-            {% endif %} #}
             <div class="form-group">
                 <label for="user_asso">Association</label>
                 {{ form_widget(registrationForm.user_asso, { 'attr': { 'class': 'form-control py-2 mb-4' } }) }}

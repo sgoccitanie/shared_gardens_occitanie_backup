@@ -1,5 +1,4 @@
 <?php
-// src/EventListener/ImageMetaListener.php
 
 namespace App\EventListener;
 

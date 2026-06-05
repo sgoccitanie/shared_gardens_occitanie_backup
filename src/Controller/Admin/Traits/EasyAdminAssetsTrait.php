@@ -1,5 +1,6 @@
 <?php
-// Pour les assets de l'administration EasyAdmin
+// Assets pour l'administration EasyAdmin
+
 namespace App\Controller\Admin\Traits;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
@@ -20,7 +21,6 @@ trait EasyAdminAssetsTrait
             ->addHtmlContentToBody($this->getCommonStyles($buttonPadding, $hoverColor));
     }
 
-    /* Styles CSS communs */
     private function getCommonStyles(string $buttonPadding, string $hoverColor): string
     {
         return '

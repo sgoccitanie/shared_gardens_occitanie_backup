@@ -1,4 +1,3 @@
-/* Style for the dashboard home page */
 .content_dashboard {
     margin: auto 10vw;
     margin-top: 10rem;
@@ -17,7 +16,7 @@ a, a:hover, a:active, a:visited, a:focus{
     color: black!important;
     text-decoration: none!important;
 }
-/* PROFILE USER */
+/* Profile */
 .profile-picture{
     max-width: 20vw;
     max-height: 27vh;

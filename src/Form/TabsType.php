@@ -16,7 +16,7 @@ class TabsType extends AbstractType
     {
         $builder
             ->add('label')
-            // Saisir un slug
+
             ->add('slug', TextType::class, [
                 'required' => true,
                 'help' => 'Ce slug doit être unique.',

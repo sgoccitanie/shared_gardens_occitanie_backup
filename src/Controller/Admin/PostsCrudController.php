@@ -1,5 +1,5 @@
 <?php
-// Dashboard : Gérer des articles
+
 namespace App\Controller\Admin;
 
 use App\Entity\Posts;
@@ -27,7 +27,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 
-#[IsGranted('ROLE_EDITOR')]  // Autoriser les éditeurs ET les admins
+#[IsGranted('ROLE_EDITOR')]
 class PostsCrudController extends AbstractCrudController
 {
     use EasyAdminAssetsTrait;
@@ -136,8 +136,8 @@ class PostsCrudController extends AbstractCrudController
         }
 
         // Supprimer UNIQUEMENT les paragraphes vides et les commentaires HTML => TinyMCE gère les div 
-        $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);   // Paragraphes vides
-        $content = preg_replace('/<!--[^\[>](.*?)-->/', '', $content); // Commentaires HTML
+        $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);
+        $content = preg_replace('/<!--[^\[>](.*?)-->/', '', $content);
 
         return $content;
     }

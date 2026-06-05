@@ -82,7 +82,6 @@ class Association
         $this->users = new ArrayCollection();
         $this->links = new ArrayCollection();
         $this->subjectEmails = new ArrayCollection();
-        // Valeurs par défaut : date du jour ou champ vide
         $this->founded_at = new \DateTimeImmutable();
         $this->banner = null;
         $this->logo = null;
@@ -126,7 +125,7 @@ class Association
 
     public function setBanner(?string $banner): static
     {
-        $this->banner = $banner ?? ''; // si null, met une chaîne vide
+        $this->banner = $banner ?? '';
         return $this;
     }
 
@@ -203,7 +202,7 @@ class Association
 
     public function setLogo(?string $logo): static
     {
-        $this->logo = $logo ?? ''; // si null, met une chaîne vide
+        $this->logo = $logo ?? '';
         return $this;
     }
 
@@ -321,7 +320,7 @@ class Association
         return $this;
     }
 
-    // Suppression validée => ligne invisible pour la gestion du réseau (logo et banner)
+    // Suppression validée => ligne invisible pour la page "gestion du réseau" (logo et banner)
     public function hasImages(): bool
     {
         return !empty($this->logo) || !empty($this->banner);

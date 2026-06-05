@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 
-#[IsGranted('ROLE_EDITOR')]  // Autoriser les éditeurs ET les admins
+#[IsGranted('ROLE_EDITOR')]
 class KeywordsCrudController extends AbstractCrudController
 {
     use EasyAdminAssetsTrait;
@@ -49,7 +49,6 @@ class KeywordsCrudController extends AbstractCrudController
             ');
     }
 
-    // Supprimer les cases à cocher
     public function configureActions(Actions $actions): Actions
     {
         return $actions

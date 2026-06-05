@@ -1,6 +1,6 @@
-{# Affiche soit la liste des articles (postsList.php), soit un article unique avec son contenu complet #}
 {% extends 'base.html.twig' %}
-
+{# => Si displayList = true : afficher la liste des articles #}
+{# => Sinon : afficher un article unique (postWithUrls[0]) #}
 {% block title %} {{ pageTitle|default('Accueil | Réseau des Semeurs de Jardins') }}{% endblock %}
 
 {% block stylesheets %}
@@ -30,6 +30,7 @@
 
         <div class="content_main">
             <div class="d-flex flex-column p-2">
+
                 {# => Tous les articles #}
                 {% if displayList %}
                     {% if postsWithUrls|length > 0 %}
@@ -47,14 +48,15 @@
                             <h2 class="empty-post">Aucun article trouvé</h2>
                         </div>
                     {% endif %}
+
                 {% else %}
                     {# => Un article unique #}
                     {% if postsWithUrls|length == 1 %}
                         {% set postWithUrl = postsWithUrls[0] %}
                         <div class="post-container">
                             <h2 style="margin-top:40px;">{{ postWithUrl.post.title }}</h2>
-                            {# Affichage du contenu : texte, image, PDF => |raw nécessaire avec TinyMCE 
-                            => nettoyé avant sauvegarde (via PostContentListener et cleanContent() dans PostsCrudController #}
+                            
+                            {# Afficher le contenu : texte, image, PDF #}
                             <div class="post-content" style="margin-top:20px;">{{ postWithUrl.post.content|raw }}</div>
                         </div>
                         {% if id %}
@@ -62,6 +64,7 @@
                                 <h4 class="my-4 mb-5 text-center">Commentaires ({{ commentCount }})</h4>
                                 {% if commentForm %}
                                     <h4 class="my-4 fw-light" style="margin-left:12.5%"> Ajouter un commentaire</h4>
+
                                     <form action="{{ path('app_comment_post', {'id': id}) }}" method="post" class="w-75 m-auto mb-4 text-end">
                                         {# Obliger un pseudo pour les commentaires uniquement pour les visiteurs #}
                                         {{ form_start(commentForm) }}
@@ -87,6 +90,8 @@
                                         {{ form_end(commentForm) }}
                                     </form>
                                 {% endif %}
+
+                                {# Modération des commentaires selon les roles #}
                                 {% for comment in comments %}
                                     <div class="comment py-2">
                                         <p>

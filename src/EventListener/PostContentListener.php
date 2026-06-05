@@ -1,6 +1,5 @@
 <?php
-
-/* Écouter les événements pour créer/modifier un pdf dans un article =  contrer les erreurs  générées par TinyMCE */
+/* Écouter les événements pour créer/modifier un pdf dans un article =  forcer "contrer les erreurs générées par TinyMCE" */
 
 namespace App\EventListener;
 
@@ -29,7 +28,7 @@ class PostContentListener implements EventSubscriberInterface
             return;
         }
 
-        // Décoder le titre pour éviter les entités HTML (ex: &#039; pour l'apostrophe)
+        // Décoder le titre
         $title = $entity->getTitle();
         if (!empty($title)) {
             $entity->setTitle(html_entity_decode($title, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
@@ -40,7 +39,7 @@ class PostContentListener implements EventSubscriberInterface
             return;
         }
 
-        // Nettoyer le HTML => supprimer sandbox="" et les imbrications vides générées par TinyMCE
+        // Supprimer sandbox="" et les imbrications vides générées par TinyMCE
         $cleanedContent = $this->cleanPdfHtml($content);
         $entity->setContent($cleanedContent);
     }

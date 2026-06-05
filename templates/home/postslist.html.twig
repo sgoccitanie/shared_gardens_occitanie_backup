@@ -1,5 +1,5 @@
-{# COMPOSANT : afficher la liste des articles en card : chaque card est cliquable et mène vers sa page #}
 {% for postWithUrl in postsWithUrls %}
+{# Liste des articles : chaque card est cliquable vers sa page #}
     {% set post = postWithUrl.post %}
     {% if post.status == true %}
         <a href="{{ postWithUrl.url }}">
@@ -27,7 +27,6 @@
                                 {% endif %}
                             </div>
                             <div class="col-5 d-flex justify-content-end">
-                                {# Nb de commentaires #}
                                 <div>Commentaire {{ post.commentCounter ?? 0 }}</div>
                             </div>
                         </div>

@@ -1,9 +1,7 @@
 <?php
 
 namespace App\Service;
-
 // HeaderService récupère et prépare des données de l'en-tête (logo, bannière, mantra,...)
-// Le Controller appelle ce service quand nécessaire
 
 use App\Repository\AssociationRepository;
 

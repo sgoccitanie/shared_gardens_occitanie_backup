@@ -1,5 +1,5 @@
 <?php
-// src/Entity/Tabs.php
+
 namespace App\Entity;
 
 use App\Repository\TabsRepository;
@@ -44,7 +44,7 @@ class Tabs
     public function __construct()
     {
         $this->tabs_posts = new ArrayCollection();
-        $this->news_feed = false; // Vide par défaut
+        $this->news_feed = false;
     }
 
     public function __toString(): string

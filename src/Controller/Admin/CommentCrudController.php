@@ -1,5 +1,6 @@
 <?php
-// Dashboard : Les commentaires
+// Modérer un commenaire
+
 namespace App\Controller\Admin;
 
 use App\Entity\Comment;
@@ -22,7 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 
-#[IsGranted('ROLE_EDITOR')] // Réservé aux éditeurs et admins
+#[IsGranted('ROLE_EDITOR')]
 class CommentCrudController extends AbstractCrudController
 {
     use EasyAdminAssetsTrait;
@@ -43,7 +44,6 @@ class CommentCrudController extends AbstractCrudController
     public function createEntity(string $entityFqcn)
     {
         $comment = new Comment();
-        // $comment->setCreatedAt(new \DateTimeImmutable());  // $createdAt est initialisée dans le constructeur
         return $comment;
     }
 
@@ -55,8 +55,6 @@ class CommentCrudController extends AbstractCrudController
             ->setPageTitle('index', 'Liste des %entity_label_plural%')
             ->setPageTitle('detail', fn(Comment $comment) => (string) $comment)
             ->setPageTitle('edit', fn(Comment $comment) => sprintf('Modifier le commentaire n°%d', $comment->getId()))
-            // Supprimer ou commenter la ligne suivante si pas besoin de template personnalisé
-            // ->setFormThemes(['@EasyAdmin/crud/form_theme.html.twig', 'admin/comments/form.html.twig'])
             ->setFormThemes(['@EasyAdmin/crud/form_theme.html.twig'])
         ;
     }

@@ -24,7 +24,7 @@ class AssociationCrudController extends AbstractCrudController
 
     public function __construct(
         private ManagerRegistry $doctrine,
-        private RequestStack $requestStack // Récupérer la session
+        private RequestStack $requestStack
     ) {}
 
     public static function getEntityFqcn(): string

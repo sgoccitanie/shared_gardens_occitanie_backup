@@ -23,8 +23,6 @@ class MessagerieService
     }
     public function sendMail($subject, $to, $template, array $context, ?string $from = 'julie.barn9@gmail.com'): bool
     {
-        // dd($subject, $to, $template, $context, $from);
-        //Load Composer's autoloader 
         require '../vendor/autoload.php';
         // do anything else you need here, like send an email
         // SUCCESS : email sent
@@ -43,7 +41,6 @@ class MessagerieService
         try {
             $this->transport->send($mail);
         } catch (TransportExceptionInterface $e) {
-            // dd($e->getMessage());
             return false;
         }
         return true;
