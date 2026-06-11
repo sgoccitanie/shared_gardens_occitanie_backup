@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Presentation;
+use App\Repository\PresentationRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -24,6 +25,13 @@ class PresentationCrudController extends AbstractCrudController
     use EasyAdminAssetsTrait;
     use EasyAdminActionsTrait;
 
+    private PresentationRepository $presentationRepo;
+
+    public function __construct(PresentationRepository $presentationRepo)
+    {
+        $this->presentationRepo = $presentationRepo;
+    }
+
     public static function getEntityFqcn(): string
     {
         return Presentation::class;
@@ -39,11 +47,23 @@ class PresentationCrudController extends AbstractCrudController
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
+        $presentation = $this->presentationRepo->find(1);
+
+        $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
+
+        if ($presentation) {
+            return $this->redirect(
+                $adminUrlGenerator
+                    ->setController(self::class)
+                    ->setAction(Action::EDIT)
+                    ->setEntityId($presentation->getId())
+            );
+        }
+        // Si aucune présentation n'existe créer une nouvelle
         return $this->redirect(
-            $this->container->get(AdminUrlGenerator::class)
+            $adminUrlGenerator
                 ->setController(self::class)
-                ->setAction(Action::EDIT)
-                ->setEntityId(1)
+                ->setAction(Action::NEW)
         );
     }
 
@@ -60,7 +80,6 @@ class PresentationCrudController extends AbstractCrudController
                 ->setFormTypeOption('attr', ['class' => 'tinymce'])
                 ->setColumns(12),
         ];
-        
     }
 
     public function configureActions(Actions $actions): Actions
@@ -69,6 +88,3 @@ class PresentationCrudController extends AbstractCrudController
             ->disable(Action::SAVE_AND_CONTINUE);
     }
 }
-
-
-
