@@ -170,8 +170,8 @@
     🟩 Finir le design suivant les consignes
     🟩 Tester/Corriger les bugs
     🟩 Vérifier la sécurité avant de charger la base de données
-    🚧 Vider proprement la base de ses fixtures
-    🚧 Charger les données de l'association/Tester/Corriger
+    🟩 Vider proprement la base de ses fixtures (TRUNCATE)
+    🟩 Charger les données de l'association/Tester/Corriger (fichier d'extraction Python et de transfert en TXT)
     🚧 Mettre en production : nom de domaine et hébergeur
     🚧 Tester/Réajuster en production
-    🚧 Livrer : fournir outils et identifiants (site, GitHub)
+    🟩 Livrer : fournir outils et identifiants (site, GitHub)
