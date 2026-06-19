@@ -5,18 +5,18 @@ namespace App\Controller\API;
 use DateTime;
 use DateTimeImmutable;
 use Google\Service\Calendar as ServiceCalendar;
-use Google_Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Psr\Log\LoggerInterface;
 
 class GoogleCalendarController extends AbstractController
 {
     private ?ServiceCalendar $service = null;
 
-    public function __construct(private readonly ParameterBagInterface $params)
+    public function __construct(private readonly ParameterBagInterface $params, private readonly LoggerInterface $logger)
     {
         $client = new \Google_Client();
         $credentialsPath = $this->params->get('google_application_credentials');
@@ -26,17 +26,20 @@ class GoogleCalendarController extends AbstractController
                 $client->setAuthConfig($credentialsPath);
                 $client->setApplicationName('semeursdejardins');
                 $client->setScopes('https://www.googleapis.com/auth/calendar.readonly');
-                $client->setSubject('rsj-23@rsj2025.iam.gserviceaccount.com');
+                // $client->setSubject('semeursdejardinslr@gmail.com');
                 $client->setAccessType('offline');
 
-                $guzzleClient = new \GuzzleHttp\Client(['curl' => [CURLOPT_SSL_VERIFYPEER => false]]);
-                $client->setHttpClient($guzzleClient);
+                // A SUPPRIMER EN PRODUCTION !!
+                // $guzzleClient = new \GuzzleHttp\Client(['curl' => [CURLOPT_SSL_VERIFYPEER => true]]);
+                // $client->setHttpClient($guzzleClient);
 
                 $this->service = new ServiceCalendar($client);
             } catch (\Exception $e) {
+                $this->logger->error('Google Calendar error: ' . $e->getMessage());
                 $this->service = null;
             }
         } else {
+            $this->logger->error("Fichier de credentials introuvable. Chemin testé : " . ($credentialsPath ?? 'null'));
             $this->service = null;
         }
     }

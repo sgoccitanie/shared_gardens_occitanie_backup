@@ -3,65 +3,68 @@
 {% set headerData = headerData ?? app.request.attributes.get('headerData', {}) %}
 
 <ul class="navbar-nav h-100">
-    <div class="d-flex h-100">
-        <!-- Sidebar -->
-        <div id="sidebar" class="h-100">
-            <div class="d-flex flex-column h-100">
-                {# SDJ logo #}
-                <div class="d-flex justify-content-center">
-                    <a class="logo" href="{{ path('app_home') }}" target="_blank">
-                        <img src="{{ asset(logoPath) }}" width="150" height="100">
-                    </a>
-                </div>
-                {# Menu #}
-                <nav class="nav flex-column">
-                    <a class="nav-link {{ app.request.attributes.get('_route') == 'app_home' ? 'active' : '' }}" href="{{ path('app_home') }}">
-                        <span class="me-2">
-                            <img src="{{asset("img/icons/nichoir_sans_pied.png")}}" width="25" height="25">
-                        </span>
-                        Blog - Accueil
-                    </a>
-                    <a class="nav-link {{ app.request.attributes.get('_route') == 'app_resources' ? 'active' : '' }}" href="{{ path('app_resources') }}">
-                        <span class="me-2">
-                            <img src="{{asset("img/icons/plantain.png")}}" width="20" height="25">
-                        </span>
-                        Ressources
-                    </a>
-                    <a class="nav-link {{ app.request.attributes.get('_route') == 'app_google_calendar' ? 'active' : '' }}" href="{{ path('app_google_calendar') }}">
-                        <span class="me-2">
-                            <img src="{{asset("img/icons/calendar.png")}}" width="25" height="25">
-                        </span>
-                        Calendrier
-                    </a>
-                    <a class="nav-link" href="https://umap.openstreetmap.fr/fr/map/les-jardins-partages-de-lherault-et-composteurs-co_196132#12/43.642162/3.967094" target="_blank">
-                        <span class="me-2">
-                            <img src="{{asset("img/icons/maps.png")}}" width="25" height="25">
-                        </span>
-                        Carte des jardins
-                    </a>
-                </nav>
-                <div class="coordinates-asso align-content-end justify-content-center px-3 mt-3">
-                {# Mini carte uMap #}
-                {% include '_partials/navbar/_mini-map.html.twig' %}
-                    <p class="contact-us text-center fw-bolder fs-5">Contactez-nous</p>
-                    <p class="city">
-                        {{ headerData.assoDescription|default('Description non disponible') }}
-                    </p>
-                    <p class="color-green text-center fw-bolder">
-                        <a href="{{ path('app_contact') }}#simple-list-item-2" class="color-green fw-bolder">Accès à la carte</a>
-                    </p>
-                    <p class="email">
-                        <i class="fa-solid fa-envelope"></i>
-                        <a href="mailto:{{ headerData.assoEmail|default('Email non disponible') }}">
-                            {{ headerData.assoEmail|default('Email non disponible') }}
-                        </a>
-                    </p>
-                    <p class="phone mb-4">
-                        <i class="fa-solid fa-phone"></i>
-                        {{ headerData.assoPhone|default('Téléphone non disponible') }}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div
+		class="d-flex h-100">
+		<!-- Sidebar -->
+		<div id="sidebar" class="h-100">
+			<div
+				class="d-flex flex-column h-100">
+				{# SDJ logo #}
+				<div class="d-flex justify-content-center">
+					<a class="logo" href="{{ path('app_home') }}" target="_blank">
+						<img src="{{ asset(logoPath) }}" width="150" height="100">
+					</a>
+				</div>
+				{# Menu #}
+				<nav class="nav flex-column">
+					<a class="nav-link {{ app.request.attributes.get('_route') == 'app_home' ? 'active' : '' }}" href="{{ path('app_home') }}">
+						<span class="me-2">
+							<img src="{{asset("img/icons/nichoir_sans_pied.png")}}" width="25" height="25" alt="logo accueil">
+						</span>
+						Blog - Accueil
+					</a>
+					<a class="nav-link {{ app.request.attributes.get('_route') == 'app_resources' ? 'active' : '' }}" href="{{ path('app_resources') }}">
+						<span class="me-2">
+							<img src="{{asset("img/icons/plantain.png")}}" width="20" height="25" alt="logo ressources">
+						</span>
+						Ressources
+					</a>
+					<a class="nav-link {{ app.request.attributes.get('_route') == 'app_google_calendar' ? 'active' : '' }}" href="{{ path('app_google_calendar') }}">
+						<span class="me-2">
+							<img src="{{asset("img/icons/calendar.png")}}" width="25" height="25" alt="logo calendrier">
+						</span>
+						Calendrier
+					</a>
+					<a class="nav-link" href="https://umap.openstreetmap.fr/fr/map/les-jardins-partages-de-lherault-et-composteurs-co_196132#10&/43.642162/3.967094" target="_blank">
+						<span class="me-2">
+							<img src="{{asset("img/icons/maps.png")}}" width="25" height="25" alt="logo map">
+						</span>
+						Carte des jardins
+					</a>
+				</nav>
+				<div
+					class="coordinates-asso align-content-end justify-content-center px-3 mt-3">
+					{# Mini carte uMap #}
+					{% include '_partials/navbar/_mini-map.html.twig' %}
+					<p class="contact-us text-center fw-bolder fs-5">Contactez-nous</p>
+					<p class="city">
+						{{ headerData.assoDescription|default('Description non disponible') }}
+					</p>
+					<p class="color-green text-center fw-bolder">
+						<a href="{{ path('app_contact') }}#simple-list-item-2" class="color-green fw-bolder">Accès à la carte</a>
+					</p>
+					<p class="email">
+						<i class="fa-solid fa-envelope"></i>
+						<a href="mailto:{{ headerData.assoEmail|default('Email non disponible') }}">
+							{{ headerData.assoEmail|default('Email non disponible') }}
+						</a>
+					</p>
+					<p class="phone mb-4">
+						<i class="fa-solid fa-phone"></i>
+						{{ headerData.assoPhone|default('Téléphone non disponible') }}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
 </ul>

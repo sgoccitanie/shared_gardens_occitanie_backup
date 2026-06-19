@@ -7,8 +7,11 @@
 /.env.*
 /.env.test
 /config/secrets/
+/secrets/
 /public/bundles/
+/bundles/
 /public/assets/
+/assets/
 /assets/vendor
 /var/
 /vendor/
@@ -29,7 +32,6 @@ credentials.json
 
 ###> symfony/asset-mapper ###
 /public/assets/
-/assets/vendor/
 ###< symfony/asset-mapper ###
 
 ###> league/oauth2-server-bundle ###

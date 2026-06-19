@@ -6,8 +6,8 @@
 parameters:
   app.jwtsecret: "%env(JWT_SECRET)%"
   uploads_directory: "%kernel.project_dir%/assets/uploads/"
-  google_application_credentials: "%kernel.project_dir%/config/secrets/rsj2025-ef9461d5b66e.json"
-  kernel.secret: '%env(KERNEL_SECRET)%'
+  kernel.secret: "%env(KERNEL_SECRET)%"
+  google_application_credentials: "%kernel.project_dir%/%env(GOOGLE_AUTH_CONFIG)%"
 
 services:
   twig.extension.intl:
@@ -38,11 +38,11 @@ services:
   # Configuration explicite pour HeaderService
   App\Service\HeaderService:
     arguments:
-      $kernelProjectDir: '%kernel.project_dir%'
+      $kernelProjectDir: "%kernel.project_dir%"
 
   App\Security\FormLoginAuthenticator:
     arguments:
-      $flashBag: '@session.flash_bag'
+      $flashBag: "@session.flash_bag"
 
   App\Repository\AddressesRepository:
     autowire: true
@@ -51,6 +51,16 @@ services:
 
   App\EventListener\PostContentListener:
     tags:
-      - { name: kernel.event_listener, event: easy_admin.pre_persist, method: cleanPostContent }
-      - { name: kernel.event_listener, event: easy_admin.pre_update, method: cleanPostContent }
-
+      - {
+          name: kernel.event_listener,
+          event: easy_admin.pre_persist,
+          method: cleanPostContent,
+        }
+      - {
+          name: kernel.event_listener,
+          event: easy_admin.pre_update,
+          method: cleanPostContent,
+        }
+  App\EventListener\NoCacheListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.response }

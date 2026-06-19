@@ -22,7 +22,6 @@ use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
 class SecurityController extends AbstractController
 {
-    private VerifyEmailHelperInterface $verifyEmailHelper;
     private HeaderService $headerService;
     private AssociationRepository $assoRepo;
     private $logger;
@@ -31,12 +30,12 @@ class SecurityController extends AbstractController
         VerifyEmailHelperInterface $verifyEmailHelper,
         HeaderService $headerService,
         AssociationRepository $assoRepo,
-        LoggerInterface $logger
+        #[\Psr\Log\LoggerInterface] LoggerInterface $securityLogger
     ) {
         $this->verifyEmailHelper = $verifyEmailHelper;
         $this->headerService = $headerService;
         $this->assoRepo = $assoRepo;
-        $this->logger = $logger;
+        $this->logger = $securityLogger;
     }
 
     #[Route(path: '/login', name: 'app_login')]
@@ -127,9 +126,9 @@ class SecurityController extends AbstractController
                     'url' => $url
                 ]);
                 $emailStatut = true;
-                $this->addFlash('success', 'Un email de réinitialisation a été envoyé à l\'adresse ' . $emailReceiver . '.');
+                $this->addFlash('success', 'Si un compte existe avec cet email, un lien de réinitialisation vous a été envoyé.');
             } else {
-                $this->addFlash('error', 'Le compte n\'existe pas.');
+                $this->addFlash('success', 'Si un compte existe avec cet email, un lien de réinitialisation vous a été envoyé.');
             }
         }
         return $this->render('security/forgot_password.html.twig', [
@@ -141,10 +140,11 @@ class SecurityController extends AbstractController
     #[Route(path: '/reset-password/{token}', name: 'app_admin_reset_password')]
     public function resetPassword(UserPasswordHasherInterface $passwordHasher, string $token, Request $request, JWTService $JWTService, UserRepository $repository, EntityManagerInterface $entityManager): Response
     {
+        $form = $this->createForm(ResetPasswordFormType::class);
+
         if ($JWTService->isValid($token) &&  !$JWTService->isExpired($token) && $JWTService->check($token, $this->getParameter('app.jwtsecret'))) {
             $payload = $JWTService->getPayload($token);
             $user = $repository->find($payload['user_id']);
-            $form = $this->createForm(ResetPasswordFormType::class);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($user && $user->getIsVerified()) {
@@ -152,7 +152,7 @@ class SecurityController extends AbstractController
                     $user->setToken('noToken');
                     $user->setUpdatedAt(new \DateTimeImmutable());
                     $user->setTokenExpirateAt(new \DateTimeImmutable('00:00:00'));
-                    $entityManager->flush();
+
                     try {
                         $entityManager->flush();
                         $this->addFlash('success', 'Votre mot de passe a été réinitialisé avec succès !');

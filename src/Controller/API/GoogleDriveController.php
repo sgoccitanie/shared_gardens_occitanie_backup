@@ -2,12 +2,10 @@
 
 namespace App\Controller\API;
 
-use App\Service\Utils;
 use Google\Service\Drive as ServiceDrive;
 use Google\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -26,7 +24,6 @@ class GoogleDriveController extends AbstractController
                 // Returns an instance of GuzzleHttp\Client that authenticates with the Google API.
                 $httpClient = $client->authorize();
             } catch (\Exception $e) {
-                dd($e);
             }
         } else {
             return $this->render('search/index.html.twig', [

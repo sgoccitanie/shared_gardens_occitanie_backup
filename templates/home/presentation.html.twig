@@ -1,45 +1,50 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Présentation | {{ parent() }}{% endblock %}
+{% block title %}
+	{{ parent() }}
+{% endblock %}
 
 {% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('styles/calendar.css') }}">
-    <link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('styles/calendar.css') }}">
+	<link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid d-flex flex-column main-container-style">
-    <div class="content_home josefinSans">
-        <div class="home_picture" style="background-image: url('{{ asset(bannerPath) }}');"></div>
-        <div class="content_main">
+	<div class="container-fluid d-flex flex-column main-container-style">
+		<div class="content_home josefinSans">
+			<div class="home_picture" style="background-image: url('{{ asset(bannerPath) }}');"></div>
+			<div
+				class="content_main">
 
-          {# Categories et onglets #}
-            {% include '_partials/categories_tabs/categories_tabs.html.twig' %}
+				{# Categories et onglets #}
+				{% include '_partials/categories_tabs/categories_tabs.html.twig' %}
 
-            <div class="presentation-container p-4">
-                <div class="row justify-content-center">
-                    <div class="text-end mb-5">
-                        {# Rediriger vers les articles #}
-                        <div>
-                            <a href="{{ path('app_articles') }}" class="button btn-secondary-green py-2">
-                                Voir nos articles
-                            </a>
-                        </div>
-                    <div class="col-lg-10 mt-2">
-                        {# Contenu modifiable par l'admin mais visible par tous #}
-                        {% if presentationContent is defined %}
-                            {{ presentationContent|raw }}
-                        {% else %}
-                            <h2 class="text-center my-5 color-green">Bienvenue sur notre site</h2>
-                            <p class="lead my-5">
-                                Notre association met en réseau les différents jardins collectifs présents ou en devenir du Languedoc Roussillon.
-                            </p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+				<div class="presentation-container p-4">
+					<div class="row justify-content-center">
+						<div
+							class="text-end mb-5">
+							{# Rediriger vers les articles #}
+							<div>
+								<a href="{{ path('app_articles') }}" class="button btn-secondary-green py-2">
+									Voir nos articles
+								</a>
+							</div>
+							<div
+								class="col-lg-10 mt-2">
+								{# Contenu modifiable par l'admin mais visible par tous #}
+								{% if presentationContent is defined %}
+									{{ presentationContent|raw }}
+								{% else %}
+									<h2 class="text-center my-5 color-green">Bienvenue sur notre site</h2>
+									<p class="lead my-5">
+										Notre association met en réseau les différents jardins collectifs présents ou en devenir du Languedoc Roussillon.
+									</p>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endblock %}

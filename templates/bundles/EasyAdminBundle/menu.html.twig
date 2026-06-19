@@ -15,10 +15,9 @@
 									{# this can happen when submenu items define permissions and the current user can't see any	instead of only displaying the label of the empty submenu, don't display anything #}
 								{% else %}
 									{% if menuItem.hasSubItems %}
-										<button
-											class="button btn-secondary-green" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-											{# {{dump(page.tabsPage)}} #}
+										<button class="button btn-secondary-green d-flex flex-row" type="button" data-bs-toggle="dropdown" aria-expanded="false">
 											{{ _self.render_menu_item(menuItem) }}
+											<span class="dropdown-arrow align-content-center">&#8964;</span>
 										</button>
 										<ul class="submenu dropdown-menu">
 											{% for menuSubItem in menuItem.subItems %}

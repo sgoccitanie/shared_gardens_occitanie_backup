@@ -23,4 +23,5 @@ return [
     EmilePerron\TinymceBundle\TinymceBundle::class => ['all' => true],
     CalendarBundle\CalendarBundle::class => ['all' => true],
     League\Bundle\OAuth2ServerBundle\LeagueOAuth2ServerBundle::class => ['all' => true],
+    Nelmio\SecurityBundle\NelmioSecurityBundle::class => ['all' => true],
 ];
