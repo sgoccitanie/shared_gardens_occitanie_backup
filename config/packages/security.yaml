@@ -23,7 +23,7 @@ security:
       lazy: true
       provider: app_user_provider
       remember_me:
-        secret: "%kernel.secret%"
+        secret: "%env(APP_SECRET)%"
         lifetime: 604800 # 1 week in seconds
         signature_properties: ["password", "updatedAt"]
         token_provider:

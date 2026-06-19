@@ -24,13 +24,13 @@ class SecurityController extends AbstractController
 {
     private HeaderService $headerService;
     private AssociationRepository $assoRepo;
-    private $logger;
+    private string $logger;
 
     public function __construct(
         VerifyEmailHelperInterface $verifyEmailHelper,
         HeaderService $headerService,
         AssociationRepository $assoRepo,
-        #[\Psr\Log\LoggerInterface] LoggerInterface $securityLogger
+        LoggerInterface $securityLogger
     ) {
         $this->verifyEmailHelper = $verifyEmailHelper;
         $this->headerService = $headerService;

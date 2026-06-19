@@ -4,6 +4,7 @@ namespace App\Controller\API;
 
 use Google\Service\Drive as ServiceDrive;
 use Google\Client;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,43 +13,35 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class GoogleDriveController extends AbstractController
 {
-    private ServiceDrive $service;
+    private ?ServiceDrive $service = null;
+    private ?string $error = null;
 
-    public function __construct(private readonly ParameterBagInterface $params)
-    {
-        $client = new Client();
-        if ($this->params->get('google_application_credentials')) {
-            // use the application default credentials
-            $client->setAuthConfig($this->params->get('google_application_credentials'));
-            try {
-                // Returns an instance of GuzzleHttp\Client that authenticates with the Google API.
-                $httpClient = $client->authorize();
-            } catch (\Exception $e) {
-            }
-        } else {
-            return $this->render('search/index.html.twig', [
-                'error' => 'Missing service account details',
-            ]);
+    public function __construct(
+        private readonly ParameterBagInterface $params,
+        private readonly LoggerInterface $logger
+    ) {
+        $credentialsPath = $this->params->get('google_application_credentials');
+
+        if (!$credentialsPath || !file_exists($credentialsPath)) {
+            $this->error = 'Service Google Drive non disponible';
+            $this->logger->error('Google Drive credentials introuvables');
+            return;
         }
-        // Set the application name
-        $client->setApplicationName('semeursdejardins');
-        // Set the redirect URI
-        $client->setRedirectUri('http://127.0.0.1:8000/search/drive');
-        // Set the scopes
-        $client->setScopes('https://www.googleapis.com/auth/drive');
-        // Set the subject
-        $client->setSubject('rsj-23@rsj2025.iam.gserviceaccount.com');
-        // Set the access type
-        $client->setAccessType('select_account consent');
-        // Create the service
-        $this->service = new ServiceDrive($client);
-        // Disable SSL verification
-        $guzzleClient = new \GuzzleHttp\Client(array('curl' => array(CURLOPT_SSL_VERIFYPEER => false,),));
-        // Set the HTTP client
-        $client->setHttpClient($guzzleClient);
-        // Get the calendar list
 
+        try {
+            $client = new Client();
+            $client->setApplicationName('semeursdejardins');
+            $client->setScopes('https://www.googleapis.com/auth/drive.readonly');
+            $client->setAuthConfig($credentialsPath);
+            $client->setAccessType('offline');
+
+            $this->service = new ServiceDrive($client);
+        } catch (\Exception $e) {
+            $this->logger->error('Google Drive init error: ' . $e->getMessage());
+            $this->error = 'Service temporairement indisponible';
+        }
     }
+
     #[Route('/search', name: 'app_search')]
     public function index(): Response
     {
@@ -76,9 +69,9 @@ class GoogleDriveController extends AbstractController
             $order = 'all';
         }
         // R.Morez folder id
-        $folderOneId = "'1sTXBydEI27J0mkwM-A50jXKRLpCsD4vI' in parents";
+        $folderOneId = "'" . $this->params->get('google_drive_folder_rmorez') . "' in parents";
         // RSJ folder id
-        $folderTwoId = "'1-HPm2j0bllynbUOkOj4xe6AhH0KMt9dQ' in parents";
+        $folderTwoId = "'" . $this->params->get('google_drive_folder_rsj') . "' in parents";
         $files = [];
         $message = null;
         $filesPages = [];
@@ -117,40 +110,54 @@ class GoogleDriveController extends AbstractController
             );
 
             if ($keywords !== null) {
-                $keywordssplited = urlencode($keywords);
+                if (strlen($keywords) < 2 || strlen($keywords) > 100) {
+                    $message = 'Le mot-clé doit faire entre 2 et 100 caractères';
+                    return $this->render('search/drive.html.twig', [
+                        'message' => $message,
+                        'files' => $filesPages,
+                        'page' => $page,
+                        'order' => $order,
+                    ]);
+                }
+                // Échappe les apostrophes en premier
+                $safeKeywords = addslashes($keywords);
+
+                // Puis on fait le split sur les espaces
+                $keywordssplited = urlencode($safeKeywords);
                 $keywordssplited = str_replace('%20', "' and fullText contains '", $keywordssplited);
+
                 $optParams['q'] = "(" . $option . ") and trashed = false and mimeType != 'application/vnd.google-apps.folder' and fullText contains '" . $keywordssplited . "'";
             }
             $optParams['pageToken'] = null;
-            // loop through the files
-            do {
+            $allFiles = [];
 
+            do {
                 try {
                     $results = $this->service->files->listFiles($optParams);
                     $files = $results->getFiles();
-                    // dd($files);
-                    // if the files are not empty, add them to the files array
+
                     if (count($files) > 0) {
                         foreach ($files as $file) {
                             $allFiles[] = $file;
                         }
-                        $optParams['pageToken'] = $results->getNextPageToken();
-                        // dump($files);
-                        array_push($filesPages, $files);
-                    } else {
-                        $message = 'Aucun résultat trouvé';
+                        $filesPages[] = $files;
                     }
+
+                    // Toujours mettre à jour le pageToken, même si pas de fichiers
+                    $optParams['pageToken'] = $results->getNextPageToken();
                 } catch (\Exception $e) {
-                    $message = $e->getMessage();
+                    $this->logger->error('Drive listFiles error: ' . $e->getMessage());
+                    $message = 'Erreur lors de la recherche, veuillez réessayer.';
+                    break; // sortir de la boucle en cas d'erreur
                 }
-            } while ($optParams['pageToken'] != null);
-            // dd($filesPages);
-            if ($filesPages && $page > count($filesPages) - 1) {
-                return $this->redirectToRoute('error_404');
+            } while ($optParams['pageToken'] !== null);
+            // si aucun fichier trouvé
+            if (empty($allFiles)) {
+                $message = 'Aucun résultat trouvé';
             }
-            // dd($filesPages);
         } catch (\Exception $e) {
-            $message = 'Erreur lors de la récupération des événements : ' . $e->getMessage();
+            $this->logger->error('Drive search error: ' . $e->getMessage());
+            $message = 'Erreur lors de la recherche, veuillez réessayer.';
         }
         if ($request->isMethod('POST')) {
             return $this->render('search/drive.html.twig', [
