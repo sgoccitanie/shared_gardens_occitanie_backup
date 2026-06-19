@@ -19,24 +19,17 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class SecurityController extends AbstractController
 {
-    private HeaderService $headerService;
-    private AssociationRepository $assoRepo;
-    private string $logger;
-
     public function __construct(
-        VerifyEmailHelperInterface $verifyEmailHelper,
-        HeaderService $headerService,
-        AssociationRepository $assoRepo,
-        LoggerInterface $securityLogger
-    ) {
-        $this->verifyEmailHelper = $verifyEmailHelper;
-        $this->headerService = $headerService;
-        $this->assoRepo = $assoRepo;
-        $this->logger = $securityLogger;
-    }
+        private readonly VerifyEmailHelperInterface $verifyEmailHelper,
+        private readonly HeaderService $headerService,
+        private readonly AssociationRepository $assoRepo,
+        #[Autowire(service: 'monolog.logger.security')]
+        private readonly LoggerInterface $logger,
+    ) {}
 
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils, UserRepository $repository, EntityManagerInterface $entityManager): Response
