@@ -95,19 +95,19 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('admin_dashboard');
         }
 
-        // Rate limiting par IP
-        $limiter = $forgotPasswordLimiter->create($request->getClientIp());
-        if (!$limiter->consume(1)->isAccepted()) {
-            $this->logger->warning('Rate limit atteint pour forgot password: {ip}', ['ip' => $request->getClientIp()]);
-            $this->addFlash('error', 'Trop de tentatives. Veuillez réessayer dans 1 heure.');
-            return $this->redirectToRoute('app_login');
-        }
-
         $loginForm = $this->createForm(ResetPwdFormType::class);
         $loginForm->handleRequest($request);
         $emailStatut = false;
 
         if ($loginForm->isSubmitted() && $loginForm->isValid()) {
+            // Rate limiting par IP
+            $limiter = $forgotPasswordLimiter->create($request->getClientIp());
+            if (!$limiter->consume(1)->isAccepted()) {
+                $this->logger->warning('Rate limit atteint pour forgot password: {ip}', ['ip' => $request->getClientIp()]);
+                $this->addFlash('error', 'Trop de tentatives. Veuillez réessayer dans 1 heure.');
+                return $this->redirectToRoute('app_login');
+            }
+
             $emailReceiver = $loginForm->get('email')->getData();
             $this->logger->info('Demande de reset password pour: {email}', ['email' => $emailReceiver]);
 
