@@ -53,6 +53,7 @@ security:
     - { path: ^/admin/login, roles: PUBLIC_ACCESS }
     - { path: ^/admin/users, roles: [ROLE_ADMIN] } # Seuls les admins gèrent les utilisateurs
     - { path: ^/admin/presentation, roles: [ROLE_ADMIN] } # Seuls les admins gèrent la page Présentation
+    - { path: ^/register, roles: [ROLE_ADMIN] }
     - { path: ^/admin, roles: [ROLE_EDITOR] } # Les éditeurs accèdent au reste du back-office
 
 when@test:

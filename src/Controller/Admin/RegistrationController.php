@@ -104,7 +104,7 @@ class RegistrationController extends AbstractController
                     }
                 }
                 /** @var string $plainPassword */
-                $plainPassword = Utils::cleanInputStatic($form->get('password')->getData());
+                $plainPassword = $form->get('password')->getData();
                 /** @var \DateTimeImmutable $tokenExpirateAt */
                 $tokenExpirateAt = new \DateTimeImmutable('+1 day');
                 /** @var string $login */
@@ -137,11 +137,11 @@ class RegistrationController extends AbstractController
                     $payload = [
                         'user_id' => $user->getId(),
                     ];
-                    $token = JWTService::generate($header, $payload, $this->getParameter('app.jwtsecret'), 14400);
+                    $token = JWTService::generate($header, $payload, $this->getParameter('app.jwtsecret'), 86400);
                     $emailSent = $messagerie->sendMail('Validation de votre compte', $user->getEmail(), 'email/confirmation_email.html.twig', [
                         'token' => $token,
                         'login' => $user->getLogin(),
-                        'expiresAtMessageData' => '3 jours',
+                        'expiresAtMessageData' => '24 heures',
                     ]);
 
                     if ($emailSent) {
@@ -154,7 +154,7 @@ class RegistrationController extends AbstractController
                 }
             } else {
                 // ERROR : email already used
-                $this->addFlash('error', 'Erreur dans la saisie de l\'email =/');
+                $this->addFlash('error', 'Erreur de saisie, veuillez réessayer s\'il vous plaît.');
             }
         }
         $pageTitle = 'Inscription';
@@ -171,6 +171,10 @@ class RegistrationController extends AbstractController
         if ($this->JWTService->isValid($token) &&  !$this->JWTService->isExpired($token) && $this->JWTService->check($token, $this->getParameter('app.jwtsecret'))) {
             $payload = $this->JWTService->getPayload($token);
             $user = $repository->find($payload['user_id']);
+            if (!$user) {
+                $this->addFlash('error', 'Utilisateur introuvable');
+                return $this->redirectToRoute('app_login');
+            }
             $user->setVerified(true);
             $user->setToken('noToken');
             $user->setTokenExpirateAt(new \DateTimeImmutable('00:00:00'));
