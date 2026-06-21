@@ -20,6 +20,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 
 class SecurityController extends AbstractController
 {
@@ -83,47 +84,80 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/forget-password', name: 'app_admin_forgot_password')]
-    public function forgetPassword(Request $request, MessagerieService $messagerie, UserRepository $repository): Response
-    {
-        // Check if the user is already logged in
+    public function forgetPassword(
+        Request $request,
+        MessagerieService $messagerie,
+        UserRepository $repository,
+        EntityManagerInterface $entityManager,
+        RateLimiterFactory $forgotPasswordLimiter
+    ): Response {
         if ($this->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirectToRoute('admin_dashboard');
         }
-        // Disable unique check for this form
+
+        // Rate limiting par IP
+        $limiter = $forgotPasswordLimiter->create($request->getClientIp());
+        if (!$limiter->consume(1)->isAccepted()) {
+            $this->logger->warning('Rate limit atteint pour forgot password: {ip}', ['ip' => $request->getClientIp()]);
+            $this->addFlash('error', 'Trop de tentatives. Veuillez réessayer dans 1 heure.');
+            return $this->redirectToRoute('app_login');
+        }
+
         $loginForm = $this->createForm(ResetPwdFormType::class);
         $loginForm->handleRequest($request);
         $emailStatut = false;
-        // Test if form is submitted and valid
+
         if ($loginForm->isSubmitted() && $loginForm->isValid()) {
-            /** @var string $emailReceiver */
             $emailReceiver = $loginForm->get('email')->getData();
-            // Send email
+            $this->logger->info('Demande de reset password pour: {email}', ['email' => $emailReceiver]);
+
             $user = $repository->findOneBy(['email' => $emailReceiver]);
+
             if (!empty($user)) {
-                $header = [
-                    'alg' => 'HS256',
-                    'typ' => 'JWT',
-                ];
-                $payload = [
-                    'user_id' => $user->getId(),
-                ];
-                // Generate token
+                $header = ['alg' => 'HS256', 'typ' => 'JWT'];
+                $payload = ['user_id' => $user->getId()];
                 $token = JWTService::generate($header, $payload, $this->getParameter('app.jwtsecret'), 1800);
+
                 $user->setToken($token);
-                // Generate url to the reset password page
-                $url = $this->generateUrl('app_admin_reset_password', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
-                $messagerie->sendMail('Réinitialisation du mot de passe', $user->getEmail(), 'email/reset_pwd.html.twig', [
-                    'token' => $token,
-                    'login' => $user->getLogin(),
-                    'expiresAtMessageData' => '30 minutes',
-                    'url' => $url
-                ]);
-                $emailStatut = true;
-                $this->addFlash('success', 'Si un compte existe avec cet email, un lien de réinitialisation vous a été envoyé.');
+                $url = $this->generateUrl(
+                    'app_admin_reset_password',
+                    ['token' => $token],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                try {
+                    $emailSent = $messagerie->sendMail(
+                        'Réinitialisation du mot de passe',
+                        $user->getEmail(),
+                        'email/reset_pwd.html.twig',
+                        [
+                            'token' => $token,
+                            'login' => $user->getLogin(),
+                            'expiresAtMessageData' => '30 minutes',
+                            'url' => $url,
+                        ]
+                    );
+
+                    if ($emailSent) {
+                        $entityManager->flush();
+                        $emailStatut = true;
+                        $this->logger->info('Email de reset envoyé pour: {email}', ['email' => $emailReceiver]);
+                    } else {
+                        $this->logger->error('Échec envoi email de reset pour: {email}', ['email' => $emailReceiver]);
+                    }
+                } catch (\Exception $e) {
+                    $this->logger->error('Erreur envoi mail reset: ' . $e->getMessage(), [
+                        'email' => $emailReceiver,
+                    ]);
+                }
             } else {
-                $this->addFlash('success', 'Si un compte existe avec cet email, un lien de réinitialisation vous a été envoyé.');
+                $this->logger->info('Demande de reset pour email inexistant: {email}', ['email' => $emailReceiver]);
             }
+
+            // Message identique dans tous les cas (anti-énumération)
+            $this->addFlash('success', 'Si un compte existe avec cet email, un lien de réinitialisation vous a été envoyé.');
         }
+
         return $this->render('security/forgot_password.html.twig', [
             'loginForm' => $loginForm,
             'email_sent' => $emailStatut,
@@ -131,40 +165,93 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/reset-password/{token}', name: 'app_admin_reset_password')]
-    public function resetPassword(UserPasswordHasherInterface $passwordHasher, string $token, Request $request, JWTService $JWTService, UserRepository $repository, EntityManagerInterface $entityManager): Response
-    {
+    public function resetPassword(
+        UserPasswordHasherInterface $passwordHasher,
+        string $token,
+        Request $request,
+        JWTService $JWTService,
+        UserRepository $repository,
+        EntityManagerInterface $entityManager
+    ): Response {
         $form = $this->createForm(ResetPasswordFormType::class);
 
-        if ($JWTService->isValid($token) &&  !$JWTService->isExpired($token) && $JWTService->check($token, $this->getParameter('app.jwtsecret'))) {
-            $payload = $JWTService->getPayload($token);
-            $user = $repository->find($payload['user_id']);
-            $form->handleRequest($request);
-            if ($form->isSubmitted() && $form->isValid()) {
-                if ($user && $user->getIsVerified()) {
-                    $user->setPassword($passwordHasher->hashPassword($user, $form->get('password')->getData()));
-                    $user->setToken('noToken');
-                    $user->setUpdatedAt(new \DateTimeImmutable());
-                    $user->setTokenExpirateAt(new \DateTimeImmutable('00:00:00'));
-
-                    try {
-                        $entityManager->flush();
-                        $this->addFlash('success', 'Votre mot de passe a été réinitialisé avec succès !');
-                    } catch (\Exception $exception) {
-                        $this->addFlash('error', 'Erreur, le mot de passe n\'a pas pu être mis à jour =/');
-                    }
-                    return $this->redirectToRoute('app_login');
-                } else {
-                    $this->addFlash('error', 'Erreur, votre lien a expiré ou bien votre compte n\'est pas vérifié =/');
-                }
-            }
-        } else {
-            $this->addFlash('error', 'Erreur, Le lien n\'est pas valide ou a expiré =/');
+        // Vérification de la validité du token JWT
+        if (
+            !$JWTService->isValid($token)
+            || $JWTService->isExpired($token)
+            || !$JWTService->check($token, $this->getParameter('app.jwtsecret'))
+        ) {
+            $this->logger->warning('Tentative de reset avec token JWT invalide ou expiré');
+            $this->addFlash('error', 'Le lien n\'est pas valide ou a expiré.');
+            return $this->redirectToRoute('app_login');
         }
+
+        $payload = $JWTService->getPayload($token);
+        $user = $repository->find($payload['user_id']);
+
+        // Vérification que l'utilisateur existe
+        if (!$user) {
+            $this->logger->warning('Tentative de reset pour utilisateur introuvable: {user_id}', [
+                'user_id' => $payload['user_id'] ?? 'inconnu',
+            ]);
+            $this->addFlash('error', 'Le lien n\'est pas valide.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Vérification que le token n'a pas déjà été utilisé
+        if ($user->getToken() === 'noToken') {
+            $this->logger->warning('Tentative de réutilisation de token de reset: {email}', [
+                'email' => $user->getEmail(),
+            ]);
+            $this->addFlash('error', 'Ce lien a déjà été utilisé.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Vérification que le token correspond bien à celui en base
+        if ($user->getToken() !== $token) {
+            $this->logger->warning('Token reçu ne correspond pas au token en base pour: {email}', [
+                'email' => $user->getEmail(),
+            ]);
+            $this->addFlash('error', 'Ce lien n\'est plus valide.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Vérification que le compte est validé
+        if (!$user->getIsVerified()) {
+            $this->logger->warning('Tentative de reset pour compte non vérifié: {email}', [
+                'email' => $user->getEmail(),
+            ]);
+            $this->addFlash('error', 'Votre compte n\'est pas encore vérifié.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword($passwordHasher->hashPassword($user, $form->get('password')->getData()));
+            $user->setToken('noToken');
+            $user->setUpdatedAt(new \DateTimeImmutable());
+            $user->setTokenExpirateAt(new \DateTimeImmutable('00:00:00'));
+
+            try {
+                $entityManager->flush();
+                $this->logger->info('Mot de passe réinitialisé pour: {email}', ['email' => $user->getEmail()]);
+                $this->addFlash('success', 'Votre mot de passe a été réinitialisé avec succès !');
+                return $this->redirectToRoute('app_login');
+            } catch (\Exception $exception) {
+                $this->logger->error('Erreur lors du reset password: ' . $exception->getMessage(), [
+                    'email' => $user->getEmail(),
+                ]);
+                $this->addFlash('error', 'Erreur, le mot de passe n\'a pas pu être mis à jour.');
+            }
+        }
+
         return $this->render('security/reset_password.html.twig', [
             'form' => $form->createView(),
             'token' => $token,
         ]);
     }
+
 
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
