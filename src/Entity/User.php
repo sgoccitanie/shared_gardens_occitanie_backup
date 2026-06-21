@@ -34,6 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         new Assert\Choice([
             'choices' => ['ROLE_EDITOR', 'ROLE_ADMIN'],
             'message' => 'Le rôle "{{ value }}" n\'est pas valide.',
+            'groups' => ['registration'],
         ]),
     ])]
     private array $roles = ['ROLE_USER'];   // IMPORTANT : rôle par défaut
