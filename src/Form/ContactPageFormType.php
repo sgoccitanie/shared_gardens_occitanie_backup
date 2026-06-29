@@ -11,6 +11,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\SubjectEmail;
 
 class ContactPageFormType extends AbstractType
 {
@@ -56,10 +58,12 @@ class ContactPageFormType extends AbstractType
                 ],
             ])
 
-            ->add('subject', null, [
+            ->add('subject', EntityType::class, [
+                'class' => SubjectEmail::class,
+                'choice_label' => 'name', // ou la propriété à afficher
                 'label' => 'Objet',
+                'placeholder' => 'Sélectionnez un objet',
                 'attr' => [
-                    'placeholder' => 'Objet',
                     'class' => 'form-control form-select',
                 ],
                 'mapped' => false,
@@ -70,7 +74,7 @@ class ContactPageFormType extends AbstractType
                     ]),
                 ],
             ])
-            
+
             ->add('message', TextareaType::class, [
                 'label' => 'Message',
                 'attr' => [

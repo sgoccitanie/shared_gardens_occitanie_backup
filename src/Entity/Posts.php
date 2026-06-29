@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 #[ORM\Entity(repositoryClass: PostsRepository::class)]
 #[UniqueEntity(fields: ['slug'], message: 'Ce slug existe déjà')]
@@ -120,7 +121,7 @@ class Posts
     public function setContent(?string $content): static
     {
         // Décoder une première fois
-         $content = html_entity_decode($content ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $content = html_entity_decode($content ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
         // Décoder une deuxième fois (cas où le contenu est double-encodé)
         $content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -129,9 +130,9 @@ class Posts
         return $this;
     }
 
-    public function getSlug(): ?string
+    public function getSlug(): string
     {
-        return $this->slug;
+        return (new AsciiSlugger())->slug($this->title)->lower()->toString();
     }
 
     public function setSlug(string $slug): static

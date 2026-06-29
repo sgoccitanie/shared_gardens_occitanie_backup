@@ -1,41 +1,38 @@
 {% if categoriesWithTabs is defined and categoriesWithTabs|length > 0 %}
-    {# Afficher les catégories et les sous-onglets #}
-    <div class="categories-tabs-container">
-        {% for categoryWithTabs in categoriesWithTabs %}
-            <div class="category-section">
-                <h3 class="category-title">
-                    <a href="{{ path('app_articles') }}?category={{ categoryWithTabs.category.id }}">
-                        {{ categoryWithTabs.category.name }}
-                    </a>
-                </h3>
-                {% if categoryWithTabs.tabs|length > 0 %}
-                    <div class="tabs-list">
-                        {% for tab in categoryWithTabs.tabs %}
-                            {# Trouver le Post associé à ce Tab via tab_id #}
-                            {% set postForTab = null %}
-                            {% for postWithUrl in allPostsWithUrls %}
-                                {% if postWithUrl.post.tab and postWithUrl.post.tab.id == tab.id and postForTab is null %}
-                                    {% set postForTab = postWithUrl %}
-                                {% endif %}
-                            {% endfor %}
-
-                            <a
-                                href="
-                                    {% if postForTab is not null %}
-                                        {{ path('app_home_with_id', {'id': postForTab.post.id}) }}
-                                    {% else %}
-                                        {{ path('app_articles') }}?category={{ categoryWithTabs.category.id }}
-                                    {% endif %}
-                                "
-                                class="tab-link"
-                                title="{{ tab.label }}"
-                            >
-                                {{ tab.label }}
-                            </a>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-        {% endfor %}
-    </div>
+	<div class="categories-tabs-container">
+		{% for categoryWithTabs in categoriesWithTabs %}
+			<div class="category-section">
+				{% if categoryWithTabs.category is not null %}
+					{% if categoryWithTabs.category.id === 2 %}
+						<h3 class="category-title">
+							<a href="{{ path('app_coming_soon') }}">
+								{{ categoryWithTabs.category.name }}
+							</a>
+						</h3>
+					{% else %}
+						<h3 class="category-title">
+							<a href="{{ path('app_articles') }}?category={{ categoryWithTabs.category.id }}">
+								{{ categoryWithTabs.category.name }}
+							</a>
+						</h3>
+						{% if categoryWithTabs.tabs|length > 0 %}
+							<div class="tabs-list">
+								{% for tab in categoryWithTabs.tabs %}
+									{% set postForTab = null %}
+									{% for postWithUrl in allPostsWithUrls %}
+										{% if postWithUrl.post.tab and postWithUrl.post.tab.id == tab.id and postForTab is null %}
+											{% set postForTab = postWithUrl %}
+										{% endif %}
+									{% endfor %}
+									<a href="{% if postForTab is not null %}{{ path('app_post_show', {'slug': postForTab.post.slug}) }}{% else %}{{ path('app_articles') }}?category={{ categoryWithTabs.category.id }}{% endif %}" class="tab-link" title="{{ tab.label }}">
+										{{ tab.label }}
+									</a>
+								{% endfor %}
+							</div>
+						{% endif %}
+					{% endif %}
+				{% endif %}
+			</div>
+		{% endfor %}
+	</div>
 {% endif %}

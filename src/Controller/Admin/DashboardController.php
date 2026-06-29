@@ -12,10 +12,8 @@ use App\Entity\Presentation;
 use App\Entity\SubjectEmail;
 use App\Entity\Tabs;
 use App\Entity\User;
-use App\Service\HeaderService;
+use App\Service\CommonDataService;
 use App\Repository\AssociationRepository;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -29,7 +27,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DashboardController extends AbstractDashboardController
 {
     public function __construct(
-        private HeaderService $headerService,
+        private CommonDataService $commonDataService,
         private AssociationRepository $assoRepo,
         private Security $security
     ) {}
@@ -49,14 +47,12 @@ class DashboardController extends AbstractDashboardController
         $assoId = $firstAssociation ? $firstAssociation->getId() : 1;
 
         // Récupérer les données de l'association
-        $headerData = $this->headerService->getHeaderData($assoId);
-        $logoPath = $this->headerService->getLogoPath($headerData['assoLogo']);
-        $formattedMantra = $this->headerService->getFormattedMantra($headerData['assoMantra']);
+        $fullHeaderData = $this->commonDataService->getFullHeaderData();
+        $headerData = $this->commonDataService->getHeaderData($assoId);
 
         return $this->render('admin/menu_dashboard.html.twig', [
+            'fullHeaderData' => $fullHeaderData,
             'headerData' => $headerData,
-            'logoPath' => $logoPath,
-            'formattedMantra' => $formattedMantra,
         ]);
     }
 
@@ -87,7 +83,6 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-
         // Menu Dashboard selon le role : visible par 'editor' et 'admin'
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
 

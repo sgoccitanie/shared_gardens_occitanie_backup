@@ -1,17 +1,65 @@
 <?php
 
 namespace App\Service;
-// HeaderService récupère et prépare des données de l'en-tête (logo, bannière, mantra,...)
+// CommonDataService récupère et prépare des données de l'en-tête (logo, bannière, mantra,...)
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Repository\AssociationRepository;
+use App\Repository\CategoriesRepository;
+use App\Repository\PagesRepository;
+use App\Repository\PostsRepository;
+use App\Repository\TabsRepository;
+use Psr\Log\LoggerInterface;
 
-class HeaderService
+class CommonDataService
 {
     public function __construct(
+        private readonly PostsRepository $postsRepository,
+        private readonly TabsRepository $tabsRepository,
+        private readonly PagesRepository $pagesRepository,
+        private readonly CategoriesRepository $categoriesRepository,
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly LoggerInterface $logger,
         private TextAnalyzerService $textAnalyzerService,
         private AssociationRepository $assoRepo,
         private string $kernelProjectDir
     ) {}
+
+    /**
+     * Récupère toutes les données du header prêtes à être passées au template
+     * (avec le formatage du mantra, logo, banner, etc.)
+     */
+    public function getFullHeaderData(): array
+    {
+        $firstAssociation = $this->assoRepo->findOneBy([], ['id' => 'ASC']);
+        $assoId = $firstAssociation ? $firstAssociation->getId() : 1;
+
+        $headerData = $this->getHeaderData($assoId);
+
+        // Conversion sécurisée de la description
+        $headerData['assoDescription'] = is_array($headerData['assoDescription'] ?? null)
+            ? implode(' ', array_filter($headerData['assoDescription'], 'is_scalar'))
+            : ($headerData['assoDescription'] ?? 'Description non disponible');
+
+        $logoPath = $this->getLogoPath($headerData['assoLogo'] ?? '');
+        $bannerFileName = $headerData['assoBanner'] ?? null;
+        $bannerPath = $this->getBannerPath($bannerFileName);
+        $formattedMantra = $this->getFormattedMantra($headerData['assoMantra'] ?? []);
+
+        // Sécurise le format du mantra
+        if (is_string($formattedMantra)) {
+            $formattedMantra = ['line1' => $formattedMantra, 'line2' => ''];
+        } elseif (!is_array($formattedMantra) || !isset($formattedMantra['line1'])) {
+            $formattedMantra = ['line1' => 'Mantra non défini', 'line2' => ''];
+        }
+
+        return [
+            'headerData' => $headerData,
+            'logoPath' => $logoPath,
+            'bannerPath' => $bannerPath,
+            'formattedMantra' => $formattedMantra,
+        ];
+    }
 
     /**
      * Récupérer les données de l'association en fonction de l'ID fourni
@@ -61,6 +109,57 @@ class HeaderService
             'assoLinks' => $assoLinks ?? [['url' => '/association/adhesion']],
         ];
     }
+
+    /**
+     * Récupère les données communes (catégories, articles pour les sous-onglets)
+     */
+    public function getCommonData(): array
+    {
+        try {
+            $allPosts = $this->postsRepository->findBy(['status' => 1], ['posted_at' => 'DESC']);
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur récupération tous articles: ' . $e->getMessage());
+            $allPosts = [];
+        }
+
+        $allPostsWithUrls = $this->buildPostsWithUrls($allPosts);
+
+        $categories = $this->categoriesRepository->findAll();
+        $categoriesWithTabs = array_map(fn($cat) => [
+            'category' => $cat,
+            'tabs' => $this->tabsRepository->findBy(['category' => $cat]),
+        ], $categories);
+
+        try {
+            $pages = $this->pagesRepository->findAll();
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur récupération pages: ' . $e->getMessage());
+            $pages = [];
+        }
+
+        return [
+            'categories' => $categories,
+            'categoriesWithTabs' => $categoriesWithTabs,
+            'allPostsWithUrls' => $allPostsWithUrls,
+            'pages' => $pages,
+            'isHomeRoute' => true,
+            'adhesionUrl' => 'https://www.helloasso.com/associations/le-reseau-des-semeurs-de-jardins/adhesions/adhesion-annuelle-au-reseau-des-semeurs-de-jardins-2026',
+        ];
+    }
+
+    /**
+     * Génère les URLs pour une liste de posts
+     */
+    public function buildPostsWithUrls(array $posts): array
+    {
+        return array_map(fn($post) => [
+            'post' => $post,
+            'url' => $this->urlGenerator->generate('app_post_show', [
+                'slug' => $post->getSlug(),
+            ]),
+        ], $posts);
+    }
+
 
     /**
      * Retourner les données par défaut pour l'en-tête

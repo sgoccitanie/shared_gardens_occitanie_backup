@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Form\ContactPageFormType;
 use App\Repository\AssociationRepository;
 use App\Repository\SubjectEmailRepository;
-use App\Service\HeaderService;
+use App\Service\CommonDataService;
 use App\Service\MessagerieService;
 use App\Service\Utils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,7 +23,7 @@ final class ContactController extends AbstractController
     public function __construct(
         MailerInterface $mailer,
         TransportInterface $transport,
-        private HeaderService $headerService,
+        private CommonDataService $commonDataService,
         private AssociationRepository $assoRepo
     ) {
         $this->mailer = $mailer;
@@ -111,9 +111,9 @@ final class ContactController extends AbstractController
         $assoId = $firstAssociation ? $firstAssociation->getId() : 1;
 
         // Récupérer les données de l'association pour le header
-        $headerData = $this->headerService->getHeaderData($assoId);
-        $logoPath = $this->headerService->getLogoPath($headerData['assoLogo']);
-        $formattedMantra = $this->headerService->getFormattedMantra($headerData['assoMantra']);
+        $headerData = $this->commonDataService->getFullHeaderData();
+        $logoPath = $this->commonDataService->getLogoPath($headerData['assoLogo']);
+        $formattedMantra = $this->commonDataService->getFormattedMantra($headerData['assoMantra']);
 
         return $this->render('home/contact.html.twig', [
             'form' => $form->createView(),

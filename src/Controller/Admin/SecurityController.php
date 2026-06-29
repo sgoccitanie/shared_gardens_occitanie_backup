@@ -7,7 +7,7 @@ use App\Form\ResetPwdFormType;
 use App\Repository\UserRepository;
 use App\Service\JWTService;
 use App\Service\MessagerieService;
-use App\Service\HeaderService;
+use App\Service\CommonDataService;
 use App\Repository\AssociationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -18,15 +18,13 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 
 class SecurityController extends AbstractController
 {
     public function __construct(
-        private readonly VerifyEmailHelperInterface $verifyEmailHelper,
-        private readonly HeaderService $headerService,
+        private readonly CommonDataService $commonDataService,
         private readonly AssociationRepository $assoRepo,
         #[Autowire(service: 'monolog.logger.security')]
         private readonly LoggerInterface $logger,
@@ -62,9 +60,7 @@ class SecurityController extends AbstractController
         // Récupérer les données de l'association
         $firstAssociation = $this->assoRepo->findOneBy([], ['id' => 'ASC']);
         $assoId = $firstAssociation ? $firstAssociation->getId() : 1;
-        $headerData = $this->headerService->getHeaderData($assoId);
-        $logoPath = $this->headerService->getLogoPath($headerData['assoLogo']);
-        $formattedMantra = $this->headerService->getFormattedMantra($headerData['assoMantra']);
+        $headerData = $this->commonDataService->getHeaderData($assoId);
 
         return $this->render('security/index.html.twig', [
             'error' => $error,
@@ -77,9 +73,7 @@ class SecurityController extends AbstractController
             'remember_me_checked' => true,
             'forgot_password_enabled' => true,
             'forgot_password_path' => $this->generateUrl('app_admin_forgot_password'),
-            'headerData' => $headerData,
-            'logoPath' => $logoPath,
-            'formattedMantra' => $formattedMantra,
+            'headerData' => $headerData
         ]);
     }
 

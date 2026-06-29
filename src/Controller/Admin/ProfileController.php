@@ -5,7 +5,7 @@ namespace App\Controller\Admin;
 use App\Form\UserProfileType;
 use App\Service\PictureService;
 use App\Service\Utils;
-use App\Service\HeaderService;
+use App\Service\CommonDataService;
 use App\Repository\AssociationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +20,7 @@ class ProfileController extends AbstractController
 {
     public function __construct(
         private PictureService $pictureService,
-        private HeaderService $headerService,
+        private CommonDataService $commonDataService,
         private AssociationRepository $assoRepo
     ) {}
 
@@ -32,9 +32,9 @@ class ProfileController extends AbstractController
 
         $firstAssociation = $this->assoRepo->findOneBy([], ['id' => 'ASC']);
         $assoId = $firstAssociation ? $firstAssociation->getId() : 1;
-        $headerData = $this->headerService->getHeaderData($assoId);
-        $logoPath = $this->headerService->getLogoPath($headerData['assoLogo']);
-        $formattedMantra = $this->headerService->getFormattedMantra($headerData['assoMantra']);
+        $headerData = $this->commonDataService->getFullHeaderData();
+        $logoPath = $this->commonDataService->getLogoPath($headerData['assoLogo']);
+        $formattedMantra = $this->commonDataService->getFormattedMantra($headerData['assoMantra']);
 
         // Rôle de l'utilisateur
         $userRole = $this->getUserRole($user);

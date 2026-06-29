@@ -31,10 +31,4 @@ class PageController extends AbstractController
     {
         return $this->render('page/cookies.html.twig');
     }
-
-    #[Route('/qui-sommes-nous', name: 'app_home', priority: 10)]
-    public function about(): Response
-    {
-        return $this->render('page/home.html.twig');
-    }
 }

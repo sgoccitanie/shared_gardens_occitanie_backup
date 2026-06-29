@@ -6,6 +6,7 @@ use DateTime;
 use DateTimeImmutable;
 use Google\Service\Calendar as ServiceCalendar;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\CommonDataService;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,7 @@ class GoogleCalendarController extends AbstractController
 {
     private ?ServiceCalendar $service = null;
 
-    public function __construct(private readonly ParameterBagInterface $params, private readonly LoggerInterface $logger)
+    public function __construct(private readonly CommonDataService $commonDataService, private readonly ParameterBagInterface $params, private readonly LoggerInterface $logger)
     {
         $client = new \Google_Client();
         $credentialsPath = $this->params->get('google_application_credentials');
@@ -28,10 +29,6 @@ class GoogleCalendarController extends AbstractController
                 $client->setScopes('https://www.googleapis.com/auth/calendar.readonly');
                 // $client->setSubject('semeursdejardinslr@gmail.com');
                 $client->setAccessType('offline');
-
-                // A SUPPRIMER EN PRODUCTION !!
-                // $guzzleClient = new \GuzzleHttp\Client(['curl' => [CURLOPT_SSL_VERIFYPEER => true]]);
-                // $client->setHttpClient($guzzleClient);
 
                 $this->service = new ServiceCalendar($client);
             } catch (\Exception $e) {
@@ -79,7 +76,8 @@ class GoogleCalendarController extends AbstractController
             $calendarArray = $calendar->getItems();
 
             $filteredEvents = array_filter($eventsArray, function ($e) {
-                return isset($e->start->dateTime) && isset($e->end->dateTime);
+                return (isset($e->start->dateTime) && isset($e->end->dateTime))
+                    || (isset($e->start->date) && isset($e->end->date));
             });
 
             $filteredCalendar = array_filter($calendarArray, function ($e) {
@@ -139,8 +137,10 @@ class GoogleCalendarController extends AbstractController
 
             // Récupérer les items et filtrer
             $eventsArray = $events->getItems();
+
             $filteredEvents = array_filter($eventsArray, function ($e) {
-                return isset($e->start->dateTime) && isset($e->end->dateTime);
+                return (isset($e->start->dateTime) && isset($e->end->dateTime))
+                    || (isset($e->start->date) && isset($e->end->date));
             });
 
             if (empty($filteredEvents)) {

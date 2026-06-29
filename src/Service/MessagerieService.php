@@ -2,47 +2,53 @@
 
 namespace App\Service;
 
-
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mailer\Transport;
-use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Address;
 
 class MessagerieService
 {
-    private MailerInterface $mailer;
-    private TransportInterface $transport;
+    public function __construct(
+        private readonly MailerInterface $mailer,
+        private readonly LoggerInterface $logger,
+        #[Autowire('%env(MAILER_FROM)%')]
+        private readonly string $defaultFrom,
+    ) {}
 
-    public function __construct(MailerInterface $mailer, TransportInterface $transport)
-    {
-        $this->mailer = $mailer;
-        $this->transport = $transport;
-    }
-    public function sendMail($subject, $to, $template, array $context, ?string $from = 'julie.barn9@gmail.com'): bool
-    {
-        require '../vendor/autoload.php';
-        // do anything else you need here, like send an email
-        // SUCCESS : email sent
+    public function sendMail(
+        string $subject,
+        string $to,
+        string $template,
+        array $context,
+        ?string $from = null
+    ): bool {
+        $fromAddress = $from ?? $this->defaultFrom;
+
         $mail = (new TemplatedEmail())
-            ->from(new Address($from))
+            ->from(new Address($fromAddress))
             ->to(new Address($to))
             ->subject($subject)
-            ->replyTo(new Address($from))
-            // path of the Twig template to render
+            ->replyTo(new Address($fromAddress))
             ->htmlTemplate($template)
-            // change locale used in the template, e.g. to match user's locale
             ->locale('fr')
-            // pass variables (name => value) to the template
             ->context($context);
-        //envoi du mail   
+
         try {
-            $this->transport->send($mail);
+            $this->mailer->send($mail);
+            $this->logger->info('Email envoyé avec succès', [
+                'to' => $to,
+                'subject' => $subject,
+            ]);
+            return true;
         } catch (TransportExceptionInterface $e) {
+            $this->logger->error('Erreur envoi email: ' . $e->getMessage(), [
+                'to' => $to,
+                'subject' => $subject,
+            ]);
             return false;
         }
-        return true;
     }
 }
