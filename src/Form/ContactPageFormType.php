@@ -20,22 +20,25 @@ class ContactPageFormType extends AbstractType
     {
         $builder
             ->add('name', null, [
-                'label' => 'Nom',
+                'label' => 'Nom et prénom',
                 'attr' => [
-                    'placeholder' => 'Votre nom',
+                    'minlength' => 5,
+                    'maxlength' => 100,
+                    'required' => true,
+                    'placeholder' => 'Votre nom et prénom',
                     'class' => 'form-control input-name',
                 ],
                 'mapped' => false,
                 'required' => true,
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Le nom est obligatoire',
+                        'message' => 'Le nom et prénom sont obligatoires',
                     ]),
                     new Length([
                         'min' => 5,
-                        'max' => 255,
-                        'minMessage' => 'Le nom doit contenir au moins {{ limit }} caractères',
-                        'maxMessage' => 'Le nom ne doit pas contenir plus de {{ limit }} caractères',
+                        'max' => 100,
+                        'minMessage' => 'Le nom et prénom doivent contenir au moins {{ limit }} caractères',
+                        'maxMessage' => 'Le nom et prénom ne doivent pas contenir plus de {{ limit }} caractères',
                     ]),
                 ],
             ])
@@ -45,6 +48,7 @@ class ContactPageFormType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Votre email',
                     'class' => 'form-control input-email',
+                    'required' => true,
                 ],
                 'mapped' => false,
                 'required' => true,
@@ -55,12 +59,13 @@ class ContactPageFormType extends AbstractType
                     new Email([
                         'message' => 'L\'email est invalide',
                     ]),
+                    new Length(['max' => 180])
                 ],
             ])
 
             ->add('subject', EntityType::class, [
                 'class' => SubjectEmail::class,
-                'choice_label' => 'name', // ou la propriété à afficher
+                'choice_label' => 'label',
                 'label' => 'Objet',
                 'placeholder' => 'Sélectionnez un objet',
                 'attr' => [
@@ -78,14 +83,23 @@ class ContactPageFormType extends AbstractType
             ->add('message', TextareaType::class, [
                 'label' => 'Message',
                 'attr' => [
+                    'minlength' => 10,
+                    'maxlength' => 1000,
                     'placeholder' => 'Votre message',
                     'class' => 'form-control textarea-message',
+                    'required' => true,
                 ],
                 'mapped' => false,
                 'required' => true,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Le message est obligatoire',
+                    ]),
+                    new Length([
+                        'min' => 10,
+                        'max' => 1000,
+                        'minMessage' => 'Le message doit contenir au moins {{ limit }} caractères',
+                        'maxMessage' => 'Le message ne doit pas contenir plus de {{ limit }} caractères',
                     ]),
                 ],
             ])

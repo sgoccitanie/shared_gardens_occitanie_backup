@@ -1,6 +1,11 @@
 twig:
+  globals:
+    dossierRMorez: "%env(GOOGLE_DRIVE_FOLDER_RMOREZ)%"
+    dossierReseau: "%env(GOOGLE_DRIVE_FOLDER_RSJ)%"
+    recaptchaSiteKey: "%env(RECAPTCHA_SITE_KEY)%"
   form_themes:
     - "@FMElfinder/Form/elfinder_widget.html.twig"
+    - "bootstrap_5_layout.html.twig"
   file_name_pattern: "*.twig"
   cache: "%kernel.cache_dir%/twig"
 

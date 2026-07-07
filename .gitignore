@@ -40,3 +40,6 @@ credentials.json
 
 ###> clé publique SSH pour dépôt Git ###
 /src/id_ed25519.pub
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

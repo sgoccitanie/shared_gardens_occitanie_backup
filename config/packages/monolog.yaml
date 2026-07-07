@@ -1,6 +1,10 @@
 monolog:
   channels:
     - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+    - security # Security-related logs are logged in the dedicated "security" channel when it exists
+    - contact # Contact form logs are logged in the dedicated "contact" channel when it exists
+    - google_api # Google API logs are logged in the dedicated "google_api" channel when it exists
+    - email # Email logs are logged in the dedicated "email" channel when it exists
 
 when@dev:
   monolog:
@@ -53,7 +57,26 @@ when@prod:
         path: php://stderr
         formatter: monolog.formatter.json
       security:
-        type: stream
+        type: rotating_file
         path: "%kernel.logs_dir%/security.log"
         level: warning
         channels: [security]
+        max_files: 90
+      contact:
+        type: rotating_file
+        path: "%kernel.logs_dir%/contact.log"
+        level: info
+        channels: [contact]
+        max_files: 90
+      google_api:
+        type: rotating_file
+        path: "%kernel.logs_dir%/google_api.log"
+        level: info
+        channels: [google_api]
+        max_files: 30
+      email:
+        type: rotating_file
+        path: "%kernel.logs_dir%/email.log"
+        level: info
+        channels: [email]
+        max_files: 30

@@ -19,7 +19,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class ProfileController extends AbstractController
 {
     public function __construct(
-        private PictureService $pictureService,
         private CommonDataService $commonDataService,
         private AssociationRepository $assoRepo
     ) {}
@@ -31,9 +30,7 @@ class ProfileController extends AbstractController
         $pageTitle = 'Gestion du profil';
 
         $firstAssociation = $this->assoRepo->findOneBy([], ['id' => 'ASC']);
-        $assoId = $firstAssociation ? $firstAssociation->getId() : 1;
         $headerData = $this->commonDataService->getFullHeaderData();
-        $logoPath = $this->commonDataService->getLogoPath($headerData['assoLogo']);
         $formattedMantra = $this->commonDataService->getFormattedMantra($headerData['assoMantra']);
 
         // Rôle de l'utilisateur
@@ -44,7 +41,6 @@ class ProfileController extends AbstractController
             'pageTitle' => $pageTitle,
             'userRole' => $userRole,
             'headerData' => $headerData,
-            'logoPath' => $logoPath,
             'formattedMantra' => $formattedMantra,
         ]);
     }

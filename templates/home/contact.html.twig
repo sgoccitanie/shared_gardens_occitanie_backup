@@ -33,26 +33,29 @@
 					<div class="row">
 						<div class="form-group col-sm-6">
 							<label for="name">Nom</label>
-							{{ form_widget(form.name, { 'attr': { 'class': 'form-control' } }) }}
+							{{ form_widget(form.name, { 'attr': { 'class': 'form-control needs-validation' } }) }}
+							<div class="invalid-feedback">Le nom doit contenir entre 5 et 100 caractères</div>
 						</div>
 						<div class="form-group col-sm-6">
 							<label for="email">Email</label>
-							{{ form_widget(form.email, { 'attr': { 'class': 'form-control' } }) }}
+							{{ form_widget(form.email, { 'attr': { 'class': 'form-control needs-validation'} }) }}
+							<div class="invalid-feedback">L'email est invalide</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="label">Objet</label>
-						{{ form_widget(form.subject, { 'attr': { 'class': 'form-control form-select' } }) }}
+						{{ form_widget(form.subject, { 'attr': { 'class': 'form-control form-select needs-validation'} }) }}
 						{% if form.subject.vars.choices is empty %}
 							<small class="text-danger">Aucun objet disponible pour le moment.</small>
 						{% endif %}
 					</div>
 					<div class="form-group form-group-textarea">
 						<label for="message">Message</label>
-						{{ form_widget(form.message, { 'attr': { 'class': 'form-control' } }) }}
+						{{ form_widget(form.message, { 'attr': { 'class': 'form-control needs-validation'} }) }}
+						<div class="invalid-feedback">Le message est obligatoire</div>
 					</div>
 					{# RECAPTCHA #}
-					<div class="g-recaptcha" data-sitekey="6Lf_274qAAAAAJFQyhMO9uAKDjpm8I4m0XF68T5I"></div>
+					<div class="g-recaptcha" data-sitekey="{{ recaptchaSiteKey }}"></div>
 
 					<button type="submit" class="button btn-secondary-green my-3 col-lg-2 col-3">Envoyer</button>
 					{{ form_end(form) }}
@@ -72,6 +75,6 @@
 {% endblock %}
 
 {% block js %}
-	<script src="{{ asset('js/form.js') }}"></script>
+	<script src="{{ asset('js/form.js') }}" defer></script>
 	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endblock %}

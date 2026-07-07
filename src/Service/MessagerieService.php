@@ -23,19 +23,21 @@ class MessagerieService
         string $to,
         string $template,
         array $context,
-        ?string $from = null
+        ?string $replyTo = null
     ): bool {
-        $fromAddress = $from ?? $this->defaultFrom;
-
         $mail = (new TemplatedEmail())
-            ->from(new Address($fromAddress))
-            ->to(new Address($to))
+            ->from(new Address($this->defaultFrom))  // toujours Gmail
+            ->to(new Address($to, 'Réseau des Semeurs de Jardins'))
             ->subject($subject)
-            ->replyTo(new Address($fromAddress))
             ->htmlTemplate($template)
             ->locale('fr')
             ->context($context);
 
+        // Si un replyTo est fourni (pour formulaire contact)
+        if ($replyTo) {
+            $mail->replyTo(new Address($replyTo));
+        }
+        dump('emailSent =', $mail);
         try {
             $this->mailer->send($mail);
             $this->logger->info('Email envoyé avec succès', [
@@ -47,6 +49,11 @@ class MessagerieService
             $this->logger->error('Erreur envoi email: ' . $e->getMessage(), [
                 'to' => $to,
                 'subject' => $subject,
+            ]);
+            return false;
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur inattendue: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
             ]);
             return false;
         }

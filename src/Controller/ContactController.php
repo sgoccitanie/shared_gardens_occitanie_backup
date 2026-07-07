@@ -8,119 +8,132 @@ use App\Repository\SubjectEmailRepository;
 use App\Service\CommonDataService;
 use App\Service\MessagerieService;
 use App\Service\Utils;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class ContactController extends AbstractController
 {
-    private $mailer;
-    private $transport;
 
     public function __construct(
-        MailerInterface $mailer,
-        TransportInterface $transport,
-        private CommonDataService $commonDataService,
-        private AssociationRepository $assoRepo
-    ) {
-        $this->mailer = $mailer;
-        $this->transport = $transport;
-    }
+        private readonly CommonDataService $commonDataService,
+        private readonly AssociationRepository $assoRepo,
+        private readonly LoggerInterface $contactLogger,
+        #[Autowire('%env(RECAPTCHA_SECRET_KEY)%')]
+        private readonly string $recaptchaSecret,
+    ) {}
 
     #[Route('/contact', name: 'app_contact')]
-    public function index(MessagerieService $messagerieService, Request $request, SubjectEmailRepository $subjectRepository, AssociationRepository $associationRepository): Response
-    {
+    public function index(
+        #[Autowire(service: 'limiter.contact_form')]
+        RateLimiterFactory $contactLimiter,
+        MessagerieService $messagerieService,
+        Request $request,
+        SubjectEmailRepository $subjectRepository,
+    ): Response {
         $form = $this->createForm(ContactPageFormType::class);
         $form->handleRequest($request);
         $success = false;
 
         if ($form->isSubmitted()) {
+            //create a limiter for the contact form with a limit of 5 requests per hour per IP address
+            $limiter = $contactLimiter->create($request->getClientIp());
+            if (false === $limiter->consume(1)->isAccepted()) {
+                $this->contactLogger->warning('Trop de requêtes sur le formulaire de contact', [
+                    'ip' => $request->getClientIp(),
+                ]);
+                $this->addFlash('error', 'Trop de tentatives, veuillez patienter avant de réessayer.');
+                return $this->redirectToRoute('app_contact');
+            }
             if ($form->isValid()) {
                 // get data from select
-                $recaptcha = $request->request->get('g-recaptcha-response');
-                $recaptchaSecret = '6Lf_274qAAAAAJpF7Vyd7zsvZwGO_MbXeEJ5sljC';
-                $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$recaptchaSecret}&response={$recaptcha}");
-                $responseKeys = json_decode($response, true);
-                if (intval($responseKeys["success"]) !== 1) {
-                    $this->addFlash('error', 'Veuillez confirmer que vous n\'êtes pas un robot.');
-                    return $this->render('home/contact.html.twig', [
-                        'form' => $form->createView(),
-                        'success' => $success,
-                    ]);
+                if ($_ENV['APP_ENV'] !== 'dev') {
+                    $recaptcha = $request->request->get('g-recaptcha-response');
+                    $recaptchaSecret = $this->recaptchaSecret;
+                    $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$recaptchaSecret}&response={$recaptcha}");
+                    $responseKeys = json_decode($response, true);
+                    if (intval($responseKeys["success"]) !== 1) {
+                        $this->addFlash('error', 'Veuillez confirmer que vous n\'êtes pas un robot.');
+                        return $this->render('home/contact.html.twig', [
+                            'form' => $form->createView(),
+                            'success' => $success,
+                        ]);
+                    }
                 }
-                $dataSelect = $form->get('id')->getData();
+                $dataSelect = $form->get('subject')->getData();
+                if (!$dataSelect) {
+                    $this->addFlash('error', 'Veuillez sélectionner un sujet.');
+                    return $this->redirectToRoute('app_contact');
+                }
                 $id = $dataSelect->getId();
                 $object = $dataSelect->getLabel();
-                $associationId = 17;
-                // get subject from id
-                try {
-                    $subject = $subjectRepository->findOneBy(['id' => $id]);
-                } catch (\Exception $e) {
-                    $this->addFlash('error', 'Veuillez sélectionner un sujet.');
-                    return $this->render('home/contact.html.twig', [
-                        'form' => $form->createView(),
-                        'success' => $success,
-                    ]);
+
+
+                // Validation ID
+                if (!is_numeric($id) || (int)$id <= 0) {
+                    $this->addFlash('error', 'Sujet invalide.');
+                    return $this->redirectToRoute('app_contact');
                 }
-                if ($object != $subject->getLabel()) {
-                    $this->addFlash('error', 'Veuillez sélectionner un sujet correct.');
-                    return $this->render('home/contact.html.twig', [
-                        'form' => $form->createView(),
-                        'success' => $success,
-                    ]);
+
+                // Association destinataire
+                $firstAssociation = $this->assoRepo->findOneBy([], ['id' => 'ASC']);
+                if (!$firstAssociation) {
+                    $this->contactLogger->error('Aucune association trouvée');
+                    $this->addFlash('error', 'Erreur technique. Veuillez réessayer plus tard.');
+                    return $this->redirectToRoute('app_contact');
+                }
+
+
+                $subject = $subjectRepository->findOneBy(['id' => $id]);
+                if (!$subject || $object !== $subject->getLabel()) {
+                    $this->addFlash('error', 'Sujet du mail invalide. Sélectionnez un sujet valide.');
+                    return $this->redirectToRoute('app_contact');
                 }
                 // get data from other fields
-                $name = $form->get('name')->getData();
-                $email = $form->get('email')->getData();
-                $message = $form->get('message')->getData();
+                $name = Utils::cleanInputStatic($form->get('name')->getData());
+                $email = Utils::cleanInputStatic($form->get('email')->getData());
+                $message = Utils::cleanInputStatic($form->get('message')->getData());
 
-                if ($name == null || $email == null || $message == null || $id == null || $object == null || $associationId == null) {
-                    $this->addFlash('error', 'Veuillez remplir tous les champs.');
-                } else {
-                    // clean data
-                    $id = Utils::cleanInputStatic($id);
-                    $associationId = Utils::cleanInputStatic($associationId);
-                    $name = Utils::cleanInputStatic($name);
-                    $email = Utils::cleanInputStatic($email);
-                    $message = Utils::cleanInputStatic($message);
-                    // get association email
-                    $associationEmail = $associationRepository->findOneBy(['id' => $associationId])->getEmail();
-                    $messagerieService->sendMail($object, $associationEmail, 'email/contact_email.html.twig', [
+
+                // Envoi email
+                $emailSent = $messagerieService->sendMail(
+                    $object,
+                    "julie.barn9@gmail.com",
+                    'email/contact_email.html.twig',
+                    [
                         'name' => $name,
                         'object' => $object,
                         'message' => $message,
-                    ], $email);
-                    if ($messagerieService) {
-                        $this->addFlash('success', 'Votre message a été envoyé avec succès');
-                        $success = true;
-                    } else {
-                        $this->addFlash('error', 'Votre message n\'a pas pu être envoyé');
-                    }
+                    ],
+                    $email
+                );
+
+                if ($emailSent) {
+                    $this->addFlash('success', 'Votre message a été envoyé avec succès');
+                    $success = true;
+                } else {
+                    $this->contactLogger->error('Échec envoi message de contact', [
+                        'from' => $email,
+                        'subject' => $object,
+                    ]);
+                    $this->addFlash('error', 'Votre message n\'a pas pu être envoyé. Veuillez réessayer.');
                 }
             } else {
-                $errors = $form->getErrors(true, false);
-                $this->addFlash('error', $errors);
+                foreach ($form->getErrors(true) as $error) {
+                    $this->addFlash('error', $error->getMessage());
+                }
             }
         }
 
-        // Récupérer l'ID de l'association active
-        $firstAssociation = $this->assoRepo->findOneBy([], ['id' => 'ASC']);
-        $assoId = $firstAssociation ? $firstAssociation->getId() : 1;
-
-        // Récupérer les données de l'association pour le header
         $headerData = $this->commonDataService->getFullHeaderData();
-        $logoPath = $this->commonDataService->getLogoPath($headerData['assoLogo']);
-        $formattedMantra = $this->commonDataService->getFormattedMantra($headerData['assoMantra']);
 
-        return $this->render('home/contact.html.twig', [
+        return $this->render('home/contact.html.twig', array_merge($headerData, [
             'form' => $form->createView(),
             'success' => $success,
-            'logoPath' => $logoPath,
-            'headerData' => $headerData,
-            'formattedMantra' => $formattedMantra,
-        ]);
+        ]));
     }
 }
