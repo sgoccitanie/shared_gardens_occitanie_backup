@@ -33,15 +33,15 @@
 		</div>
 	</div>
 
-	<div id="loader" class="position-absolute top-50 start-50 translate-middle d-none">
-		<i class="fa-solid fa-spinner"></i>
+	<div id="loader" class="position-fixed top-50 start-50 translate-middle d-none loader-container">
+		<div class="loader-spinner"></div>
 	</div>
 
-	<div id="eventModal" class="modal">
-		<div class="modal-content">
-			<span class="close">&times;</span>
-			<h2 id="modalTitle"></h2>
-			<p id="eventContent"></p>
+	<div id="eventModal" class="modal-custom">
+		<div class="modal-custom-content">
+			<button class="modal-custom-close close" aria-label="Fermer">&times;</button>
+			<h2 id="modalTitle" class="modal-custom-title"></h2>
+			<div id="eventContent" class="modal-custom-body"></div>
 		</div>
 	</div>
 {% endblock %}
@@ -65,6 +65,16 @@ return;
 const calendar = new FullCalendar.Calendar(calendarEl, {
 locale: "fr",
 timeZone: "Europe/Paris",
+
+// Limite l'affichage à 3 événements par jour, ajoute "+X autres"
+dayMaxEvents: 3,
+
+// Affichage plus compact
+eventDisplay: 'block',
+
+// Vue initiale mobile/desktop
+initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth',
+
 events: [{% for event in calendarList %}{
 publicId: "{{ event.id }}",
 title: "{{ event.summary|e('js') }}",
@@ -76,13 +86,40 @@ color : "rgb(255, 193, 7)",
 color : "rgb(48, 175, 133)",{% endif %}
 }
 {% if not loop.last %},{% endif %}{% endfor %}],
+
 headerToolbar: {
 start: "title",
-center: "dayGridMonth, timeGridDay",
+center: "dayGridMonth,listWeek",
 end: "prev,next today"
 },
+
+// Textes en français
+buttonText: {
+today: "Aujourd'hui",
+month: 'Mois',
+week: 'Semaine',
+day: 'Jour',
+list: 'Liste'
+},
+
+// Texte "+ X autres" en français
+moreLinkText: function (n) {
+return '+ ' + n + ' autres';
+},
+
+// Affichage clic sur "+ X autres"
+moreLinkClick: 'popover',
+
+// Clic sur événement
 eventClick: function (info) {
 openModal(info.event.extendedProps.publicId);
+},
+
+// Format heure sans "am/pm"
+eventTimeFormat: {
+hour: '2-digit',
+minute: '2-digit',
+hour12: false
 }
 });
 
@@ -95,55 +132,81 @@ const modalTitle = document.getElementById('modalTitle');
 const modalContent = document.getElementById('eventContent');
 const loading = document.getElementById('loader');
 
-let xhr = new XMLHttpRequest();
 loading.classList.remove('d-none');
 
-xhr.open('GET', '/google/calendar/event/' + id, true);
+fetch('/google/calendar/event/' + encodeURIComponent(id)).then(response => {
+if (!response.ok) 
+throw new Error('Erreur ' + response.status);
 
-xhr.onload = function () {
+
+
+return response.json();
+}).then(event => {
 loading.classList.add('d-none');
-if (xhr.status === 200) {
-let event = JSON.parse(xhr.responseText);
 modalTitle.textContent = event.summary;
 
-modalContent.textContent = (event.description ? event.description + '<br>' : '') + (event.location ? event.location + '<br>' : '') + (event.start.dateTime ? new Date(event.start.dateTime).toLocaleString('fr-FR', {
-day: '2-digit',
-month: '2-digit',
-year: 'numeric',
-hour: '2-digit',
-minute: '2-digit'
-}) + '<br>' : '') + (event.end.dateTime ? new Date(event.end.dateTime).toLocaleString('fr-FR', {
-day: '2-digit',
-month: '2-digit',
-year: 'numeric',
-hour: '2-digit',
-minute: '2-digit'
-}) : '') + `<div class="d-flex justify-content-end">
-                                <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=${
-encodeURIComponent(event.summary)
-}&dates=${
-encodeURIComponent(event.start.dateTime)
-}/${
-encodeURIComponent(event.end.dateTime)
-}&details=${
-encodeURIComponent(stripHtml(stripHtml(event.description)))
-}&location=${
-encodeURIComponent(event.location || '')
-}" target="_blank">
-                                    <i class="fa-solid fa-calendar-plus"></i>
-                                </a>
-                            </div>`;
-} else {
-modalContent.innerHTML = 'Erreur : ' + xhr.status;
-} modal.classList.add('d-block');
-};
+// Contenu sécurisé (textContent puis ajout HTML dans un conteneur)
+const container = document.createElement('div');
 
-xhr.onerror = function () {
+if (event.description) {
+const desc = document.createElement('p');
+desc.innerHTML = event.description;
+container.appendChild(desc);
+}
+
+if (event.location) {
+const loc = document.createElement('p');
+loc.innerHTML = '<i class="fa-solid fa-location-dot"></i> ';
+loc.appendChild(document.createTextNode(event.location));
+container.appendChild(loc);
+}
+
+if (event.start.dateTime) {
+const dates = document.createElement('p');
+dates.innerHTML = '<i class="fa-solid fa-clock"></i> ';
+const startDate = new Date(event.start.dateTime).toLocaleString('fr-FR', {
+day: '2-digit',
+month: '2-digit',
+year: 'numeric',
+hour: '2-digit',
+minute: '2-digit'
+});
+const endDate = new Date(event.end.dateTime).toLocaleString('fr-FR', {
+day: '2-digit',
+month: '2-digit',
+year: 'numeric',
+hour: '2-digit',
+minute: '2-digit'
+});
+dates.appendChild(document.createTextNode(startDate + ' - ' + endDate));
+container.appendChild(dates);
+}
+
+// Lien Ajouter à mon agenda
+if (event.start.dateTime) {
+const linkContainer = document.createElement('div');
+linkContainer.className = 'd-flex justify-content-end mt-3';
+
+const link = document.createElement('a');
+link.href = 'https://calendar.google.com/calendar/render?action=TEMPLATE' + '&text=' + encodeURIComponent(event.summary || '') + '&dates=' + encodeURIComponent(event.start.dateTime || '') + '/' + encodeURIComponent(event.end.dateTime || '') + '&details=' + encodeURIComponent(event.description || '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '') + encodeURIComponent((event.description || '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '')) + '&location=' + encodeURIComponent(event.location || '');
+link.target = '_blank';
+link.rel = 'noopener noreferrer';
+link.className = 'btn btn-outline-primary btn-sm';
+link.innerHTML = '<i class="fa-solid fa-calendar-plus"></i> Ajouter à mon agenda';
+
+linkContainer.appendChild(link);
+container.appendChild(linkContainer);
+}
+modalContent.innerHTML = '';
+modalContent.appendChild(container);
+
+modal.classList.add('d-block');
+}).catch(error => {
 loading.classList.add('d-none');
-console.log("Erreur AJAX");
-};
-
-xhr.send();
+modalContent.innerHTML = '<p class="text-danger">Erreur lors du chargement.</p>';
+modal.classList.add('d-block');
+console.error(error);
+});
 }
 
 document.getElementById('eventModal').addEventListener('click', function (e) {
@@ -152,9 +215,26 @@ this.classList.remove('d-block');
 }
 });
 
+// Fermeture avec la croix
+document.querySelector('#eventModal .close') ?. addEventListener('click', function () {
+document.getElementById('eventModal').classList.remove('d-block');
+});
+
+// Fermeture avec Échap
+document.addEventListener('keydown', function (e) {
+if (e.key === 'Escape') {
+document.getElementById('eventModal').classList.remove('d-block');
+}
+});
+
 function stripHtml(html) {
-let tmp = document.createElement("DIV");
-tmp.innerHTML = html;
+if (! html) 
+return '';
+
+
+
+const tmp = document.createElement("DIV");
+tmp.textContent = html;
 return tmp.textContent || tmp.innerText || "";
 }
 		</script>

@@ -31,7 +31,6 @@ class ProfileController extends AbstractController
 
         $firstAssociation = $this->assoRepo->findOneBy([], ['id' => 'ASC']);
         $headerData = $this->commonDataService->getFullHeaderData();
-        $formattedMantra = $this->commonDataService->getFormattedMantra($headerData['assoMantra']);
 
         // Rôle de l'utilisateur
         $userRole = $this->getUserRole($user);
@@ -40,8 +39,7 @@ class ProfileController extends AbstractController
             'user' => $user,
             'pageTitle' => $pageTitle,
             'userRole' => $userRole,
-            'headerData' => $headerData,
-            'formattedMantra' => $formattedMantra,
+            'headerData' => $headerData
         ]);
     }
 

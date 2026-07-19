@@ -12,6 +12,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
+use Symfony\Component\Validator\Constraints\PasswordStrength;
 
 class UserProfileType extends AbstractType
 {
@@ -22,37 +26,40 @@ class UserProfileType extends AbstractType
             ->add('login', null, [
                 'label' => 'Pseudo ',
                 'required' => true,
-                'data' => $options['data']->getLogin() ?? 'Votre pseudo',
                 'attr' => [
                     'placeholder' => 'Votre pseudo',
                     'class' => 'form-control',
-                ],
+                    'minlength' => 3,
+                    'maxlength' => 30,
+                ]
             ])
 
             ->add('firstname', null, [
                 'label' => 'Prénom',
                 'required' => true,
-                'data' => $options['data']->getFirstname() ?? 'Votre prénom',
                 'attr' => [
                     'placeholder' => 'Votre prénom',
                     'class' => 'form-control',
-                ],
+                    'minlength' => 1,
+                    'maxlength' => 50,
+                ]
             ])
 
             ->add('lastname', null, [
                 'label' => 'Nom',
                 'required' => true,
-                'data' => $options['data']->getLastname() ?? 'Votre nom',
                 'attr' => [
                     'placeholder' => 'Votre nom',
                     'class' => 'form-control',
-                ],
+                    'minlength' => 1,
+                    'maxlength' => 50,
+                ]
             ])
 
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
-                'required' => false, // Possible de ne pas changer le mot de passe
+                'required' => false,
                 'first_options' => [
                     'label' => 'Nouveau mot de passe',
                     'attr' => [
@@ -70,6 +77,20 @@ class UserProfileType extends AbstractType
                     ],
                 ],
                 'invalid_message' => 'Les deux mots de passe doivent être identiques.',
+                'constraints' => [
+                    new Length([
+                        'min' => 12,
+                        'minMessage' => 'Le mot de passe doit faire au moins {{ limit }} caractères',
+                        'max' => 4096, // Protection contre les attaques par déni de service
+                    ]),
+                    new PasswordStrength([
+                        'minScore' => PasswordStrength::STRENGTH_MEDIUM,
+                        'message' => 'Ce mot de passe est trop faible. Utilisez une combinaison de lettres, chiffres et symboles.',
+                    ]),
+                    new NotCompromisedPassword([
+                        'message' => 'Ce mot de passe a été compromis dans une fuite de données. Choisissez-en un autre.',
+                    ]),
+                ],
             ])
 
             ->add('submit', SubmitType::class, [

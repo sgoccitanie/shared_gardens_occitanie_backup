@@ -7,7 +7,8 @@
 
 	{% block stylesheets %}
 	{{ parent() }}
-<link rel="stylesheet" href="{{ asset('styles/stylePdf.css') }}"> {% endblock %}
+	<link rel="stylesheet" href="{{ asset('styles/stylePdf.css') }}"> <link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
+{% endblock %}
 
 {% block content %}
 	<div class="container-fluid d-flex flex-column main-container-style">
@@ -34,7 +35,7 @@
 					{% if displayList %}
 						{% if postsWithUrls|length > 0 %}
 							<div class="d-flex justify-content-end p-lg-2">
-								<select class="form-select" aria-label="Default select example" style="width: fit-content;" onchange="window.location.href='{{ path('app_articles') }}?order=' + this.value">
+								<select class="form-select" aria-label="Default select example" style="width: fit-content;" onchange="window.location.href='{{ path('app_post_show') }}?order=' + this.value">
 									<option value="ASC" {% if order == 'ASC' %} selected {% endif %}>Du plus ancien au plus récent</option>
 									<option value="DESC" {% if order == 'DESC' %} selected {% endif %}>Du plus récent au plus ancien</option>
 								</select>
@@ -66,7 +67,7 @@
 											Ajouter un commentaire</h4>
 
 										<form
-											action="{{ path('app_comment_post', {slug: slug}) }}" method="post" class="w-75 m-auto mb-4 text-end">
+											action="{{ path('app_comment_post', {id: id}) }}" method="post" class="w-75 m-auto mb-4 text-end">
 											{# Obliger un pseudo pour les commentaires uniquement pour les visiteurs #}
 											{{ form_start(commentForm) }}
 											<div class="d-flex align-items-center mb-0">

@@ -152,12 +152,14 @@ class CommonDataService
      */
     public function buildPostsWithUrls(array $posts): array
     {
+
+        $allPosts = array_filter($posts, fn($post) => !empty($post->getSlug()));
         return array_map(fn($post) => [
             'post' => $post,
             'url' => $this->urlGenerator->generate('app_post_show', [
                 'slug' => $post->getSlug(),
             ]),
-        ], $posts);
+        ], $allPosts);
     }
 
 
@@ -184,7 +186,7 @@ class CommonDataService
     public function getLogoPath(?string $assoLogo = null): string
     {
         $defaultLogoPath = 'uploads/profiles/SDJ/logo/logo_SDJ.png';
-        $fallbackLogoPath = 'img/icons/logo_SDJ.png'; // Chemin de secours
+        $fallbackLogoPath = 'img/icons/logo_SDJ.png';
 
         if ($assoLogo && file_exists($this->kernelProjectDir . '/public/' . $assoLogo)) {
             return $assoLogo;

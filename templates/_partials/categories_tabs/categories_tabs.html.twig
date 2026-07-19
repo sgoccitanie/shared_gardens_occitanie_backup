@@ -1,4 +1,5 @@
 {% if categoriesWithTabs is defined and categoriesWithTabs|length > 0 %}
+	{# Afficher les catégories et les sous-onglets #}
 	<div class="categories-tabs-container">
 		{% for categoryWithTabs in categoriesWithTabs %}
 			<div class="category-section">
@@ -11,7 +12,7 @@
 						</h3>
 					{% else %}
 						<h3 class="category-title">
-							<a href="{{ path('app_articles') }}?category={{ categoryWithTabs.category.id }}">
+							<a href="{{ path('app_post_show') }}?category={{ categoryWithTabs.category.id }}">
 								{{ categoryWithTabs.category.name }}
 							</a>
 						</h3>
@@ -24,7 +25,13 @@
 											{% set postForTab = postWithUrl %}
 										{% endif %}
 									{% endfor %}
-									<a href="{% if postForTab is not null %}{{ path('app_post_show', {'slug': postForTab.post.slug}) }}{% else %}{{ path('app_articles') }}?category={{ categoryWithTabs.category.id }}{% endif %}" class="tab-link" title="{{ tab.label }}">
+									<a href="
+																																								{% if postForTab is not null %}
+																																									{{ path('app_home_with_id', {'id': postForTab.post.id}) }}
+																																								{% else %}
+																																									{{ path('app_post_show') }}?category={{ categoryWithTabs.category.id }}
+																																								{% endif %}
+																																							" class="tab-link" title="{{ tab.label }}">
 										{{ tab.label }}
 									</a>
 								{% endfor %}
@@ -33,6 +40,7 @@
 					{% endif %}
 				{% endif %}
 			</div>
+
 		{% endfor %}
 	</div>
 {% endif %}

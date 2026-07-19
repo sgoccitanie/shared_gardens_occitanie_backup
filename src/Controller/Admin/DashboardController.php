@@ -95,7 +95,7 @@ class DashboardController extends AbstractDashboardController
         if ($this->security->isGranted('ROLE_ADMIN')) {
             $blogSubMenu = array_merge($blogSubMenu, [
                 MenuItem::linkToCrud('Images/Logos', 'fas fa-image', Association::class)->setController(Association2CrudController::class),
-                MenuItem::linkToCrud('Onglets', 'fas fa-tags', Tabs::class),
+                MenuItem::linkToCrud('Pages', 'fas fa-tags', Tabs::class),
                 MenuItem::linkToCrud('Mots clés', 'fas fa-key', Keywords::class),
                 MenuItem::linkToCrud('Catégories', 'fas fa-list', Categories::class),
                 MenuItem::linkToCrud('Liens', 'fas fa-link', Links::class),

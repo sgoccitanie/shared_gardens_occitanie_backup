@@ -27,10 +27,12 @@ class Posts
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: 'Le contenu ne peut pas être vide')]
+    #[Assert\Length(min: 10, minMessage: 'Le contenu doit contenir au moins 10 caractères')]
     private ?string $content = null;
 
     #[ORM\Column(length: 100, unique: true)]
-    #[Assert\Length(min: 3, max: 100, minMessage: 'Le slug doit contenir au moins 3 caractères', maxMessage: 'Le slug ne peut pas contenir plus de 100 caractères')]
+    #[Assert\NotBlank(message: 'Le slug ne peut pas être vide')]
+    #[Assert\Length(min: 3, max: 300, minMessage: 'Le slug doit contenir au moins 3 caractères', maxMessage: 'Le slug ne peut pas contenir plus de 300 caractères')]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
@@ -106,7 +108,7 @@ class Posts
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
 
@@ -130,14 +132,18 @@ class Posts
         return $this;
     }
 
-    public function getSlug(): string
+    public function getSlug(): ?string
     {
+        if ($this->title === null) {
+            return null;
+        }
         return (new AsciiSlugger())->slug($this->title)->lower()->toString();
     }
 
-    public function setSlug(string $slug): static
+    public function setSlug(?string $slug): static
     {
-        $this->slug = $slug;
+
+        $this->slug = $slug ? mb_strtolower($slug) : null;
 
         return $this;
     }

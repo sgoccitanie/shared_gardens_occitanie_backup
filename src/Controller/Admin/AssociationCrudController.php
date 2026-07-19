@@ -16,15 +16,16 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\HttpFoundation\RequestStack;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_ADMIN')]
 class AssociationCrudController extends AbstractCrudController
 {
     use EasyAdminAssetsTrait;
     use EasyAdminActionsTrait;
 
     public function __construct(
-        private ManagerRegistry $doctrine,
-        private RequestStack $requestStack
+        private ManagerRegistry $doctrine
     ) {}
 
     public static function getEntityFqcn(): string
@@ -101,4 +102,3 @@ class AssociationCrudController extends AbstractCrudController
         }
     }
 }
-

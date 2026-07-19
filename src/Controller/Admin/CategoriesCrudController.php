@@ -9,19 +9,18 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+#[IsGranted('ROLE_EDITOR')]
 class CategoriesCrudController extends AbstractCrudController
 {
     use EasyAdminAssetsTrait;
     use EasyAdminActionsTrait;
 
-    public function __construct(
-        private EntityManagerInterface $entityManager
-    ) {}
+    public function __construct() {}
 
     public static function getEntityFqcn(): string
     {
@@ -38,7 +37,7 @@ class CategoriesCrudController extends AbstractCrudController
         ;
     }
 
-   public function configureAssets(Assets $assets): Assets
+    public function configureAssets(Assets $assets): Assets
     {
         return $this->configureCommonAssets($assets)
             ->addHtmlContentToBody('
@@ -63,5 +62,16 @@ class CategoriesCrudController extends AbstractCrudController
         return [
             TextField::new('name')->setRequired(true),
         ];
+    }
+
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        /** @var Categories $entityInstance */
+
+        foreach ($entityInstance->getPostCat() as $post) {
+            $post->removeCategory($entityInstance);
+        }
+
+        parent::deleteEntity($entityManager, $entityInstance);
     }
 }

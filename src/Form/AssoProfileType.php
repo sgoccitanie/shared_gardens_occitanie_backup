@@ -5,7 +5,6 @@ namespace App\Form;
 use App\Entity\Association;
 use App\Validator\Constraints\WordCount;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -14,12 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Mime\Message;
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\RegexValidator;
 
 class AssoProfileType extends AbstractType
 {
@@ -36,7 +31,6 @@ class AssoProfileType extends AbstractType
             ->add('acronyme', null, [
                 'attr' => ['class' => 'js-acronyme'],
                 'label' => 'Acronyme',
-                'required' => true,
                 'data' => $options['data']->getAcronyme() ?? 'L\'acronyme de l\'association',
             ])
             ->add('email', EmailType::class, [
@@ -123,7 +117,7 @@ class AssoProfileType extends AbstractType
                             'image/webp',
                             'image/jpg',
                             'image/svg+xml',
-                        ], 
+                        ],
                         maxSize: '7M',
                         maxSizeMessage: 'La taille du fichier est trop grande',
                     )

@@ -86,7 +86,7 @@ class SecurityController extends AbstractController
         RateLimiterFactory $forgotPasswordLimiter
     ): Response {
         if ($this->isGranted('IS_AUTHENTICATED_FULLY')) {
-            return $this->redirectToRoute('admin_dashboard');
+            return $this->redirectToRoute('admin');
         }
 
         $loginForm = $this->createForm(ResetPwdFormType::class);

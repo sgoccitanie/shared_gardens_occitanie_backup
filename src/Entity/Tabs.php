@@ -28,7 +28,7 @@ class Tabs
     /**
      * @var Collection<int, Posts>
      */
-    #[ORM\OneToMany(targetEntity: Posts::class, mappedBy: 'tab', cascade: ['remove'])]
+    #[ORM\OneToMany(targetEntity: Posts::class, mappedBy: 'tab')]
     private Collection $tabs_posts;
 
     #[ORM\ManyToOne(inversedBy: 'tabs_page')]
@@ -128,7 +128,7 @@ class Tabs
 
     public function setSlug(string $slug): static
     {
-        $this->slug = $slug;
+        $this->slug = $slug ? mb_strtolower($slug) : null;
 
         return $this;
     }

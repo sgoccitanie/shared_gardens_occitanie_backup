@@ -22,8 +22,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
-    #[Assert\Email(message: 'Veuillez entrer une adresse email valide')]
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Email]
+    #[Assert\Length(max: 180)]
     private ?string $email = null;
 
     /**
@@ -50,13 +52,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     ])]
     private ?string $password = null;
 
-    #[ORM\Column(length: 60)]
+    #[ORM\Column(length: 30)]
+    #[Assert\NotBlank(message: 'Le login ne peut pas être vide')]
+    #[Assert\Length(min: 1, max: 30)]
     private ?string $login = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le prénom ne peut pas être vide')]
+    #[Assert\Length(min: 1, max: 50)]
     private ?string $firstname = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le nom de famille ne peut pas être vide')]
+    #[Assert\Length(min: 1, max: 50)]
     private ?string $lastname = null;
 
     #[ORM\Column]
@@ -71,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true, unique: true)]
     private ?string $token = null;
 
     #[ORM\Column(nullable: true)]
@@ -211,7 +219,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->login;
     }
 
-    public function setLogin(string $login): static
+    public function setLogin(?string $login): static
     {
         $this->login = $login;
 
@@ -223,7 +231,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->firstname;
     }
 
-    public function setFirstname(string $firstname): static
+    public function setFirstname(?string $firstname): static
     {
         $this->firstname = $firstname;
 
@@ -235,14 +243,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->lastname;
     }
 
-    public function setLastname(string $lastname): static
+    public function setLastname(?string $lastname): static
     {
         $this->lastname = $lastname;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->created_at;
     }
@@ -296,7 +304,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->token;
     }
 
-    public function setToken(string $token = null): static
+    public function setToken(?string $token): static
     {
         $this->token = $token;
 
@@ -308,7 +316,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->tokenExpirateAt;
     }
 
-    public function setTokenExpirateAt(\DateTimeImmutable $tokenExpirateAt = null): static
+    public function setTokenExpirateAt(?\DateTimeImmutable $tokenExpirateAt): static
     {
         $this->tokenExpirateAt = $tokenExpirateAt;
 

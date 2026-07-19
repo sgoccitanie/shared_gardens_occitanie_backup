@@ -19,11 +19,12 @@ class Cities
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 10, nullable: false)]
+    #[ORM\Column(length: 10, nullable: false, unique: true)]
     #[Assert\Regex(
         pattern: '/^(0[1-9]|[1-9][0-9])\d{3}$/',
         message: 'Le code postal doit être un code postal français valide'
     )]
+    #[Assert\Unique(message: 'Ce code postal est déjà utilisé pour une autre ville.')]
     private ?string $postalcode = null;
 
     #[ORM\Column(length: 255)]
@@ -49,7 +50,7 @@ class Cities
 
     public function __toString(): string
     {
-        return $this->name . ', ' . $this->area_name . ', ' . $this->dpt_name . ', ' . $this->country;
+        return $this->name . ', ' . $this->postalcode . ', ' . $this->area_name . ', ' . $this->dpt_name . ', ' . $this->country;
     }
 
     public function getId(): ?int

@@ -3,14 +3,19 @@
 	<div class="row row-event">
 		{% set lastDisplayedDate = '' %}
 		{% for event in events %}
-			{% if event.start.dateTime|date('Y-m-d') != lastDisplayedDate %}
-				{% if event.start.dateTime|date('Y-m-d') == 'now'|date('Y-m-d') %}
+			{# Récupérer la date de début (dateTime ou date) #}
+			{% set eventStart = event.start.dateTime ?? event.start.date %}
+			{% set eventStartDay = eventStart|date('Y-m-d') %}
+
+			{% if eventStartDay != lastDisplayedDate %}
+				{% if eventStartDay == 'now'|date('Y-m-d') %}
 					<div class="event-date">Aujourd'hui</div>
 				{% else %}
-					<div class="event-date">{{ event.start.dateTime|format_datetime(locale:'fr', pattern:'EEEE d MMMM') }}</div>
+					<div class="event-date">{{ eventStart|format_datetime(locale:'fr', pattern:'EEEE d MMMM') }}</div>
 				{% endif %}
-				{% set lastDisplayedDate = event.start.dateTime|date('Y-m-d') %}
+				{% set lastDisplayedDate = eventStartDay %}
 			{% endif %}
+
 			<div class="eventsList color-{{ event.colorId in [1,3,6] ? event.colorId : 1 }}">
 				<div class="container-fluid p-0">
 					<div class="row">
@@ -29,29 +34,24 @@
 					</div>
 				</div>
 				<p style="font-weight: 600;">
-					{% if event.start.dateTime %}
-						{{ event.start.dateTime|format_datetime(locale:'fr', pattern:'EEEE d MMMM') }}
-						{% if event.end.dateTime|date('Y-m-d') is not same as(event.start.dateTime|date('Y-m-d')) %}
-							-
-							{{ event.end.dateTime|format_datetime(locale:'fr', pattern:'d MMMM') }}
-						{% endif %}
-					{% else %}
-						{{ event.start.date|format_datetime(locale:'fr', pattern:'EEEE d MMMM') }}
-						{% if event.end.date is not same as(event.start.date) %}
-							-
-							{{ event.end.date|format_datetime(locale:'fr', pattern:'d MMMM') }}
-						{% endif %}
+					{{ eventStart|format_datetime(locale:'fr', pattern:'EEEE d MMMM') }}
+					{% set eventEnd = event.end.dateTime ?? event.end.date %}
+					{% if eventEnd|date('Y-m-d') is not same as(eventStartDay) %}
+						-
+						{{ eventEnd|format_datetime(locale:'fr', pattern:'d MMMM') }}
 					{% endif %}
 				</p>
 				<p>{{ event.description ? event.description|raw : 'Aucune description.' }}</p>
 				<p>{{ event.location ? event.location : '' }}</p>
 				<div class="d-flex justify-content-end">
-					<a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ event.summary|url_encode }}&dates={{ event.start.dateTime|date('Ymd\\THis') }}/{{ event.end.dateTime|date('Ymd\\THis') }}&details={{ event.description|url_encode }}&location={{ event.location|url_encode }}" target="_blank">
-						<i class="fa-solid fa-calendar-plus"></i>
-						Ajouter à mon agenda
-					</a>
+					{% if event.start.dateTime %}
+						<a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ event.summary|url_encode }}&dates={{ event.start.dateTime|date('Ymd\\THis') }}/{{ event.end.dateTime|date('Ymd\\THis') }}&details={{ event.description|raw|replace({'<br>': '\n', '<br/>': '\n', '<br />': '\n'})|striptags|url_encode }}&location={{ event.location|url_encode }}" target="_blank">
+							<i class="fa-solid fa-calendar-plus"></i>
+							Ajouter à mon agenda
+						</a>
+					{% endif %}
 				</div>
 			</div>
 		{% endfor %}
 	</div>
-</div></div>
+</div>

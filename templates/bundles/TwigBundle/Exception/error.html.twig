@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur
+{% endblock %}
+
+{% block content %}
+	<div class="container main-container-style pt-5 pb-5">
+		<div class="text-center kgSecondChancesSolid mb-5">
+			<h1>Une erreur est survenue</h1>
+			<p class="lead">
+				{% if status_code == 403 %}
+					Vous n'avez pas accès à cette page.
+				{% elseif status_code == 404 %}
+					Cette page n'existe pas.
+				{% elseif status_code == 429 %}
+					Trop de tentatives, veuillez réessayer plus tard.
+				{% else %}
+					Nous rencontrons un problème technique ({{ status_code }}). Veuillez réessayer plus tard.
+				{% endif %}
+			</p>
+			<p class="text-muted">Code
+				{{ status_code }}</p>
+			<a href="{{ path('app_home') }}" class="btn btn-tertiary">Retour à l'accueil</a>
+		</div>
+	</div>
+</div>{% endblock %}

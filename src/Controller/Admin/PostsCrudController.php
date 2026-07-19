@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Posts;
+use App\Repository\CategoriesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UserRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -22,7 +23,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
@@ -33,14 +33,10 @@ class PostsCrudController extends AbstractCrudController
     use EasyAdminAssetsTrait;
     use EasyAdminActionsTrait;
 
-    private Security $security;
-    private UserRepository $userRepository;
-
-    public function __construct(Security $security, UserRepository $userRepository)
-    {
-        $this->security = $security;
-        $this->userRepository = $userRepository;
-    }
+    public function __construct(
+        private readonly Security $security,
+        private readonly UserRepository $userRepository,
+    ) {}
 
     public static function getEntityFqcn(): string
     {
@@ -76,8 +72,10 @@ class PostsCrudController extends AbstractCrudController
 
         if ($this->security->isGranted('ROLE_EDITOR') && !$this->security->isGranted('ROLE_ADMIN')) {
             $user = $this->security->getUser();
-            $qb->andWhere('entity.user = :user')
-                ->setParameter('user', $user);
+            if ($user !== null) {
+                $qb->andWhere('entity.user = :user')
+                    ->setParameter('user', $user);
+            }
         }
 
         return $qb;
@@ -99,18 +97,25 @@ class PostsCrudController extends AbstractCrudController
                 'Il est recommandé d\'utiliser les slugs automatiques, mais vous pouvez les personnaliser'
             ),
             AssociationField::new('user', 'Auteur')
-                ->setFormTypeOption('query_builder', function (UserRepository $userRepository) {
+                ->setFormTypeOption('query_builder', function () {
                     if ($this->security->isGranted('ROLE_EDITOR') && !$this->security->isGranted('ROLE_ADMIN')) {
                         $user = $this->userRepository->findOneBy(['email' => $this->security->getUser()->getUserIdentifier()]);
-                        return $userRepository->createQueryBuilder('u')
+                        return $this->userRepository->createQueryBuilder('u')
                             ->where('u.id = :userId')
                             ->setParameter('userId', $user->getId());
                     }
-                    return $userRepository->createQueryBuilder('u');
+                    return $this->userRepository->createQueryBuilder('u');
                 }),
             Field::new('status', 'En ligne ?'),
-            AssociationField::new('categories', 'Catégories')->setFormTypeOption('choice_label', 'name')
-                ->setFormTypeOption('by_reference', false),
+            AssociationField::new('categories', 'Catégories')
+                ->setFormTypeOption('choice_label', 'name')
+                ->setFormTypeOption('by_reference', false)
+                ->setFormTypeOption('query_builder', function (CategoriesRepository $er) {
+                    return $er->createQueryBuilder('c')
+                        ->where('c.id != :id')
+                        ->setParameter('id', 2) // Assuming 2 is the ID of the 'À venir' category
+                        ->orderBy('c.name', 'ASC');
+                }),
             AssociationField::new('tab', 'Pages')->setFormTypeOption('choice_label', 'label'),
             AssociationField::new('keywords', 'Mots clés')->setFormTypeOption('choice_label', 'label'),
 
@@ -137,13 +142,14 @@ class PostsCrudController extends AbstractCrudController
 
         // Supprimer UNIQUEMENT les paragraphes vides et les commentaires HTML => TinyMCE gère les div 
         $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);
-        $content = preg_replace('/<!--[^\[>](.*?)-->/', '', $content);
+        // Supprime tous les commentaires sauf les conditionnels IE (au cas où)
+        $content = preg_replace('/<!--(?!\[if).*?-->/s', '', $content);
 
         return $content;
     }
 
     /* Nettoyer le contenu avant de l'envoyer au template */
-    public function editEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         /** @var Posts $entityInstance */
         $content = $entityInstance->getContent();
@@ -151,5 +157,19 @@ class PostsCrudController extends AbstractCrudController
             $content = $this->cleanContent($content);
             $entityInstance->setContent($content);
         }
+
+        parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        /** @var Posts $entityInstance */
+        $content = $entityInstance->getContent();
+        if (!empty($content)) {
+            $content = $this->cleanContent($content);
+            $entityInstance->setContent($content);
+        }
+
+        parent::persistEntity($entityManager, $entityInstance);
     }
 }

@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
 
 class ResetPasswordFormType extends AbstractType
@@ -28,18 +29,17 @@ class ResetPasswordFormType extends AbstractType
                 'second_options' => ['label' => 'Confirmer le mot de passe'],
                 'constraints' => [
                     new Length([
-                        'min' => 8,
-                        'max' => 100,
-                        'minMessage' => 'Le mot de passe doit contenir au moins 8 caractères',
-                        'maxMessage' => 'Le mot de passe ne doit pas contenir plus de 100 caractères',
-                    ]),
-                    new NotBlank([
-                        'message' => 'Veuillez entrer un mot de passe',
+                        'min' => 12,
+                        'minMessage' => 'Le mot de passe doit faire au moins {{ limit }} caractères',
+                        'max' => 4096, // Protection contre les attaques par déni de service
                     ]),
                     new PasswordStrength([
-                        'minScore' => PasswordStrength::STRENGTH_WEAK,
-                        'message' => 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial
-                        et contenir au moins 8 caractères',
+                        'minScore' => PasswordStrength::STRENGTH_MEDIUM,
+                        'message' => 'Ce mot de passe est trop faible. Utilisez une combinaison de lettres, chiffres et symboles.',
+                    ]),
+                    //Contrainte Symfony qui utilise l'API HaveIBeenPwned (haveibeenpwned.com), un service gratuit créé par le chercheur en sécurité Troy Hunt, qui référence des milliards de mots de passe issus de fuites de données réelles.
+                    new NotCompromisedPassword([
+                        'message' => 'Ce mot de passe a été compromis dans une fuite de données. Choisissez-en un autre.',
                     ]),
                 ],
             ])

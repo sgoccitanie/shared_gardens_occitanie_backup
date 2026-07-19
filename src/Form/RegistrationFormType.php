@@ -18,8 +18,8 @@ use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
-use App\Validator\Constraints\WordCount;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 
 class RegistrationFormType extends AbstractType
 {
@@ -27,16 +27,11 @@ class RegistrationFormType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class, [
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Veuillez entrer une adresse email',
-                    ]),
-                    new Email([
-                        'message' => 'Veuillez entrer une adresse email valide',
-                    ]),
+                'attr' => [
+                    'maxlength' => 180,
                 ],
             ])
-            
+
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
@@ -44,19 +39,31 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Vous devez accepter les conditions d\'utilisation.',
                     ]),
                 ],
-
             ])
 
             ->add('firstname', TextType::class, [
-                'attr' => ['class' => 'register-input']
+                'attr' => [
+                    'class' => 'register-input',
+                    'minlength' => 1,
+                    'maxlength' => 50,
+                ]
             ])
 
             ->add('lastname', TextType::class, [
-                'attr' => ['class' => 'register-input']
+                'attr' => [
+                    'class' => 'register-input',
+                    'minlength' => 1,
+                    'maxlength' => 50,
+                ]
             ])
 
             ->add('login', TextType::class, [
-                'attr' => ['class' => 'register-input']
+                'attr' => ['class' => 'register-input'],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez entrer un nom d\'utilisateur',
+                    ]),
+                ],
             ])
 
             ->add('password', RepeatedType::class, [
@@ -64,24 +71,28 @@ class RegistrationFormType extends AbstractType
                 'mapped' => false,
                 'label' => 'Mot de passe',
                 'attr' => ['autocomplete' => 'off', 'aria-label' => 'password', 'aria-describedby' => 'passwordHelp'],
-                'invalid_message' => 'The password fields must match.',
                 'required' => true,
-                'first_options'  => ['label' => 'Mot de passe', 'attr' => ['class' => 'form-control password-field']],
-                'second_options' => ['label' => 'Confirmer le mot de passe', 'attr' => ['class' => 'form-control']],
+                'first_options'  => [
+                    'label' => 'Mot de passe',
+                    'attr' => ['class' => 'form-control password-field']
+                ],
+                'second_options' => [
+                    'label' => 'Confirmer le mot de passe',
+                    'attr' => ['class' => 'form-control']
+                ],
                 'constraints' => [
                     new Length([
-                        'min' => 8,
-                        'max' => 100,
-                        'minMessage' => 'Le mot de passe doit contenir au moins 8 caractères',
-                        'maxMessage' => 'Le mot de passe ne doit pas contenir plus de 100 caractères',
-                    ]),
-                    new NotBlank([
-                        'message' => 'Veuillez entrer un mot de passe',
+                        'min' => 12,
+                        'minMessage' => 'Le mot de passe doit faire au moins {{ limit }} caractères',
+                        'max' => 4096, // Protection contre les attaques par déni de service (ex: un mot de passe très long pourrait provoquer une erreur 500)
                     ]),
                     new PasswordStrength([
-                        'minScore' => PasswordStrength::STRENGTH_WEAK,
-                        'message' => 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial
-                        et contenir au moins 8 caractères',
+                        'minScore' => PasswordStrength::STRENGTH_MEDIUM,
+                        'message' => 'Ce mot de passe est trop faible. Utilisez une combinaison de lettres, chiffres et symboles.',
+                    ]),
+                    //Contrainte Symfony qui utilise l'API HaveIBeenPwned (haveibeenpwned.com), un service gratuit créé par le chercheur en sécurité Troy Hunt, qui référence des milliards de mots de passe issus de fuites de données réelles.
+                    new NotCompromisedPassword([
+                        'message' => 'Ce mot de passe a été compromis dans une fuite de données. Choisissez-en un autre.',
                     ]),
                 ],
             ])

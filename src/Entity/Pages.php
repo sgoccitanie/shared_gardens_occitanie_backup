@@ -93,7 +93,7 @@ class Pages
 
     public function setSlug(string $slug): static
     {
-        $this->slug = $slug;
+        $this->slug = $slug ? mb_strtolower($slug) : null;
 
         return $this;
     }

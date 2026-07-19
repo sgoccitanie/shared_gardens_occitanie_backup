@@ -5,7 +5,6 @@
 /.env
 /.env.dev
 /.env.*
-/.env.test
 /config/secrets/
 /secrets/
 /public/bundles/

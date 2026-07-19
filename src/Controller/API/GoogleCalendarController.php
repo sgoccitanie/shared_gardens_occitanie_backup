@@ -64,13 +64,16 @@ class GoogleCalendarController extends AbstractController
                 'timeZone' => 'Europe/Paris',
             ]);
 
+
+
             $calendar = $this->service->events->listEvents('semeursdejardinslr@gmail.com', [
+                'maxResults' => 2500,           // Augmenter la limite (max autorisé)
                 'singleEvents' => true,
                 'orderBy' => 'startTime',
                 'timeZone' => 'Europe/Paris',
-                'timeMin' => $dateNow->format(DateTime::RFC3339),
+                'timeMin' => $dateNow->modify('-1 year')->format(DateTime::RFC3339),  // Passés
+                'timeMax' => $dateNow->modify('+2 years')->format(DateTime::RFC3339), // Futurs
             ]);
-
             // Récupérer les items et filtrer les événements valides
             $eventsArray = $events->getItems();
             $calendarArray = $calendar->getItems();
@@ -80,9 +83,41 @@ class GoogleCalendarController extends AbstractController
                     || (isset($e->start->date) && isset($e->end->date));
             });
 
+            // Retirer la description de chaque événement et les noms de calendrier entre parenthèses RGPD
+            foreach ($filteredEvents as $event) {
+                if ($event->summary) {
+                    $event->summary = preg_replace('/\s*\([^)]*\)/', '', $event->summary);
+                }
+                if ($event->description) {
+                    // Retirer les emails
+                    // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
+                    $event->description = preg_replace(
+                        '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
+                        '',
+                        $event->description
+                    );
+                }
+            }
+            // Filtre qui inclut aussi les événements "journée entière"
             $filteredCalendar = array_filter($calendarArray, function ($e) {
-                return isset($e->start->dateTime) && isset($e->end->dateTime);
+                return (isset($e->start->dateTime) && isset($e->end->dateTime))
+                    || (isset($e->start->date) && isset($e->end->date));
             });
+            // Retirer la description de chaque événement et les noms de calendrier entre parenthèses RGPD
+            foreach ($filteredCalendar as $event) {
+                // Nettoyage RGPD
+                if ($event->summary) {
+                    $event->summary = preg_replace('/\s*\([^)]*\)/', '', $event->summary);
+                }
+                if ($event->description) {
+                    // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
+                    $event->description = preg_replace(
+                        '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
+                        '',
+                        $event->description
+                    );
+                }
+            }
 
             return $this->render('google_calendar/index.html.twig', [
                 'events' => $filteredEvents,
@@ -107,6 +142,20 @@ class GoogleCalendarController extends AbstractController
 
         try {
             $event = $this->service->events->get('semeursdejardinslr@gmail.com', $id);
+
+            // Nettoyage RGPD
+            if ($event->summary) {
+                $event->summary = preg_replace('/\s*\([^)]*\)/', '', $event->summary);
+            }
+            if ($event->description) {
+                // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
+                $event->description = preg_replace(
+                    '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
+                    '',
+                    $event->description
+                );
+            }
+
             return new JsonResponse($event);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
@@ -142,6 +191,18 @@ class GoogleCalendarController extends AbstractController
                 return (isset($e->start->dateTime) && isset($e->end->dateTime))
                     || (isset($e->start->date) && isset($e->end->date));
             });
+            // Retirer la description de chaque événement et les noms de calendrier entre parenthèses RGPD
+            foreach ($filteredEvents as $event) {
+                if ($event->summary) {
+                    // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
+                    $event->description = preg_replace(
+                        '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
+                        '',
+                        $event->description
+                    );
+                    $event->description = strip_tags($event->description, '<b><br><p><strong><em>');
+                }
+            }
 
             if (empty($filteredEvents)) {
                 return $this->render('google_calendar/coming.html.twig', [

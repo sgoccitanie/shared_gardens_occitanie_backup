@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Attribute\Groups;
 use App\Repository\AddressesRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 
@@ -32,16 +31,16 @@ class Addresses
     #[Groups(['addresses:list', 'addresses:item'])]
     private ?string $street = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0, nullable: true)]
+    #[ORM\Column(type: 'float', precision: 10, scale: 7, nullable: true)]
     #[Groups(['addresses:list', 'addresses:item'])]
     private ?string $longitude = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 7, nullable: true)]
+    #[ORM\Column(type: 'float', precision: 10, scale: 7, nullable: true)]
     #[Groups(['addresses:list', 'addresses:item'])]
     private ?string $latitude = null;
 
     #[ORM\ManyToOne(inversedBy: 'addresses')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['addresses:list', 'addresses:item'])]
     private ?Cities $city = null;
 
@@ -64,7 +63,7 @@ class Addresses
 
     public function __toString()
     {
-        return  $this->street . ', ' . $this->city->getPostalcode() . ' ' . $this->city->getName();
+        return   $this->city->getName() . ' ' . $this->city->getPostalcode();
     }
 
     public function getId(): ?int
