@@ -128,10 +128,4 @@ class SearchController extends AbstractController
             'query' => $query,
         ]);
     }
-
-    #[Route('/search', name: 'app_search')]
-    public function search(): Response
-    {
-        return $this->render('search/index.html.twig');
-    }
 }

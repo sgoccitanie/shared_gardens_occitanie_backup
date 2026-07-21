@@ -19,7 +19,9 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Validator\Constraints\Blank;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
+use Symfony\Component\Validator\Constraints\Unique;
 
 class RegistrationFormType extends AbstractType
 {
@@ -29,6 +31,14 @@ class RegistrationFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'attr' => [
                     'maxlength' => 180,
+                ],
+                'constraints' => [
+                    new Unique([
+                        'message' => 'Cet email existe déjà dans la BDD.',
+                    ]),
+                    new Blank([
+                        'message' => 'L\'email doit être renseigné.'
+                    ]),
                 ],
             ])
 

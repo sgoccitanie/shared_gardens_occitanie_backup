@@ -41,4 +41,7 @@
 			{% endblock menu_item %}
 		{% endfor %}
 	</div>
+	{% block js %}
+		<script src="{{ asset('js/menu.js') }}" defer></script>
+	{% endblock js %}
 {% endblock main_menu %}

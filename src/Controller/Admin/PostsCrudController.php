@@ -26,6 +26,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 
 #[IsGranted('ROLE_EDITOR')]
 class PostsCrudController extends AbstractCrudController
@@ -57,13 +58,29 @@ class PostsCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Articles')
             ->setPageTitle('index', 'Liste des %entity_label_plural%')
             ->setPageTitle('detail', fn(Posts $post) => (string) $post)
-            ->setPageTitle('edit', fn(Posts $post) => sprintf('Édition de "<b>%s</b>"', $post->getSlug()))
+            ->setPageTitle('edit', fn(Posts $post) => sprintf('Édition de l\'article "<b>%s</b>"', $post->getTitle()))
             ->setFormThemes(['@EasyAdmin/crud/form_theme.html.twig', 'admin/posts/form.html.twig']);
     }
 
     public function configureActions(Actions $actions): Actions
     {
-        return $this->configureCommonActions($actions);
+        return $actions
+            // Modifier "Enregistrer et continuer d'éditer"
+            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE, function (Action $action) {
+                return $action->setLabel('Enregistrer et rester');
+            })
+            ->add(Crud::PAGE_EDIT, Action::INDEX)
+            ->add(Crud::PAGE_NEW, Action::INDEX)
+            ->update(Crud::PAGE_EDIT, Action::INDEX, function (Action $action) {
+                return $action
+                    ->setLabel('Retour aux articles')
+                    ->setIcon('fa fa-arrow-left');
+            })
+            ->update(Crud::PAGE_NEW, Action::INDEX, function (Action $action) {
+                return $action
+                    ->setLabel('Retour aux articles')
+                    ->setIcon('fa fa-arrow-left');
+            });
     }
 
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
@@ -93,9 +110,12 @@ class PostsCrudController extends AbstractCrudController
             TextField::new('title', 'Titre de l\'article'),
             DateField::new('postedAt')->setFormat('short')->setDisabled(true),
             FormField::addColumn(2),
-            SlugField::new('slug')->setTargetFieldName(['title', 'postedAt'])->setFormTypeOption('attr', ['readonly' => true])->setUnlockConfirmationMessage(
-                'Il est recommandé d\'utiliser les slugs automatiques, mais vous pouvez les personnaliser'
-            ),
+            SlugField::new('slug')
+                ->setTargetFieldName(['title'])
+                ->setFormTypeOption('attr', ['readonly' => true])
+                ->setUnlockConfirmationMessage(
+                    'Il est recommandé d\'utiliser les slugs automatiques, mais vous pouvez les personnaliser'
+                ),
             AssociationField::new('user', 'Auteur')
                 ->setFormTypeOption('query_builder', function () {
                     if ($this->security->isGranted('ROLE_EDITOR') && !$this->security->isGranted('ROLE_ADMIN')) {
@@ -148,28 +168,79 @@ class PostsCrudController extends AbstractCrudController
         return $content;
     }
 
+    private function ensureUniqueSlug(EntityManagerInterface $entityManager, Posts $post): void
+    {
+        $baseSlug = $post->getSlug();
+        if (empty($baseSlug)) {
+            return;
+        }
+
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (true) {
+            $existing = $entityManager->getRepository(Posts::class)->findOneBy(['slug' => $slug]);
+
+            // Si aucun autre post avec ce slug (ou c'est le post actuel), on garde
+            if ($existing === null || $existing->getId() === $post->getId()) {
+                $post->setSlug($slug);
+                return;
+            }
+
+            // Sinon, ajoute un suffixe
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+    }
+
     /* Nettoyer le contenu avant de l'envoyer au template */
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         /** @var Posts $entityInstance */
-        $content = $entityInstance->getContent();
-        if (!empty($content)) {
-            $content = $this->cleanContent($content);
-            $entityInstance->setContent($content);
-        }
+        try {
+            $content = $entityInstance->getContent();
+            if (!empty($content)) {
+                $content = $this->cleanContent($content);
+                $entityInstance->setContent($content);
+            }
+            // Assure l'unicité du slug
+            $this->ensureUniqueSlug($entityManager, $entityInstance);
 
-        parent::updateEntity($entityManager, $entityInstance);
+            parent::updateEntity($entityManager, $entityInstance);
+            $this->addFlash(
+                'success',
+                'L\'article a été modifié avec succès.'
+            );
+        } catch (\Exception $e) {
+            $this->addFlash(
+                'danger',
+                'Erreur lors de la modification : ' . $e->getMessage()
+            );
+        }
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         /** @var Posts $entityInstance */
-        $content = $entityInstance->getContent();
-        if (!empty($content)) {
-            $content = $this->cleanContent($content);
-            $entityInstance->setContent($content);
-        }
+        try {
+            $content = $entityInstance->getContent();
+            if (!empty($content)) {
+                $content = $this->cleanContent($content);
+                $entityInstance->setContent($content);
+            }
+            // Assure l'unicité du slug
+            $this->ensureUniqueSlug($entityManager, $entityInstance);
 
-        parent::persistEntity($entityManager, $entityInstance);
+            parent::persistEntity($entityManager, $entityInstance);
+            $this->addFlash(
+                'success',
+                'L\'article a été ajouté avec succès.'
+            );
+        } catch (\Exception $e) {
+            $this->addFlash(
+                'danger',
+                "Erreur lors de l'ajout : " . $e->getMessage()
+            );
+        }
     }
 }

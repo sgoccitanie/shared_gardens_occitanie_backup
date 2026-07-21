@@ -150,16 +150,19 @@ class CommonDataService
     /**
      * Génère les URLs pour une liste de posts
      */
-    public function buildPostsWithUrls(array $posts): array
+    public function buildPostsWithUrls(array $posts, string $routeName = 'app_home_with_slug'): array
     {
-
         $allPosts = array_filter($posts, fn($post) => !empty($post->getSlug()));
-        return array_map(fn($post) => [
-            'post' => $post,
-            'url' => $this->urlGenerator->generate('app_post_show', [
-                'slug' => $post->getSlug(),
-            ]),
-        ], $allPosts);
+
+        return array_map(function ($post) use ($routeName) {
+            $slug = $post->getSlug();
+            return [
+                'post' => $post,
+                'url' => $this->urlGenerator->generate($routeName, [
+                    'slug' => $slug,
+                ]),
+            ];
+        }, $allPosts);
     }
 
 

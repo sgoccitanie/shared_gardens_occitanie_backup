@@ -6,6 +6,7 @@ use App\Repository\PagesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PagesRepository::class)]
 class Pages
@@ -15,7 +16,14 @@ class Pages
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 60)]
+    #[Assert\NotBlank(message: 'Le titre est obligatoire')]
+    #[Assert\Length(
+        min: 3,
+        max: 60,
+        minMessage: 'Le titre doit faire au moins {{ limit }} caractères',
+        maxMessage: 'Le titre ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $name = null;
 
     /**
@@ -24,7 +32,7 @@ class Pages
     #[ORM\OneToMany(targetEntity: Tabs::class, mappedBy: 'pages')]
     private Collection $tabs_page;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, unique: true)]
     private ?string $slug = null;
 
     #[ORM\Column]

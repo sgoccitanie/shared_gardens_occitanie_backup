@@ -54,7 +54,14 @@
 							</div>
 						</div>
 					</div>
+
 				{% endfor %}
+
+				<button type="button" id="back-to-top" class="back-to-top" aria-label="Revenir en haut de la page" hidden>
+					<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+						<path d="M12 19V5M5 12l7-7 7 7"/>
+					</svg>
+				</button>
 			</div>
 		{% else %}
 			<div class="alert alert-info text-center">
@@ -64,5 +71,6 @@
 	</div>
 {% endblock %}
 {% block js %}
-	<script src="{{asset('js/main.js')}}" defer></script>
+	{{ parent() }}
+	<script src="{{ asset('js/back-to-top.js') }}" defer></script>
 {% endblock %}

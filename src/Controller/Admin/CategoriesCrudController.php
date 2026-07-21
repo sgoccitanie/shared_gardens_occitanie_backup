@@ -68,8 +68,9 @@ class CategoriesCrudController extends AbstractCrudController
     {
         /** @var Categories $entityInstance */
 
+        // Détacher tous les posts liés à cette catégorie (ils restent en BDD)
         foreach ($entityInstance->getPostCat() as $post) {
-            $post->removeCategory($entityInstance);
+            $entityInstance->removePostCat($post);
         }
 
         parent::deleteEntity($entityManager, $entityInstance);

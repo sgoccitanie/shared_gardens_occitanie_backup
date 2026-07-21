@@ -1,10 +1,10 @@
 {% if categoriesWithTabs is defined and categoriesWithTabs|length > 0 %}
-	{# Afficher les catégories et les sous-onglets #}
 	<div class="categories-tabs-container">
 		{% for categoryWithTabs in categoriesWithTabs %}
 			<div class="category-section">
 				{% if categoryWithTabs.category is not null %}
-					{% if categoryWithTabs.category.id === 2 %}
+					{% if categoryWithTabs.category.id == 2 %}
+						{# Catégorie spéciale "À venir" - lien direct #}
 						<h3 class="category-title">
 							<a href="{{ path('app_coming_soon') }}">
 								{{ categoryWithTabs.category.name }}
@@ -12,26 +12,26 @@
 						</h3>
 					{% else %}
 						<h3 class="category-title">
-							<a href="{{ path('app_post_show') }}?category={{ categoryWithTabs.category.id }}">
+							<a href="{{ path('app_articles') }}?category={{ categoryWithTabs.category.id }}">
 								{{ categoryWithTabs.category.name }}
 							</a>
 						</h3>
 						{% if categoryWithTabs.tabs|length > 0 %}
 							<div class="tabs-list">
 								{% for tab in categoryWithTabs.tabs %}
-									{% set postForTab = null %}
+									{# Compter les articles rattachés à cette tab et récupérer le premier #}
+									{% set postCount = 0 %}
+									{% set singlePost = null %}
 									{% for postWithUrl in allPostsWithUrls %}
-										{% if postWithUrl.post.tab and postWithUrl.post.tab.id == tab.id and postForTab is null %}
-											{% set postForTab = postWithUrl %}
+										{% if postWithUrl.post.tab and postWithUrl.post.tab.id == tab.id %}
+											{% set postCount = postCount + 1 %}
+											{% if singlePost is null %}
+												{% set singlePost = postWithUrl %}
+											{% endif %}
 										{% endif %}
 									{% endfor %}
-									<a href="
-																																								{% if postForTab is not null %}
-																																									{{ path('app_home_with_id', {'id': postForTab.post.id}) }}
-																																								{% else %}
-																																									{{ path('app_post_show') }}?category={{ categoryWithTabs.category.id }}
-																																								{% endif %}
-																																							" class="tab-link" title="{{ tab.label }}">
+
+									<a href="{% if postCount == 1 %}{{ singlePost.url }}{% elseif postCount > 1 %}{{ path('app_home_with_slug', {'slug': tab.slug}) }}{% endif %}" class="tab-link" title="{{ tab.label }}">
 										{{ tab.label }}
 									</a>
 								{% endfor %}
@@ -40,7 +40,6 @@
 					{% endif %}
 				{% endif %}
 			</div>
-
 		{% endfor %}
 	</div>
 {% endif %}

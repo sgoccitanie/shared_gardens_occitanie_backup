@@ -2,12 +2,12 @@
 {# => Si displayList = true : afficher la liste des articles #}
 {# => Sinon : afficher un article unique (postWithUrls[0]) #}
 	{% block title %}
-{{ pageTitle|default('Accueil | Réseau des Semeurs de Jardins') }}
+{{ pageTitle|default('Réseau des Semeurs de Jardins') }}
 {% endblock %}
 
 	{% block stylesheets %}
 	{{ parent() }}
-	<link rel="stylesheet" href="{{ asset('styles/stylePdf.css') }}"> <link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
+	<link rel="stylesheet" href="{{ asset('styles/index.css') }}"> <link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -27,113 +27,138 @@
 
 			{# Categories et onglets #}
 			{% include '_partials/categories_tabs/categories_tabs.html.twig' %}
-
 			<div class="content_main">
 				<div
 					class="d-flex flex-column p-2">
-					{# => Tous les articles #}
+					{# --- LISTE DES ARTICLES --- #}
 					{% if displayList %}
 						{% if postsWithUrls|length > 0 %}
-							<div class="d-flex justify-content-end p-lg-2">
-								<select class="form-select" aria-label="Default select example" style="width: fit-content;" onchange="window.location.href='{{ path('app_post_show') }}?order=' + this.value">
-									<option value="ASC" {% if order == 'ASC' %} selected {% endif %}>Du plus ancien au plus récent</option>
-									<option value="DESC" {% if order == 'DESC' %} selected {% endif %}>Du plus récent au plus ancien</option>
-								</select>
-							</div>
-							<div class="row row-cols-1 row-cols-md-1 g-4 d-flex flex-row" id="postslist-container">
-								{% include 'home/postslist.html.twig' %}
-							</div>
-						{% else %}
-							<div class="post-container">
-								<h2 class="empty-post">Aucun article trouvé</h2>
-							</div>
-						{% endif %}
+							<div class="row_index">
+								<div class="d-flex justify-content-end me-3">
+									<select class="form-select" aria-label="Default select example" style="width: fit-content;" onchange="window.location.href='{{ path('app_articles') }}?order=' + this.value">
+										<option value="ASC" {% if order == 'ASC' %} selected {% endif %}>Du plus ancien au plus récent</option>
+										<option value="DESC" {% if order == 'DESC' %} selected {% endif %}>Du plus récent au plus ancien</option>
+									</select>
+								</div>
+								<div id="posts_list">
+									{% if backToList %}
+										<div class="mb-3">
+											<a href="{{ path('app_articles') }}" class="button btn-outline-primary">
+												<i class="fa-solid fa-arrow-left"></i>
+												Retour à la liste
+											</a>
+										</div>
+									{% endif %}
+									{% for postWithUrl in postsWithUrls %}
+										{% set post = postWithUrl.post %}
+										<div class="row_index_item mx-lg-4 my-lg-4 p-4 my-2 card card-profile">
+											<div class="row_index_item_content">
+												<div class="row_index_item_header d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-2">
+													<h2 class="mb-0">
+														<a href="{{ path('app_home_with_slug', {'slug': post.slug}) }}" class="post-title-link">
+															{{ post.title }}
+														</a>
+													</h2>
+													<span class="post-date text-muted">
+														{{ post.postedAt|format_datetime(locale: 'fr', pattern: 'd MMMM Y') }}
+													</span>
 
-					{% else %}
-						{# => Un article unique #}
-						{% if postsWithUrls|length == 1 %}
-							{% set postWithUrl = postsWithUrls[0] %}
-							<div class="post-container">
-								<h2 style="margin-top:40px;">{{ postWithUrl.post.title }}</h2>
-
-								{# Afficher le contenu : texte, image, PDF #}
-								<div class="post-content" style="margin-top:20px;">{{ postWithUrl.post.content|raw }}</div>
-							</div>
-							{% if id %}
-								<div class="col-12 m-auto comments-section my-3">
-									<h4 class="my-4 mb-5 text-center">Commentaires ({{ commentCount }})</h4>
-									{% if commentForm %}
-										<h4 class="my-4 fw-light" style="margin-left:12.5%">
-											Ajouter un commentaire</h4>
-
-										<form
-											action="{{ path('app_comment_post', {id: id}) }}" method="post" class="w-75 m-auto mb-4 text-end">
-											{# Obliger un pseudo pour les commentaires uniquement pour les visiteurs #}
-											{{ form_start(commentForm) }}
-											<div class="d-flex align-items-center mb-0">
-												{% if not (app.user and (app.user.roles|join(',') matches '/ROLE_EDITOR|ROLE_ADMIN/')) %}
-													<div class="d-flex align-items-center">
-														{{ form_label(commentForm.pseudo, null, {'label_attr': {'class': 'me-2 mb-0'}}) }}
-														<div style="width:250px;">
-															{{ form_widget(commentForm.pseudo) }}
-														</div>
-														{{ form_errors(commentForm.pseudo) }}
-													</div>
-												{% endif %}
-												<div class="{% if not (app.user and (app.user.roles|join(',') matches '/ROLE_EDITOR|ROLE_ADMIN/')) %}ms-auto{% else %}m-0{% endif %}">
-													{{ form_label(commentForm.content, null, {'label_attr': {'class': 'mb-0'}}) }}
+												</div>
+												<div class="row_index_item_categories px-3 py-2 float-end">
+													{% for category in post.categories %}
+														<span class="badge bg-secondary">{{ category.name }}</span>
+													{% endfor %}
+												</div>
+												<div class="row_index_item_excerpt">
+													{{ post.content|striptags|slice(0, 50)|raw }}...
+												</div>
+												<div class="row_index_item_footer mt-2">
+													<a href="{{ path('app_home_with_slug', {'slug': post.slug}) }}" class="button btn-secondary-outline">
+														Lire la suite
+													</a>
 												</div>
 											</div>
-											{{ form_widget(commentForm.content) }}
-											{{ form_errors(commentForm.content) }}
-											<button class="button btn-secondary-green mx-5 my-3" type="submit">
-												Envoyer
-											</button>
-											{{ form_end(commentForm) }}
-										</form>
-									{% endif %}
-
-									{# Modération des commentaires selon les roles #}
-									{% for comment in comments %}
-										<div class="comment py-2">
-											<p>
-												{% set roles = (comment.user and comment.user.roles is defined) ? comment.user.roles : [] %}
-												{% if 'ROLE_EDITOR' in roles and 'ROLE_ADMIN' in roles %}
-													{% set role_label = 'Super-modérateur' %}
-												{% elseif 'ROLE_EDITOR' in roles %}
-													{% set role_label = 'Modérateur' %}
-												{% else %}
-													{% set role_label = '' %}
-												{% endif %}
-
-												{% if comment.user %}
-													{{ comment.user.firstname }}
-													{{ comment.user.lastname }}
-													{% if role_label != '' %},
-														{{ role_label }}
-													{% endif %}
-												{% else %}
-													{{ comment.pseudo }}
-												{% endif %}
-
-												({{ comment.createdAt|date('d/m/Y H:i') }})
-											</p>
-											<p class="mx-4 text-secondary">{{ comment.content }}</p>
-											<hr>
 										</div>
-									{% else %}
-										<p class="mx-5 px-5">Aucun commentaire.</p>
 									{% endfor %}
 								</div>
-							{% endif %}
+							</div>
 						{% else %}
-							<div class="post-container">
-								<h2 class="empty-post">Aucun article trouvé</h2>
+							<div class="text-center py-5">
+								<h2>Aucun article disponible</h2>
+								<p>Aucun article n'est encore publié pour cette catégorie.</p>
+							</div>
+						{% endif %}
+					{% else %}
+						{# --- ARTICLE UNIQUE --- #}
+						{% if postsWithUrls|length == 1 %}
+							{% set postWithUrl = postsWithUrls[0] %}
+							{% set post = postWithUrl.post %}
+
+							<div class="row_index ">
+								<div class="row_index_item single-post">
+									<div class="row_index_item_content">
+										<div class="row_index_item_header d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+											<h1 class="mb-0">{{ post.title }}</h1>
+											<span class="post-date text-muted">
+												{{ post.postedAt|format_datetime(locale: 'fr', pattern: 'd MMMM Y') }}
+											</span>
+										</div>
+										<div class="row_index_item_categories mx-3 float-end">
+											{% for category in post.categories %}
+												<span class="badge bg-secondary">{{ category.name }}</span>
+											{% endfor %}
+										</div>
+										<div class="row_index_item_content-body">
+											{{ post.content|raw }}
+										</div>
+									</div>
+								</div>
+
+								{# --- COMMENTAIRES --- #}
+								{% if commentForm is not null %}
+									<div class="comments-section mt-5">
+										<h3>Commentaires ({{ commentCount }})</h3>
+
+										{% if comments|length > 0 %}
+											<div class="comments-list mb-4">
+												{% for comment in comments %}
+													<div class="comment-item p-3 mb-2 border rounded">
+														<div class="comment-header d-flex justify-content-between">
+															<strong>{{ comment.pseudo }}</strong>
+															<small class="text-muted">
+																{{ comment.createdAt|format_datetime(locale: 'fr', pattern: 'd MMMM Y à HH:mm') }}
+															</small>
+														</div>
+														<div class="comment-content mt-2">
+															{{ comment.content|raw }}
+														</div>
+													</div>
+												{% endfor %}
+											</div>
+										{% endif %}
+
+										<div class="comment-form">
+											<h4>Laisser un commentaire</h4>
+											{{ form_start(commentForm, {'action': path('app_comment_post', {'slug': post.slug})}) }}
+											{{ form_widget(commentForm) }}
+											<button type="submit" class="button btn-secondary-green mt-2">Publier</button>
+											{{ form_end(commentForm) }}
+										</div>
+									</div>
+								{% endif %}
+							</div>
+						{% else %}
+							<div class="text-center py-5">
+								<h2>Article introuvable</h2>
+								<p>L'article que vous cherchez n'existe pas ou n'est plus disponible.</p>
+								<a href="{{ path('app_home') }}" class="button btn-secondary-green">Retour à l'accueil</a>
 							</div>
 						{% endif %}
 					{% endif %}
 				</div>
 			</div>
-		</div>
-	</div>
-{% endblock %}
+		{% endblock %}
+
+		{% block js %}
+			<script src="{{ asset('js/index.js') }}" defer></script>
+		{% endblock %}

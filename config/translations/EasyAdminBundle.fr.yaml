@@ -1,0 +1,4 @@
+flash_messages:
+  entity_updated: "Tout a bien été mis à jour !"
+  entity_created: "Tout a bien été créé !"
+  entity_deleted: "Tout a bien été supprimé !"

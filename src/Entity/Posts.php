@@ -50,7 +50,7 @@ class Posts
     #[ORM\Column(nullable: true)]
     private ?int $comment_counter = null;
 
-    #[ORM\ManyToOne(inversedBy: 'tabs_posts')]
+    #[ORM\ManyToOne(targetEntity: Tabs::class, inversedBy: 'tabs_posts')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Tabs $tab = null;
 
@@ -134,10 +134,7 @@ class Posts
 
     public function getSlug(): ?string
     {
-        if ($this->title === null) {
-            return null;
-        }
-        return (new AsciiSlugger())->slug($this->title)->lower()->toString();
+        return $this->slug;
     }
 
     public function setSlug(?string $slug): static

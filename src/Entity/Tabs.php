@@ -28,6 +28,7 @@ class Tabs
     /**
      * @var Collection<int, Posts>
      */
+    // ManyToOne → toujours inversedBy (jamais mappedBy) — c'est le côté propriétaire
     #[ORM\OneToMany(targetEntity: Posts::class, mappedBy: 'tab')]
     private Collection $tabs_posts;
 

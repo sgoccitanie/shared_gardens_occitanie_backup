@@ -14,13 +14,20 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
+use App\Entity\Posts;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 #[IsGranted('ROLE_EDITOR')]
 class TabsCrudController extends AbstractCrudController
 {
     use EasyAdminAssetsTrait;
     use EasyAdminActionsTrait;
+
+    public function __construct(
+        private readonly AdminUrlGenerator $adminUrlGenerator,
+    ) {}
 
     public static function getEntityFqcn(): string
     {
@@ -34,9 +41,62 @@ class TabsCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Pages')
             ->setPageTitle('index', 'Listes des %entity_label_plural%')
             ->setPageTitle('detail', fn(Tabs $tab) => (string) $tab)
-            ->setPageTitle('edit', fn(Tabs $tab) => sprintf('Edition de "<b>%s</b>"', $tab->getLabel()))
+            ->setPageTitle('edit', fn(Tabs $tab) => sprintf('Edition de la page "<b>%s</b>"', $tab->getLabel()))
             ->setFormThemes(['@EasyAdmin/crud/form_theme.html.twig', 'admin/posts/form.html.twig'])
         ;
+    }
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        try {
+            parent::persistEntity($entityManager, $entityInstance);
+            $this->addFlash('success', 'La page "' . $entityInstance->getLabel() . '" a été créée avec succès.');
+        } catch (\Exception $e) {
+            $this->addFlash('danger', 'Erreur lors de la création : ' . $e->getMessage());
+        }
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        try {
+            /** @var Tabs $entityInstance */
+
+            // Récupérer l'état actuel en base (avant modification)
+            $originalTab = $entityManager->getUnitOfWork()->getOriginalEntityData($entityInstance);
+
+            // Récupérer les posts actuellement en base
+            $postsInDb = $entityManager->getRepository(Posts::class)->findBy(['tab' => $entityInstance]);
+
+            // Récupérer les posts après modification (dans le formulaire)
+            $postsInForm = $entityInstance->getTabsPosts()->toArray();
+
+            // Détacher les posts qui étaient en base mais plus dans le formulaire
+            foreach ($postsInDb as $post) {
+                if (!in_array($post, $postsInForm, true)) {
+                    $post->setTab(null);
+                    $entityManager->persist($post);
+                }
+            }
+
+            // Attacher les posts nouveaux
+            foreach ($postsInForm as $post) {
+                $post->setTab($entityInstance);
+                $entityManager->persist($post);
+            }
+            // Assure l'unicité du slug
+            $this->ensureUniqueSlug($entityManager, $entityInstance);
+
+            parent::updateEntity($entityManager, $entityInstance);
+
+            $this->addFlash(
+                'success',
+                'La page a été modifiée avec succès.'
+            );
+        } catch (\Exception $e) {
+            $this->addFlash(
+                'danger',
+                'Erreur lors de la modification : ' . $e->getMessage()
+            );
+        }
     }
 
     public function configureAssets(Assets $assets): Assets
@@ -44,14 +104,25 @@ class TabsCrudController extends AbstractCrudController
         return $this->configureCommonAssets($assets);
     }
 
-    // Supprimer les cases à cocher
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
-            ->disable('batchDelete')
-            ->setPermission('batchDelete', 'NO_ACCESS')
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER);
+            // Modifier "Enregistrer et continuer d'éditer"
+            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE, function (Action $action) {
+                return $action->setLabel('Enregistrer et rester');
+            })
+            ->add(Crud::PAGE_EDIT, Action::INDEX)
+            ->add(Crud::PAGE_NEW, Action::INDEX)
+            ->update(Crud::PAGE_EDIT, Action::INDEX, function (Action $action) {
+                return $action
+                    ->setLabel('Retour aux pages')
+                    ->setIcon('fa fa-arrow-left');
+            })
+            ->update(Crud::PAGE_NEW, Action::INDEX, function (Action $action) {
+                return $action
+                    ->setLabel('Retour aux pages')
+                    ->setIcon('fa fa-arrow-left');
+            });
     }
 
     public function configureFields(string $pageName): iterable
@@ -70,13 +141,50 @@ class TabsCrudController extends AbstractCrudController
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         /** @var Tabs $entityInstance */
+        try {
+            // Détacher tous les posts liés à cette tab (ils restent en BDD)
+            foreach ($entityInstance->getTabsPosts() as $post) {
+                $post->setTab(null);
+                $entityManager->persist($post);
+            }
+            // Assure l'unicité du slug
+            $this->ensureUniqueSlug($entityManager, $entityInstance);
 
-        // Détacher tous les posts liés à cette tab (ils restent en BDD)
-        foreach ($entityInstance->getTabsPosts() as $post) {
-            $post->setTab(null);
-            $entityManager->persist($post);
+            parent::deleteEntity($entityManager, $entityInstance);
+            $this->addFlash(
+                'success',
+                'L\'article a été supprimé avec succès.'
+            );
+        } catch (\Exception $e) {
+            $this->addFlash(
+                'danger',
+                'Erreur lors de la suppression : ' . $e->getMessage()
+            );
+        }
+    }
+
+    private function ensureUniqueSlug(EntityManagerInterface $entityManager, Tabs $tab): void
+    {
+        $baseSlug = $tab->getSlug();
+        if (empty($baseSlug)) {
+            return;
         }
 
-        parent::deleteEntity($entityManager, $entityInstance);
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (true) {
+            $existing = $entityManager->getRepository(Tabs::class)->findOneBy(['slug' => $slug]);
+
+            // Si aucun autre tab avec ce slug (ou c'est le tab actuel), on garde
+            if ($existing === null || $existing->getId() === $tab->getId()) {
+                $tab->setSlug($slug);
+                return;
+            }
+
+            // Sinon, ajoute un suffixe
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
     }
 }

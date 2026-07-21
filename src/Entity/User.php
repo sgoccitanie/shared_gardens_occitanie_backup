@@ -39,6 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             'groups' => ['registration'],
         ]),
     ])]
+    #[Assert\NotBlank(message: 'Veuillez saisir un rôle.')]
     private array $roles = ['ROLE_USER'];   // IMPORTANT : rôle par défaut
 
     /**
@@ -86,7 +87,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeImmutable $tokenExpirateAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: 'Veuillez saisir une association dans la liste')]
     private ?Association $user_asso = null;
 
     /* Ghoster un utilisateur */
