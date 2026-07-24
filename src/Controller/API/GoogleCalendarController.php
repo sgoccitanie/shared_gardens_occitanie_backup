@@ -125,8 +125,9 @@ class GoogleCalendarController extends AbstractController
                 'timeZone' => 'Europe/Paris',
             ]);
         } catch (\Exception $e) {
+            $this->logger->error('Erreur lors de la récupération des événements Google Calendar : ' . $e->getMessage());
             return $this->render('google_calendar/index.html.twig', [
-                'error' => 'Erreur lors de la récupération des événements : ' . $e->getMessage(),
+                'error' => 'Erreur lors de la récupération des événements.',
                 'events' => [],
                 'calendarList' => [],
             ]);
@@ -158,7 +159,12 @@ class GoogleCalendarController extends AbstractController
 
             return new JsonResponse($event);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
+            $this->logger->error('Erreur récupération événement Google Calendar', [
+                'event_id' => $id,
+                'exception' => $e,
+            ]);
+
+            return new JsonResponse(['error' => 'Événement indisponible'], 500);
         }
     }
 
@@ -205,6 +211,7 @@ class GoogleCalendarController extends AbstractController
             }
 
             if (empty($filteredEvents)) {
+                $this->logger->info('Aucun événement à venir trouvé dans Google Calendar.');
                 return $this->render('google_calendar/coming.html.twig', [
                     'events' => [],
                     'error' => 'Aucun événement à venir.',
@@ -215,9 +222,10 @@ class GoogleCalendarController extends AbstractController
                 'events' => $filteredEvents,
             ]);
         } catch (\Exception $e) {
+            $this->logger->error('Erreur récupération événements à venir Google Calendar : ' . $e->getMessage());
             return $this->render('google_calendar/coming.html.twig', [
                 'events' => [],
-                'error' => 'Erreur : ' . $e->getMessage(),
+                'error' => 'Erreur : Impossible de récupérer les événements à venir.',
             ]);
         }
     }

@@ -9,9 +9,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TabsRepository::class)]
-#[UniqueEntity(
-    fields: ['slug']
-)]
+#[UniqueEntity(fields: ['slug'])]
 class Tabs
 {
     #[ORM\Id]
@@ -19,38 +17,35 @@ class Tabs
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 60)]
     private ?string $label = null;
 
     #[ORM\Column]
     private ?bool $news_feed = null;
 
+    #[ORM\Column(length: 50, unique: true)]
+    private ?string $slug = null;
+
+    #[ORM\ManyToMany(targetEntity: Categories::class, inversedBy: 'tabs_cat')]
+    private Collection $categories;
+
     /**
      * @var Collection<int, Posts>
      */
-    // ManyToOne → toujours inversedBy (jamais mappedBy) — c'est le côté propriétaire
-    #[ORM\OneToMany(targetEntity: Posts::class, mappedBy: 'tab')]
+    #[ORM\ManyToMany(targetEntity: Posts::class, mappedBy: 'tabs')]
     private Collection $tabs_posts;
 
-    #[ORM\ManyToOne(inversedBy: 'tabs_page')]
-    private ?Pages $pages = null;
-
-    #[ORM\Column(length: 50, unique: true, options: ['message' => 'Ce slug est déjà utilisé'])]
-    private ?string $slug = null;
-
-    #[ORM\ManyToOne(targetEntity: Categories::class)]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Categories $category = null;
 
     public function __construct()
     {
         $this->tabs_posts = new ArrayCollection();
+        $this->categories = new ArrayCollection();
         $this->news_feed = false;
     }
 
     public function __toString(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     public function getId(): ?int
@@ -66,7 +61,6 @@ class Tabs
     public function setLabel(string $label): static
     {
         $this->label = $label;
-
         return $this;
     }
 
@@ -78,47 +72,17 @@ class Tabs
     public function setNewsFeed(bool $news_feed): static
     {
         $this->news_feed = $news_feed;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Posts>
-     */
     public function getTabsPosts(): Collection
     {
         return $this->tabs_posts;
     }
 
-    public function addTabsPost(Posts $tabsPost): static
+    public function setTabsPosts(Collection $tabs_posts): static
     {
-        if (!$this->tabs_posts->contains($tabsPost)) {
-            $this->tabs_posts->add($tabsPost);
-            $tabsPost->setTab($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTabsPost(Posts $tabsPost): static
-    {
-        if ($this->tabs_posts->removeElement($tabsPost)) {
-            if ($tabsPost->getTab() === $this) {
-                $tabsPost->setTab(null);
-            }
-        }
-        return $this;
-    }
-
-    public function getPages(): ?Pages
-    {
-        return $this->pages;
-    }
-
-    public function setPages(?Pages $pages): static
-    {
-        $this->pages = $pages;
-
+        $this->tabs_posts = $tabs_posts;
         return $this;
     }
 
@@ -130,19 +94,55 @@ class Tabs
     public function setSlug(string $slug): static
     {
         $this->slug = $slug ? mb_strtolower($slug) : null;
-
         return $this;
     }
 
-    public function getCategory(): ?Categories
+    public function getCategories(): Collection
     {
-        return $this->category;
+        return $this->categories;
     }
 
-    public function setCategory(?Categories $category): static
+    public function setCategories(Collection $categories    ): static
     {
-        $this->category = $category;
+        $this->categories = $categories;
+        return $this;
+    }
 
+    
+    
+    public function addTabsPost(Posts $tabsPost): static
+    {
+        if (!$this->tabs_posts->contains($tabsPost)) {
+            $this->tabs_posts->add($tabsPost);
+            $tabsPost->addTab($this);
+        }
+        return $this;
+    }
+
+    public function removeTabsPost(Posts $tabsPost): static
+    {
+        if ($this->tabs_posts->removeElement($tabsPost)) {
+            $tabsPost->removeTab($this);
+        }
+        return $this;
+    }
+
+    
+    
+    public function addCategory(Categories $categories): static
+    {
+        if (!$this->categories->contains($categories)) {
+            $this->categories->add($categories);
+            $categories->addTabsCat($this);
+        }
+        return $this;
+    }
+
+    public function removeCategory(Categories $categories): static
+    {
+        if ($this->categories->removeElement($categories)) {
+            $categories->removeTabsCat($this);
+        }
         return $this;
     }
 }

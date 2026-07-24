@@ -88,7 +88,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotBlank(message: 'Veuillez saisir une association dans la liste')]
     private ?Association $user_asso = null;
 
     /* Ghoster un utilisateur */

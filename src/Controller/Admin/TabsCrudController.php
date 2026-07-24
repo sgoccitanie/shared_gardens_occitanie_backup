@@ -16,8 +16,7 @@ use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 use App\Entity\Posts;
 use Doctrine\ORM\EntityManagerInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Psr\Log\LoggerInterface;
 
 #[IsGranted('ROLE_EDITOR')]
 class TabsCrudController extends AbstractCrudController
@@ -26,7 +25,7 @@ class TabsCrudController extends AbstractCrudController
     use EasyAdminActionsTrait;
 
     public function __construct(
-        private readonly AdminUrlGenerator $adminUrlGenerator,
+        private readonly LoggerInterface $logger
     ) {}
 
     public static function getEntityFqcn(): string
@@ -51,7 +50,10 @@ class TabsCrudController extends AbstractCrudController
             parent::persistEntity($entityManager, $entityInstance);
             $this->addFlash('success', 'La page "' . $entityInstance->getLabel() . '" a été créée avec succès.');
         } catch (\Exception $e) {
-            $this->addFlash('danger', 'Erreur lors de la création : ' . $e->getMessage());
+            $this->logger->error('Erreur création page : ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            $this->addFlash('danger', "La page n'a pas pu être enregistrée. Réessayez ou contactez l'administrateur.");
         }
     }
 
@@ -63,23 +65,27 @@ class TabsCrudController extends AbstractCrudController
             // Récupérer l'état actuel en base (avant modification)
             $originalTab = $entityManager->getUnitOfWork()->getOriginalEntityData($entityInstance);
 
-            // Récupérer les posts actuellement en base
-            $postsInDb = $entityManager->getRepository(Posts::class)->findBy(['tab' => $entityInstance]);
-
-            // Récupérer les posts après modification (dans le formulaire)
+            // Récupérer les posts après modification dans le formulaire.
+            // La relation Posts-Tabs est ManyToMany et est portée par Posts.
+            $postsInDb = $entityManager->getRepository(Posts::class)->createQueryBuilder('post')
+                ->innerJoin('post.tabs', 'tab')
+                ->andWhere('tab = :tab')
+                ->setParameter('tab', $entityInstance)
+                ->getQuery()
+                ->getResult();
             $postsInForm = $entityInstance->getTabsPosts()->toArray();
 
             // Détacher les posts qui étaient en base mais plus dans le formulaire
             foreach ($postsInDb as $post) {
                 if (!in_array($post, $postsInForm, true)) {
-                    $post->setTab(null);
+                    $post->removeTab($entityInstance);
                     $entityManager->persist($post);
                 }
             }
 
             // Attacher les posts nouveaux
             foreach ($postsInForm as $post) {
-                $post->setTab($entityInstance);
+                $post->addTab($entityInstance);
                 $entityManager->persist($post);
             }
             // Assure l'unicité du slug
@@ -132,9 +138,12 @@ class TabsCrudController extends AbstractCrudController
             SlugField::new('slug')->setTargetFieldName(['label'])->setFormTypeOption('attr', ['readonly' => true])->setUnlockConfirmationMessage(
                 'Il est recommandé d\'utiliser les slugs automatiques, mais vous pouvez les personnaliser'
             ),
-            AssociationField::new('category')->setLabel('Catégorie associée'),
-            AssociationField::new('tabs_posts')->setLabel('Article(s) associé(s)'),
-            AssociationField::new('pages')->setLabel('Nom de l\'onglet')
+            AssociationField::new('categories')->setLabel('Catégorie associée'),
+            AssociationField::new('tabs_posts', 'Article(s) associé(s)')
+            ->setFormTypeOption('by_reference', false)
+            ->setFormTypeOption('multiple', true)
+            ->setFormTypeOption('choice_label', 'title')
+            ->setHelp('Un article peut être rattaché à plusieurs pages'),
         ];
     }
 
@@ -144,7 +153,7 @@ class TabsCrudController extends AbstractCrudController
         try {
             // Détacher tous les posts liés à cette tab (ils restent en BDD)
             foreach ($entityInstance->getTabsPosts() as $post) {
-                $post->setTab(null);
+                $post->removeTab($entityInstance);
                 $entityManager->persist($post);
             }
             // Assure l'unicité du slug
@@ -153,13 +162,13 @@ class TabsCrudController extends AbstractCrudController
             parent::deleteEntity($entityManager, $entityInstance);
             $this->addFlash(
                 'success',
-                'L\'article a été supprimé avec succès.'
+                'La page a été supprimée avec succès.'
             );
         } catch (\Exception $e) {
-            $this->addFlash(
-                'danger',
-                'Erreur lors de la suppression : ' . $e->getMessage()
-            );
+            $this->logger->error('Erreur suppression page : ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            $this->addFlash('danger', "La page n'a pas pu être supprimée. Elle est peut-être liée à d'autres contenus.");
         }
     }
 

@@ -5,18 +5,24 @@
 /.env
 /.env.dev
 /.env.*
+
 /config/secrets/
 /secrets/
-/public/bundles/
 /bundles/
-/public/assets/
+credentials.json
+
 /assets/
 /assets/vendor
-/var/
 /vendor/
+
+/var/
 /node_modules/
-credentials.json
+
+
+/public/bundles/
+/public/assets/
 /public/tokens
+/public/uploads/*/.cache/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
@@ -42,3 +48,4 @@ credentials.json
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+/public/uploads/

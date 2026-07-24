@@ -2,17 +2,18 @@
 {# "Modifier Présentation" #}
 
 {% block _Presentation_content_widget %}
-{# Chargement asynchrone de TinyMCE via CDN = recharge améliorée de la page #}
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-    {{ tinymce_scripts() }}
-    <textarea name="Presentation[content]" id="presentation_content" class="tinymce presentation-content" role="textbox">{{ data }}</textarea>
+    {# Inclure les scripts TinyMCE #}
+    <script src="{{ asset('bundles/tinymce/ext/tinymce/tinymce.min.js') }}"></script>
+    <textarea name="Presentation[content]" id="presentation_content" class="tinymce-presentation" role="textbox">{{ data }}</textarea>
     <script>
     
         tinymce.init({
-            selector: '.tinymce',
+            selector: '.tinymce-presentation',
             license_key: 'gpl',
             base_url: '/bundles/tinymce/ext/tinymce/',
             entity_encoding: "raw",
+            content_css: ['{{ asset('styles/post.css') }}'],
+            body_class: 'post-content',
             relative_urls: false,
             remove_script_host: false,
             verify_html: false,
@@ -25,16 +26,52 @@
                 "media", "table", "help", "wordcount"
             ],
             toolbar: [
-                "undo redo | blocks | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | removeformat | help"
+                "undo redo | blocks styles forecolor backcolor  |" +
+                "bold italic underline fontfamily fontsize| " +
+                "alignleft aligncenter alignright alignjustify | " +
+                "bullist numlist outdent indent | " +
+                "link image media | removeformat | help"
             ],
             height: 600,
             link_default_target: '_blank',
-            content_style: "body { font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; } " +
-                           ".text-center { text-align: center; } " +
-                           ".color-green { color: #99cd47; } " +
-                           ".lead { font-size: 1.25rem; font-weight: 300; } " +
-                           "h2 { color: #99cd47; font-size: 2rem; margin-bottom: 1rem; } " +
-                           "p { margin-bottom: 1rem; }",
+            font_family_formats:
+                "Police du site (Josefin Sans)='Josefin Sans', sans-serif;" +
+                "Arial=arial, helvetica, sans-serif;" +
+                "Georgia=georgia, serif;" +
+                "Times New Roman=times new roman, times, serif;" +
+                "Verdana=verdana, geneva, sans-serif",
+
+            font_size_formats: '10px 12px 14px 16px 18px 20px 24px 32px 36px',
+
+            // Ajouter des styles personnalisés
+            style_formats: [
+                { title: 'Titre 2', block: 'h2' },
+                { title: 'Titre 3', block: 'h3' },
+                { title: 'Paragraphe', block: 'p' },
+                { title: 'Block', block: 'div' },
+                { title: 'Image responsive', selector: 'img', classes: 'img-fluid' },
+                { title: 'Image centrée', selector: 'img', styles: { display: 'block', marginLeft: 'auto', marginRight: 'auto' } },
+                { title: 'Image flottante à gauche', selector: 'img', styles: { float: 'left', marginRight: '15px' } },
+                { title: 'Image flottante à droite', selector: 'img', styles: { float: 'right', marginLeft: '15px' } },
+                { title: 'Liste à puces', selector: 'ul', classes: 'list-unstyled' },
+                { title: 'Liste numérotée', selector: 'ol', classes: 'list-unstyled'},
+                { title: 'Bouton', selector: 'a', classes: 'btn btn-secondary-green' },
+                { title: 'Citation', block: 'blockquote', styles: { 'border-left': '3px solid black', 'padding-left': '15px', 'font-style': 'italic' } },
+            ],
+            //couleurs par défaut du sélecteur TinyMCE
+            color_map: [
+                '99CD47', 'Vert Semeurs',
+                '7FBF3A', 'Vert foncé',
+                'D4E8B0', 'Vert clair',
+                '30AF85', 'Turquoise',
+                'E6007E', 'Rose charte',
+                '333333', 'Texte',
+                '666666', 'Texte clair',
+                'FFFFFF', 'Blanc',
+            ],
+
+            custom_colors: true,       // laisse accès au sélecteur libre
+            color_cols: 4,  
             setup: function(editor) {
                 editor.on('init', function() {
                     this.getDoc().body.style.fontSize = '14px';

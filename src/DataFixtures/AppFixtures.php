@@ -129,7 +129,6 @@ class AppFixtures extends Fixture
             $tab->setLabel($faker->word());
             $tab->setNewsFeed($faker->boolean(40));
             $tab->setSlug($faker->slug());
-            $tab->setPages($faker->randomElement($pages));
             $manager->persist($tab);
             $tabs[] = $tab;
         }
@@ -153,7 +152,7 @@ class AppFixtures extends Fixture
             $post->setLikesCounter($faker->numberBetween(0, 500));
             $post->setStatus($faker->boolean(80));
             $post->setCommentCounter($faker->numberBetween(0, 10));
-            $post->setTab($faker->randomElement($tabs));
+            $post->setTabs($faker->randomElement($tabs));
             $post->setUser($faker->randomElement($users));
 
             // Ajout de keywords
@@ -229,13 +228,13 @@ class AppFixtures extends Fixture
         }
 
         // Assigner des categories aux posts
-        foreach ($posts as $post) {
-            $numCategories = $faker->numberBetween(1, 2);
-            $postCategories = $faker->randomElements($categories, $numCategories);
-            foreach ($postCategories as $category) {
-                $post->addCategory($category);
-            }
-        }
+        // foreach ($posts as $post) {
+        //     $numCategories = $faker->numberBetween(1, 2);
+        //     $postCategories = $faker->randomElements($categories, $numCategories);
+        //     foreach ($postCategories as $category) {
+        //         $post->add($category);
+        //     }
+        // }
 
         // Créer des videos
         for ($i = 0; $i < 10; $i++) {

@@ -16,6 +16,48 @@ class PostsRepository extends ServiceEntityRepository
         parent::__construct($registry, Posts::class);
     }
  
+    public function findCategory(int $postId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.tabs', 't')
+            ->innerJoin('t.categories', 'c')
+            ->addSelect('t', 'c')
+            ->where('p.id = :postId')
+            ->setParameter('postId', $postId)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByCategory(int $categoryId, string $order = 'DESC'): array
+    {
+       $order = in_array(strtoupper($order), ['ASC', 'DESC'], true) ? strtoupper($order) : 'DESC';
+
+        return $this->createQueryBuilder('p')
+            ->select('DISTINCT p')
+            ->innerJoin('p.tabs', 't')
+            ->innerJoin('t.categories', 'c')
+            ->where('c.id = :categoryId')
+            ->andWhere('p.status = 1')
+            ->setParameter('categoryId', $categoryId)
+            ->orderBy('p.posted_at', $order)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findBySlug(int $slug, string $order = 'DESC'): array
+    {
+       $order = in_array(strtoupper($order), ['ASC', 'DESC'], true) ? strtoupper($order) : 'DESC';
+
+        return $this->createQueryBuilder('p')
+            ->select('DISTINCT p')
+            ->innerJoin('p.tabs', 't')
+            ->andWhere('p.status = 1')
+            ->setParameter('slug', $slug)
+            ->orderBy('p.posted_at', $order)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Posts[] Returns an array of Posts objects
     //     */

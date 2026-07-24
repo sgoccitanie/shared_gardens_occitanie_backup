@@ -3,36 +3,11 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <style>
-        /* Conteneur PDF hauteur A4 */
-        .pdf-embed {
-            width: 100%;
-            height: 1122px !important;
-            margin: 1rem 0;
-            display: block;
-            overflow: auto;
-            border: 1px solid #ddd;
-            position: relative;
-        }
-        /* Cibler les iframes dans le conteneur PDF */
-        .pdf-embed iframe {
-            width: 100% !important;
-            height: 100% !important;
-            display: block !important;
-            border: none !important;
-        }
-        /* Responsive */
-        @media (max-width: 768px) {
-            .pdf-embed {
-                height: 800px !important;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('styles/post.css') }}">
 {% endblock %}
 
 {% block _Posts_content_widget %}
-    {# Charger TinyMCE et ses dépendances #}
-    {{ tinymce_scripts() }}
+    <script src="{{ asset('bundles/tinymce/ext/tinymce/tinymce.min.js') }}"></script>
     <textarea name="Posts[content]" id="{{ id }}" class="tinymce" role="textbox" style="background-red">{{ data }}</textarea>
 
     <script>
@@ -86,7 +61,6 @@
             }, 8000); // Message affiché pendant 8 secondes
             message.dataset.timeoutId = timeoutId;
         }
-
         // Plugin TinyMCE pour gérer l'insertion de PDF
         tinymce.PluginManager.add('pdf', function(editor) {
             editor.ui.registry.addButton('pdf', {
@@ -147,6 +121,11 @@
             elementpath: false, // Désactiver les div en bas de l'éditeur
             selector: '.tinymce',
             license_key: 'gpl',
+            content_css: [
+                '{{ asset('styles/post.css') }}'
+            ],
+            body_class: 'post-content',
+            language: 'fr_FR',
             base_url: '/bundles/tinymce/ext/tinymce/',
             /* URLs et liens */
             relative_urls: false,
@@ -154,7 +133,6 @@
             link_default_target: '_blank',
             /* Nettoyer le HTML / Valider */
             extended_valid_elements: 'object[data|type|width|height|style],param[name|value],iframe[src|width|height|style|frameborder|allowfullscreen]',
-            valid_children: '+body[style|object|iframe],+object[param|#text],+iframe[#text]',
             allow_html_in_named_anchor: true,
             allow_conditional_comments: false,
             allow_script_urls: true,
@@ -163,43 +141,125 @@
             cleanup_on_startup: false,
             trim_span_elements: false,
             entity_encoding: 'raw',
-            forced_root_block: '',
-            forced_root_block_attrs: {},
             valid_elements: '*[*]',
             valid_children: '+body[*]',
             extended_valid_elements: '*[*]',
             verify_html: false,
             cleanup: false, // Désactiver le nettoyage automatique
-            plugins: ["link", "image", "pdf", "code"],
+            plugins: ['link', 'image', 'pdf', 'code', 'lists', 'table'],
 
             /* Plugins et barre d'outils */
-            toolbar: [
-                "cut copy | undo redo | bold italic strikethrough underline | forecolor backcolor | blockquote | removeformat | pdf | link image | code",
-                "formatselect | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent"
+            toolbar: 'undo redo | bold italic underline fontfamily fontsize| ' +
+                    ' blocks styles forecolor backcolor  |' +
+                    'alignleft aligncenter alignright alignjustify | ' +
+                    'bullist numlist | ' +
+                    'link image pdf | removeformat | code',
+
+            // Ajouter des styles personnalisés            
+
+            link_default_target: '_blank',
+            font_family_formats:
+                "Police du site (Josefin Sans)='Josefin Sans', sans-serif;" +
+                "Arial=arial, helvetica, sans-serif;" +
+                "Georgia=georgia, serif;" +
+                "Times New Roman=times new roman, times, serif;" +
+                "Verdana=verdana, geneva, sans-serif",
+
+            font_size_formats: '10px 12px 14px 16px 18px 20px 24px 32px 36px',
+
+            content_style: "body { font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; } " +
+                           ".text-center { text-align: center; } " +
+                           ".color-green { color: #99cd47; } " +
+                           ".lead { font-size: 1.25rem; font-weight: 300; } " +
+                           "h2 { color: #99cd47; font-size: 2rem; margin-bottom: 1rem; } " +
+                           "p { margin-bottom: 1rem; }",
+            //couleurs par défaut du sélecteur TinyMCE
+            color_map: [
+                '99CD47', 'Vert Semeurs',
+                '7FBF3A', 'Vert foncé',
+                'D4E8B0', 'Vert clair',
+                '30AF85', 'Turquoise',
+                'E6007E', 'Rose charte',
+                '333333', 'Texte',
+                '666666', 'Texte clair',
+                'FFFFFF', 'Blanc',
             ],
+            style_formats: [
+                { title: 'Titre 2', block: 'h2' },
+                { title: 'Titre 3', block: 'h3' },
+                { title: 'Paragraphe', block: 'p' },
+                { title: 'Block', block: 'div' },
+                { title: 'Image responsive', selector: 'img', classes: 'img-fluid' },
+                { title: 'Image centrée', selector: 'img', styles: { display: 'block', marginLeft: 'auto', marginRight: 'auto' } },
+                { title: 'Image flottante à gauche', selector: 'img', styles: { float: 'left', marginRight: '15px' } },
+                { title: 'Image flottante à droite', selector: 'img', styles: { float: 'right', marginLeft: '15px' } },
+                { title: 'Liste à puces', selector: 'ul', classes: 'list-unstyled' },
+                { title: 'Liste numérotée', selector: 'ol', classes: 'list-unstyled'},
+                { title: 'Bouton', selector: 'a', classes: 'btn btn-secondary-green' },
+                { title: 'Citation', block: 'blockquote', styles: { 'border-left': '3px solid black', 'padding-left': '15px', 'font-style': 'italic' } },
+            ],
+            // laisse accès au sélecteur libre
+            custom_colors: true,       
+            color_cols: 4,
 
             /* Interface */
             height: 1000,
 
             /* Uploads d'images */
             images_upload_url: '{{ path('api_tinymce_upload_image') }}',
-            images_upload_handler: function (blobInfo, success, failure) {
-                let formData = new FormData();
-                formData.append('file', blobInfo.blob(), blobInfo.filename());
-                fetch('{{ path('api_tinymce_upload_image') }}', {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => response.json())
-                .then(function(jsonData) {
-                    if (jsonData.location) success(jsonData.location);
-                    else failure('Réponse inattendue du serveur.');
-                })
-                .catch(error => failure('Erreur : ' + error.message));
+            images_upload_handler: async function (blobInfo, progress) {
+                try {
+                    const formData = new FormData();
+                    formData.append('file', blobInfo.blob(), blobInfo.filename());
+                    
+                    const response = await fetch('{{ path('api_tinymce_upload_image') }}', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    
+                    if (!response.ok) throw new Error('Upload failed');
+                    
+                    const data = await response.json();
+                    return data.location;
+                } catch (error) {
+                    console.error(error);
+                    throw new Error('Erreur lors de l\'upload de l\'image');
+                }
             },
+
+            // Lazy loading des images insérées
+            image_advtab: true,
 
             /* Gestion du copier-coller des PDF */
             setup: function(editor) {
+                editor.on('change', function () {
+                    editor.save(); // sync avec le champ hidden
+                });
+                editor.on('init', function() {
+                    const form = editor.getElement().closest('form');
+                    if (form) {
+                        form.addEventListener('submit', function() {
+                            editor.setDirty(false);
+                            localStorage.removeItem('draft_' + window.location.pathname);
+                        });
+                    }
+                });
+                // Auto-save toutes les 30s
+                let saveTimer;
+                editor.on('input', function () {
+                    clearTimeout(saveTimer);
+                    saveTimer = setTimeout(() => {
+                        editor.save();
+                        localStorage.setItem('draft_' + window.location.pathname, editor.getContent());
+                    }, 30000);
+                });
+                // Restaurer le brouillon
+                const draft = localStorage.getItem('draft_' + window.location.pathname);
+                if (draft && !editor.getContent()) {
+                    if (confirm('Un brouillon est disponible. Le restaurer ?')) {
+                        editor.setContent(draft);
+                    }
+                }
                 // Écouteur pour le copier-coller de PDF
                 editor.on('PastePostProcess', function(e) {
                     // Vérifier si le contenu collé contient un iframe avec un PDF
@@ -290,6 +350,16 @@
                     const content = editor.getContent();
                     editor.setContent(content, { format: 'raw' });  // Conserver le format brut du contenu
                 });
+            }
+        });
+        window.addEventListener('beforeunload', function (e) {
+            const editors = tinymce.editors;
+            for (let i = 0; i < editors.length; i++) {
+                if (editors[i].isDirty()) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                    return '';
+                }
             }
         });
     </script>

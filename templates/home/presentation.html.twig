@@ -8,6 +8,7 @@
 	{{ parent() }}
 	<link rel="stylesheet" href="{{ asset('styles/calendar.css') }}">
 	<link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/post.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -20,7 +21,7 @@
 				{# Categories et onglets #}
 				{% include '_partials/categories_tabs/categories_tabs.html.twig' %}
 
-				<div class="presentation-container p-4">
+				<div class="p-4">
 					<div class="row justify-content-center">
 						<div
 							class="text-end mb-5">
@@ -30,8 +31,7 @@
 									Voir nos articles
 								</a>
 							</div>
-							<div
-								class="col-lg-10 mt-2">
+							<div class="post-content">
 								{# Contenu modifiable par l'admin mais visible par tous #}
 								{% if presentationContent is defined %}
 									{{ presentationContent|raw }}

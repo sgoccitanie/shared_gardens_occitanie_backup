@@ -5,25 +5,37 @@ namespace App\Controller\API;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_EDITOR')]
 class TinyMceUploadController extends AbstractController
 {
     const MAX_IMAGE_SIZE = 10000000; // 10 Mo
     const MAX_FILE_SIZE = 50000000; // 50 Mo
 
-    private $logger;
-
     public function __construct(
         private readonly ParameterBagInterface $params,
-        LoggerInterface $logger
+        private readonly LoggerInterface $logger
     ) {
-        $this->logger = $logger;
+    }
+    private function parseSize(string $size): int
+    {
+        $size = trim($size);
+        $unit = strtolower(substr($size, -1));
+        $value = (int) $size;
+
+        return match ($unit) {
+            'g' => $value * 1024 * 1024 * 1024,
+            'm' => $value * 1024 * 1024,
+            'k' => $value * 1024,
+            default => $value,
+        };
     }
 
     // Images
@@ -33,7 +45,15 @@ class TinyMceUploadController extends AbstractController
         $file = $request->files->get("file");
 
         if (!$file) {
-            $this->logger->warning('Tentative d\'upload d\'image sans fichier');
+            $contentLength = (int) $request->headers->get('Content-Length', 0);
+            $maxPost = $this->parseSize(ini_get('post_max_size'));
+
+            if ($contentLength > $maxPost) {
+                return new JsonResponse([
+                    'error' => sprintf('Le fichier dépasse la taille maximale autorisée (%s).', ini_get('post_max_size'))
+                ], 413);
+            }
+
             return new JsonResponse(['error' => 'Aucun fichier envoyé.'], 400);
         }
 
@@ -62,13 +82,19 @@ class TinyMceUploadController extends AbstractController
         }
 
         // Générer un nom de fichier sécurisé
-        $directory = $this->params->get('kernel.project_dir') . '/public/uploads/images';
-        if (!file_exists($directory)) {
-            mkdir($directory, 0777, true);
+        $directory = $this->params->get('kernel.project_dir') . '/public/uploads/files';
+        if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
+            $this->logger->error('Impossible de créer le répertoire : ' . $directory);
+            return new JsonResponse(['error' => "Le fichier n'a pas pu être enregistré."], 500);
+        }
+        $fileName = uniqid('img_', true) . '.pdf';
+        try {
+            $file->move($directory, $fileName);
+        } catch (FileException $e) {
+            $this->logger->error('Erreur déplacement fichier', ['exception' => $e]);
+            return new JsonResponse(['error' => "Le fichier n'a pas pu être enregistré."], 500);
         }
 
-        $fileName = uniqid('img_', true) . '.' . $extension;
-        $file->move($directory, $fileName);
 
         $fileUrl = $this->generateUrl('app_home', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'uploads/images/' . $fileName;
         return new JsonResponse(['location' => $fileUrl]);
@@ -79,9 +105,17 @@ class TinyMceUploadController extends AbstractController
     public function uploadFile(Request $request): Response
     {
         $file = $request->files->get("file");
-
+       
         if (!$file) {
-            $this->logger->warning('Tentative d\'upload de fichier sans fichier');
+            $contentLength = (int) $request->headers->get('Content-Length', 0);
+            $maxPost = $this->parseSize(ini_get('post_max_size'));
+
+            if ($contentLength > $maxPost) {
+                return new JsonResponse([
+                    'error' => sprintf('Le fichier dépasse la taille maximale autorisée (%s).', ini_get('post_max_size'))
+                ], 413);
+            }
+
             return new JsonResponse(['error' => 'Aucun fichier envoyé.'], 400);
         }
 
@@ -102,15 +136,20 @@ class TinyMceUploadController extends AbstractController
 
         // Générer un nom de fichier sécurisé
         $directory = $this->params->get('kernel.project_dir') . '/public/uploads/files';
-        if (!file_exists($directory)) {
-            mkdir($directory, 0777, true);
+        if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
+            $this->logger->error('Impossible de créer le répertoire : ' . $directory);
+            return new JsonResponse(['error' => "Le fichier n'a pas pu être enregistré."], 500);
+        }
+        $fileName = uniqid('file_', true) . '.pdf';
+        try {
+            $file->move($directory, $fileName);
+        } catch (FileException $e) {
+            $this->logger->error('Erreur déplacement fichier', ['exception' => $e]);
+            return new JsonResponse(['error' => "Le fichier n'a pas pu être enregistré."], 500);
         }
 
-        $fileName = uniqid('file_', true) . '.pdf';
-        $file->move($directory, $fileName);
-
         // URL absolue pour le PDF
-        $fileUrl = $this->generateUrl('app_home', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'uploads/files/' . $fileName;
+        $fileUrl = '/uploads/files/' . $fileName;        
 
         // Retourner un lien vers le PDF
         return new JsonResponse([

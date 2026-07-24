@@ -6,7 +6,6 @@ namespace App\Service;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Repository\AssociationRepository;
 use App\Repository\CategoriesRepository;
-use App\Repository\PagesRepository;
 use App\Repository\PostsRepository;
 use App\Repository\TabsRepository;
 use Psr\Log\LoggerInterface;
@@ -16,7 +15,6 @@ class CommonDataService
     public function __construct(
         private readonly PostsRepository $postsRepository,
         private readonly TabsRepository $tabsRepository,
-        private readonly PagesRepository $pagesRepository,
         private readonly CategoriesRepository $categoriesRepository,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly LoggerInterface $logger,
@@ -120,28 +118,41 @@ class CommonDataService
         } catch (\Exception $e) {
             $this->logger->error('Erreur récupération tous articles: ' . $e->getMessage());
             $allPosts = [];
-        }
-
+        }                
+                
         $allPostsWithUrls = $this->buildPostsWithUrls($allPosts);
 
         $categories = $this->categoriesRepository->findAll();
-        $categoriesWithTabs = array_map(fn($cat) => [
-            'category' => $cat,
-            'tabs' => $this->tabsRepository->findBy(['category' => $cat]),
-        ], $categories);
+        $categoriesWithTabs = array_map(function ($cat) use ($allPostsWithUrls) {
 
-        try {
-            $pages = $this->pagesRepository->findAll();
-        } catch (\Exception $e) {
-            $this->logger->error('Erreur récupération pages: ' . $e->getMessage());
-            $pages = [];
-        }
+        $tabs = $this->tabsRepository->findByCategory($cat);
+
+        $tabsWithPosts = [];
+
+        foreach ($tabs as $tab) {
+            $posts = array_filter($allPostsWithUrls, function ($postWithUrl) use ($tab) {
+                foreach ($postWithUrl['post']->getTabs() as $postTab) {
+                    if ($postTab->getId() === $tab->getId()) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+                $tabsWithPosts[] = [
+                    'tab' => $tab,
+                    'posts' => array_values($posts),
+                ];
+            }
+            return [
+                'categories' => $cat,
+                'tabs' => $tabsWithPosts,
+            ];
+        }, $categories);
 
         return [
             'categories' => $categories,
             'categoriesWithTabs' => $categoriesWithTabs,
             'allPostsWithUrls' => $allPostsWithUrls,
-            'pages' => $pages,
             'isHomeRoute' => true,
             'adhesionUrl' => 'https://www.helloasso.com/associations/le-reseau-des-semeurs-de-jardins/adhesions/adhesion-annuelle-au-reseau-des-semeurs-de-jardins-2026',
         ];

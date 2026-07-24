@@ -2,37 +2,39 @@
 	<div class="categories-tabs-container">
 		{% for categoryWithTabs in categoriesWithTabs %}
 			<div class="category-section">
-				{% if categoryWithTabs.category is not null %}
-					{% if categoryWithTabs.category.id == 2 %}
+				{% if categoryWithTabs.categories is not null %}
+					{% if categoryWithTabs.categories.id == 2 %}
 						{# Catégorie spéciale "À venir" - lien direct #}
 						<h3 class="category-title">
 							<a href="{{ path('app_coming_soon') }}">
-								{{ categoryWithTabs.category.name }}
+								{{ categoryWithTabs.categories.name }}
 							</a>
 						</h3>
 					{% else %}
 						<h3 class="category-title">
-							<a href="{{ path('app_articles') }}?category={{ categoryWithTabs.category.id }}">
-								{{ categoryWithTabs.category.name }}
+							<a href="{{ path('app_articles') }}?category={{ categoryWithTabs.categories.id }}">
+								{{ categoryWithTabs.categories.name }}
 							</a>
 						</h3>
 						{% if categoryWithTabs.tabs|length > 0 %}
 							<div class="tabs-list">
-								{% for tab in categoryWithTabs.tabs %}
-									{# Compter les articles rattachés à cette tab et récupérer le premier #}
-									{% set postCount = 0 %}
-									{% set singlePost = null %}
-									{% for postWithUrl in allPostsWithUrls %}
-										{% if postWithUrl.post.tab and postWithUrl.post.tab.id == tab.id %}
-											{% set postCount = postCount + 1 %}
-											{% if singlePost is null %}
-												{% set singlePost = postWithUrl %}
-											{% endif %}
-										{% endif %}
-									{% endfor %}
+								{% for tabWithPosts in categoryWithTabs.tabs %}
 
-									<a href="{% if postCount == 1 %}{{ singlePost.url }}{% elseif postCount > 1 %}{{ path('app_home_with_slug', {'slug': tab.slug}) }}{% endif %}" class="tab-link" title="{{ tab.label }}">
-										{{ tab.label }}
+    								{% set postCount = tabWithPosts.posts|length %}
+									{% set singlePost = postCount == 1 ? tabWithPosts.posts|first : null %}
+
+									<a href="
+										{% if postCount == 1 %}
+											{{ singlePost.url }}
+										{% elseif postCount > 1 %}
+											{{ path('app_home_with_slug', {'slug': tabWithPosts.tab.slug}) }}
+										{% else %}
+											#
+										{% endif %}
+									"
+									class="tab-link"
+									title="{{ tabWithPosts.tab.label }}">
+										{{ tabWithPosts.tab.label }}
 									</a>
 								{% endfor %}
 							</div>

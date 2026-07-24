@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request as Request;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
+#[IsGranted('ROLE_EDITOR')]
 class ProfileController extends AbstractController
 {
     public function __construct(

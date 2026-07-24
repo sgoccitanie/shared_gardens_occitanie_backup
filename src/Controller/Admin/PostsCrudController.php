@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Posts;
-use App\Repository\CategoriesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UserRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -26,7 +25,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
+use App\Entity\Categories;
+use App\Entity\Tabs;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use Psr\Log\LoggerInterface;
 
 #[IsGranted('ROLE_EDITOR')]
 class PostsCrudController extends AbstractCrudController
@@ -37,6 +39,7 @@ class PostsCrudController extends AbstractCrudController
     public function __construct(
         private readonly Security $security,
         private readonly UserRepository $userRepository,
+        private readonly LoggerInterface $logger
     ) {}
 
     public static function getEntityFqcn(): string
@@ -58,6 +61,7 @@ class PostsCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Articles')
             ->setPageTitle('index', 'Liste des %entity_label_plural%')
             ->setPageTitle('detail', fn(Posts $post) => (string) $post)
+            ->setDefaultSort(['posted_at' => 'DESC'])
             ->setPageTitle('edit', fn(Posts $post) => sprintf('Édition de l\'article "<b>%s</b>"', $post->getTitle()))
             ->setFormThemes(['@EasyAdmin/crud/form_theme.html.twig', 'admin/posts/form.html.twig']);
     }
@@ -127,16 +131,23 @@ class PostsCrudController extends AbstractCrudController
                     return $this->userRepository->createQueryBuilder('u');
                 }),
             Field::new('status', 'En ligne ?'),
-            AssociationField::new('categories', 'Catégories')
-                ->setFormTypeOption('choice_label', 'name')
+            AssociationField::new('tabs', 'Pages')
                 ->setFormTypeOption('by_reference', false)
-                ->setFormTypeOption('query_builder', function (CategoriesRepository $er) {
-                    return $er->createQueryBuilder('c')
-                        ->where('c.id != :id')
-                        ->setParameter('id', 2) // Assuming 2 is the ID of the 'À venir' category
-                        ->orderBy('c.name', 'ASC');
+                ->setFormTypeOption('multiple', true)
+                ->setFormTypeOption('choice_label', function (Tabs $tab): string {
+                    $categories = $tab->getCategories();
+
+                    if ($categories->isEmpty()) {
+                        return $tab->getLabel() . ' — (aucune catégorie)';
+                    }
+
+                    $names = array_map(
+                        fn(Categories $c) => $c->getName(),
+                        $categories->toArray()
+                    );
+
+                    return sprintf('%s — %s', $tab->getLabel(), implode(', ', $names));
                 }),
-            AssociationField::new('tab', 'Pages')->setFormTypeOption('choice_label', 'label'),
             AssociationField::new('keywords', 'Mots clés')->setFormTypeOption('choice_label', 'label'),
 
             // Formulaire pour créer un article avec TinyMCE (templates\admin\posts\form.html.twig)
@@ -160,15 +171,14 @@ class PostsCrudController extends AbstractCrudController
             return '';
         }
 
-        // Supprimer UNIQUEMENT les paragraphes vides et les commentaires HTML => TinyMCE gère les div 
         $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);
-        // Supprime tous les commentaires sauf les conditionnels IE (au cas où)
         $content = preg_replace('/<!--(?!\[if).*?-->/s', '', $content);
 
+        // return $this->sanitizer->sanitize($content);
         return $content;
     }
 
-    private function ensureUniqueSlug(EntityManagerInterface $entityManager, Posts $post): void
+        private function ensureUniqueSlug(EntityManagerInterface $entityManager, Posts $post): void
     {
         $baseSlug = $post->getSlug();
         if (empty($baseSlug)) {
@@ -197,6 +207,7 @@ class PostsCrudController extends AbstractCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         /** @var Posts $entityInstance */
+        $entityInstance->setPostedAt(new \DateTimeImmutable());
         try {
             $content = $entityInstance->getContent();
             if (!empty($content)) {
@@ -212,10 +223,10 @@ class PostsCrudController extends AbstractCrudController
                 'L\'article a été modifié avec succès.'
             );
         } catch (\Exception $e) {
-            $this->addFlash(
-                'danger',
-                'Erreur lors de la modification : ' . $e->getMessage()
-            );
+            $this->logger->error('Erreur modification article : ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            $this->addFlash('danger', "Les modifications de l'article n'ont pas pu être enregistrées. Réessayez ou contactez l'administrateur.");
         }
     }
 
@@ -237,10 +248,25 @@ class PostsCrudController extends AbstractCrudController
                 'L\'article a été ajouté avec succès.'
             );
         } catch (\Exception $e) {
-            $this->addFlash(
-                'danger',
-                "Erreur lors de l'ajout : " . $e->getMessage()
-            );
+            $this->logger->error('Erreur création article : ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            $this->addFlash('danger', "L'article n'a pas pu être enregistré. Réessayez ou contactez l'administrateur.");
+
+        }
+    }
+
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        /** @var Posts $entityInstance */
+        $title = $entityInstance->getTitle();
+
+        try {
+            parent::deleteEntity($entityManager, $entityInstance);
+            $this->addFlash('success', sprintf('L\'article "%s" a bien été supprimé.', $title));
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur suppression article : ' . $e->getMessage(), ['exception' => $e]);
+            $this->addFlash('danger', "L'article n'a pas pu être supprimé. Il est peut-être lié à d'autres contenus.");
         }
     }
 }

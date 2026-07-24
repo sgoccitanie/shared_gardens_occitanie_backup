@@ -16,6 +16,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 #[IsGranted('ROLE_ADMIN')]
 class PresentationCrudController extends AbstractCrudController
@@ -23,11 +25,10 @@ class PresentationCrudController extends AbstractCrudController
     use EasyAdminAssetsTrait;
     use EasyAdminActionsTrait;
 
-    private PresentationRepository $presentationRepo;
-
-    public function __construct(PresentationRepository $presentationRepo)
+    public function __construct(
+        private readonly PresentationRepository $presentationRepo,  
+        private readonly LoggerInterface $logger)
     {
-        $this->presentationRepo = $presentationRepo;
     }
 
     public static function getEntityFqcn(): string
@@ -84,5 +85,47 @@ class PresentationCrudController extends AbstractCrudController
     {
         return $this->configureCommonActions($actions)
             ->disable(Action::SAVE_AND_CONTINUE);
+    }
+
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        /** @var Presentation $entityInstance */
+        try {
+            $content = $entityInstance->getContent();
+            if (!empty($content)) {
+                $content = $this->cleanContent($content);
+                $entityInstance->setContent($content);
+            }
+
+            parent::updateEntity($entityManager, $entityInstance);
+            $this->addFlash(
+                'success',
+                'La présentation a été modifiée avec succès.'
+            );
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur modification présentation : ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            $this->addFlash('danger', "Les modifications de la présentation n'ont pas pu être enregistrées. Réessayez ou contactez l'administrateur.");
+        }
+    }
+
+    /**
+     * Nettoyer le contenu HTML pour éviter les balises parasites
+     * Attention : ne doit pas supprimer les iframes (sinon les pdf ne pourront pas s'afficher !)
+     * NB : TinyMCE gère déjà les divs vides
+     */
+    private function cleanContent(?string $content): string
+    {
+        if (empty($content)) {
+            return '';
+        }
+
+        $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);
+        $content = preg_replace('/<!--(?!\[if).*?-->/s', '', $content);
+
+        // return $this->sanitizer->sanitize($content);
+        return $content;
     }
 }

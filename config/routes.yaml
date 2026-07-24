@@ -34,19 +34,10 @@ app_cookies:
 # Routes dynamiques (slugs)
 app_home:
   path: /
-  controller: App\Controller\HomeController::index
+  controller: App\Controller\HomeController::home
   methods: GET
 
-app_home_with_slug_and_id:
-  path: /{slug}/{id}
+app_home_with_slug:
+  path: /{slug}
   controller: App\Controller\HomeController::index
   methods: GET
-  requirements:
-    id: '\d+'
-
-app_home_with_id:
-  path: /{id}
-  controller: App\Controller\HomeController::index
-  methods: GET
-  requirements:
-    id: '\d+'

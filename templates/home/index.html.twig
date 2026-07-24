@@ -7,7 +7,9 @@
 
 	{% block stylesheets %}
 	{{ parent() }}
-	<link rel="stylesheet" href="{{ asset('styles/index.css') }}"> <link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
+	<link rel="stylesheet" href="{{ asset('styles/index.css') }}"> 
+	<link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
+	<link rel="stylesheet" href="{{ asset('styles/post.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -35,20 +37,21 @@
 						{% if postsWithUrls|length > 0 %}
 							<div class="row_index">
 								<div class="d-flex justify-content-end me-3">
-									<select class="form-select" aria-label="Default select example" style="width: fit-content;" onchange="window.location.href='{{ path('app_articles') }}?order=' + this.value">
-										<option value="ASC" {% if order == 'ASC' %} selected {% endif %}>Du plus ancien au plus récent</option>
-										<option value="DESC" {% if order == 'DESC' %} selected {% endif %}>Du plus récent au plus ancien</option>
+									{% set orderUrl = categoryId is defined and categoryId is not null
+										? path('app_articles', {'category': categoryId})
+										: (slug is defined and slug is not null
+											? path('app_home_with_slug', {'slug': slug})
+											: path('app_articles')) %}
+
+									<select class="form-select"
+											aria-label="Trier les articles"
+											style="width: fit-content;"
+											onchange="window.location.href='{{ orderUrl }}{{ '?' in orderUrl ? '&' : '?' }}order=' + this.value">
+										<option value="ASC" {% if order == 'ASC' %}selected{% endif %}>Du plus ancien au plus récent</option>
+										<option value="DESC" {% if order == 'DESC' %}selected{% endif %}>Du plus récent au plus ancien</option>
 									</select>
 								</div>
-								<div id="posts_list">
-									{% if backToList %}
-										<div class="mb-3">
-											<a href="{{ path('app_articles') }}" class="button btn-outline-primary">
-												<i class="fa-solid fa-arrow-left"></i>
-												Retour à la liste
-											</a>
-										</div>
-									{% endif %}
+								<div id="posts_list">									
 									{% for postWithUrl in postsWithUrls %}
 										{% set post = postWithUrl.post %}
 										<div class="row_index_item mx-lg-4 my-lg-4 p-4 my-2 card card-profile">
@@ -64,16 +67,11 @@
 													</span>
 
 												</div>
-												<div class="row_index_item_categories px-3 py-2 float-end">
-													{% for category in post.categories %}
-														<span class="badge bg-secondary">{{ category.name }}</span>
-													{% endfor %}
-												</div>
 												<div class="row_index_item_excerpt">
 													{{ post.content|striptags|slice(0, 50)|raw }}...
 												</div>
 												<div class="row_index_item_footer mt-2">
-													<a href="{{ path('app_home_with_slug', {'slug': post.slug}) }}" class="button btn-secondary-outline">
+													<a href="{{ path('app_home_with_slug', {'slug': post.slug, 'category': categoryId, 'postSlug': postSlug}) }}" class="button btn-secondary-outline">
 														Lire la suite
 													</a>
 												</div>
@@ -93,22 +91,33 @@
 						{% if postsWithUrls|length == 1 %}
 							{% set postWithUrl = postsWithUrls[0] %}
 							{% set post = postWithUrl.post %}
-
-							<div class="row_index ">
+							{% if backToList %}
+								{% if categoryId is defined and categoryId is not null %}
+									<div class="mb-3">
+										<a href="{{ path('app_articles', {'category': categoryId}) }}" class="button btn-outline-primary">
+											<i class="fa-solid fa-arrow-left"></i>
+											Retour à la liste
+										</a>
+									</div>
+								{% elseif postSlug is defined and postSlug is not null %}
+									<div class="mb-3">
+										<a href="{{ path('app_home_with_slug', {'slug': postSlug}) }}" class="button btn-outline-primary">
+											<i class="fa-solid fa-arrow-left"></i>
+											Retour à la liste
+										</a>
+									</div>
+								{% endif %}
+							{% endif %}
+							<div class="post-content row_index">
 								<div class="row_index_item single-post">
 									<div class="row_index_item_content">
 										<div class="row_index_item_header d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
-											<h1 class="mb-0">{{ post.title }}</h1>
+											<h1>{{ post.title }}</h1>
 											<span class="post-date text-muted">
 												{{ post.postedAt|format_datetime(locale: 'fr', pattern: 'd MMMM Y') }}
 											</span>
 										</div>
-										<div class="row_index_item_categories mx-3 float-end">
-											{% for category in post.categories %}
-												<span class="badge bg-secondary">{{ category.name }}</span>
-											{% endfor %}
-										</div>
-										<div class="row_index_item_content-body">
+										<div>
 											{{ post.content|raw }}
 										</div>
 									</div>

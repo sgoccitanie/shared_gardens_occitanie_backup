@@ -9,7 +9,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\String\Slugger\AsciiSlugger;
 
 #[ORM\Entity(repositoryClass: PostsRepository::class)]
 #[UniqueEntity(fields: ['slug'], message: 'Ce slug existe déjà')]
@@ -50,9 +49,11 @@ class Posts
     #[ORM\Column(nullable: true)]
     private ?int $comment_counter = null;
 
-    #[ORM\ManyToOne(targetEntity: Tabs::class, inversedBy: 'tabs_posts')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Tabs $tab = null;
+    /**
+     * @var Collection<int, Comment>
+     */
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post', cascade: ['remove'], orphanRemoval: true)]
+    private Collection $comments;
 
     /**
      * @var Collection<int, Keywords>
@@ -61,14 +62,14 @@ class Posts
     private Collection $keywords;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: 'Veuillez indiquer le créateur du post.')]
     private ?User $user = null;
-
     /**
-     * @var Collection<int, Categories>
+     * @var Collection<int, Tabs>
      */
-    #[ORM\ManyToMany(targetEntity: Categories::class, mappedBy: 'post_cat')]
-    private Collection $categories;
+    #[ORM\ManyToMany(targetEntity: Tabs::class, inversedBy: 'tabs_posts')]
+    private Collection $tabs;
 
     /**
      * @var Collection<int, Files>
@@ -88,9 +89,10 @@ class Posts
     public function __construct()
     {
         $this->keywords = new ArrayCollection();
-        $this->categories = new ArrayCollection();
+        $this->tabs = new ArrayCollection();
         $this->files = new ArrayCollection();
         $this->metas = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -204,19 +206,60 @@ class Posts
 
         return $this;
     }
-
-    public function getTab(): ?Tabs
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
     {
-        return $this->tab;
+        return $this->comments;
     }
 
-    public function setTab(?Tabs $tab): static
+    public function addComment(Comment $comment): static
     {
-        $this->tab = $tab;
-
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setPost($this);
+        }
         return $this;
     }
 
+    public function removeComment(Comment $comment): static
+    {
+        if ($this->comments->removeElement($comment)) {
+            if ($comment->getPost() === $this) {
+                $comment->setPost(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tabs>
+     */
+    public function getTabs(): Collection
+    {
+        return $this->tabs;
+    }
+
+    public function setTabs(Collection $tabs): static
+    {
+        $this->tabs = $tabs;
+        return $this;
+    }
+
+    public function addTab(Tabs $tab): static
+    {
+        if (!$this->tabs->contains($tab)) {
+            $this->tabs->add($tab);
+        }
+        return $this;
+    }
+
+    public function removeTab(Tabs $tab): static
+    {
+        $this->tabs->removeElement($tab);
+        return $this;
+    }
     /**
      * @return Collection<int, Keywords>
      */
@@ -249,33 +292,6 @@ class Posts
     public function setUser(?User $user): static
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Categories>
-     */
-    public function getCategories(): Collection
-    {
-        return $this->categories;
-    }
-
-    public function addCategory(Categories $category): static
-    {
-        if (!$this->categories->contains($category)) {
-            $this->categories->add($category);
-            $category->addPostCat($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCategory(Categories $category): static
-    {
-        if ($this->categories->removeElement($category)) {
-            $category->removePostCat($this);
-        }
 
         return $this;
     }

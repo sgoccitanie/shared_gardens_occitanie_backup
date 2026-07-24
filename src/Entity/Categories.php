@@ -16,22 +16,24 @@ class Categories
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[ORM\Constraint(length: 50, message: 'Le nom de la catégorie ne peut pas dépasser {{ limit }} caractères.')]
+    #[ORM\NotBlank(message: 'Le nom de la catégorie ne peut pas être vide.')]
     private ?string $name = null;
 
     /**
-     * @var Collection<int, Posts>
+     * @var Collection<int, Tabs>
      */
-    #[ORM\ManyToMany(targetEntity: Posts::class, inversedBy: 'categories')]
-    private Collection $post_cat;
-
+    #[ORM\ManyToMany(targetEntity: Tabs::class, mappedBy: 'categories')]
+    private Collection $tabs_cat;
+    
     public function __construct()
     {
-        $this->post_cat = new ArrayCollection();
+        $this->tabs_cat = new ArrayCollection();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->name;
+        return $this->name ?? '';
     }
 
     public function getId(): ?int
@@ -47,31 +49,31 @@ class Categories
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Posts>
-     */
-    public function getPostCat(): Collection
+    public function addTabsCat(Tabs $tabsCat): static
     {
-        return $this->post_cat;
-    }
-
-    public function addPostCat(Posts $postCat): static
-    {
-        if (!$this->post_cat->contains($postCat)) {
-            $this->post_cat->add($postCat);
+        if (!$this->tabs_cat->contains($tabsCat)) {
+            $this->tabs_cat->add($tabsCat);
         }
-
         return $this;
     }
 
-    public function removePostCat(Posts $postCat): static
+    public function removeTabsCat(Tabs $tabsCat): static
     {
-        $this->post_cat->removeElement($postCat);
-
+        $this->tabs_cat->removeElement($tabsCat);
         return $this;
+    }
+
+    public function setTabsCat(Collection $tabs_cat): static
+    {
+        $this->tabs_cat = $tabs_cat;
+        return $this;
+    }
+
+    public function getTabsCat(): Collection
+    {
+        return $this->tabs_cat;
     }
 }
