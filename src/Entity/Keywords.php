@@ -31,6 +31,9 @@ class Keywords
 
     public function __toString(): string
     {
+        if ($this->label === null) {
+            return '';
+        }
         return $this->label;
     }
 

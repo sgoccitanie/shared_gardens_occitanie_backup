@@ -30,17 +30,18 @@
 			{# Categories et onglets #}
 			{% include '_partials/categories_tabs/categories_tabs.html.twig' %}
 			<div class="content_main">
-				<div
-					class="d-flex flex-column p-2">
+				<div class="d-flex flex-column p-2">	
 					{# --- LISTE DES ARTICLES --- #}
 					{% if displayList %}
 						{% if postsWithUrls|length > 0 %}
+							{# breadCrumb : Fil d'ariane en french #}
+							{% include '_partials/header/breadcrumb.html.twig' with {'category': category} %}
 							<div class="row_index">
 								<div class="d-flex justify-content-end me-3">
-									{% set orderUrl = categoryId is defined and categoryId is not null
+									{% set orderUrl = categoryId is defined and categoryId is not null and tabPost === false
 										? path('app_articles', {'category': categoryId})
 										: (slug is defined and slug is not null
-											? path('app_home_with_slug', {'slug': slug})
+											? path('app_home_with_slug', {'slug': slug, 'category': categoryId})
 											: path('app_articles')) %}
 
 									<select class="form-select"
@@ -65,7 +66,6 @@
 													<span class="post-date text-muted">
 														{{ post.postedAt|format_datetime(locale: 'fr', pattern: 'd MMMM Y') }}
 													</span>
-
 												</div>
 												<div class="row_index_item_excerpt">
 													{{ post.content|striptags|slice(0, 50)|raw }}...
@@ -107,12 +107,13 @@
 										</a>
 									</div>
 								{% endif %}
-							{% endif %}
+							{% endif %}							
+							{# breadCrumb : Fil d'ariane en french #}
+							{% include '_partials/header/breadcrumb.html.twig' with {'post': postWithUrl.post} %}
 							<div class="post-content row_index">
 								<div class="row_index_item single-post">
 									<div class="row_index_item_content">
-										<div class="row_index_item_header d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
-											<h1>{{ post.title }}</h1>
+										<div class="row_index_item_header d-flex flex-column flex-md-row justify-content-end align-items-md-center mb-3">
 											<span class="post-date text-muted">
 												{{ post.postedAt|format_datetime(locale: 'fr', pattern: 'd MMMM Y') }}
 											</span>
@@ -133,15 +134,30 @@
 												{% for comment in comments %}
 													<div class="comment-item p-3 mb-2 border rounded">
 														<div class="comment-header d-flex justify-content-between">
-															<strong>{{ comment.pseudo }}</strong>
+															<span class="badge-team fw-bold">{{ comment.pseudo }}</span>
 															<small class="text-muted">
 																{{ comment.createdAt|format_datetime(locale: 'fr', pattern: 'd MMMM Y à HH:mm') }}
 															</small>
 														</div>
 														<div class="comment-content mt-2">
-															{{ comment.content|raw }}
+															{{ comment.content|nl2br }}
 														</div>
 													</div>
+													 {# Réponses de l'équipe #}
+													{% for reply in comment.replies %}
+														{% if reply.isApproved %}
+															<div class="comment-item p-3 mb-2 border border-3 rounded  ms-3">
+																<div class="comment-header d-flex justify-content-between">
+																	<span class="badge-team fw-bold">{{ reply.pseudo }}</span>
+																	<span class="badge-team fw-bold">Réponse du réseau</span>
+																	<small class="text-muted">{{ reply.createdAt|format_datetime(locale: 'fr', pattern: 'd MMMM Y à HH:mm') }}</small>
+																</div>
+																<div class="comment-content mt-2">
+																	{{ reply.content|nl2br }}
+																</div>
+															</div>
+														{% endif %}
+													{% endfor %}
 												{% endfor %}
 											</div>
 										{% endif %}

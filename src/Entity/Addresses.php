@@ -63,6 +63,9 @@ class Addresses
 
     public function __toString()
     {
+        if ($this->city === null) {
+            return '';
+        }
         return   $this->city->getName() . ' ' . $this->city->getPostalcode();
     }
 

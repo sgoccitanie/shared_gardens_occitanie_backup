@@ -1,0 +1,35 @@
+<nav aria-label="Fil d'Ariane" class="breadcrumb-nav">
+    <ol class="breadcrumb-list">
+        <li><a href="{{ path('app_home') }}">Accueil</a></li>
+
+        {# Cas 1 : article unique — on remonte sa catégorie puis sa page #}
+        {% if post is defined and post is not null %}
+            {% set tab = post.tabs|length > 0 ? post.tabs|first : null %}
+            {% set category = (tab and tab.categories|length > 0) ? tab.categories|first : null %}
+
+            {% if category %}
+                <li><a href="{{ path('app_articles', {'category': category.id}) }}">{{ category.name }}</a></li>
+            {% endif %}
+            {% if tab %}
+                <li><a href="{{ path('app_home_with_slug', {'slug': tab.slug}) }}">{{ tab.label }}</a></li>
+            {% endif %}
+            <li aria-current="page">{{ post.title }}</li>
+
+        {# Cas 2 : liste d'une catégorie #}
+        {% elseif category is defined and category is not null and tabPost === false %}
+            <li aria-current="page">{{ category.name}}</li>
+
+        {# Cas 3 : liste d'une page (tab) #}
+        {% elseif tabPost === true %}
+            {% if category %}
+                <li><a href="{{ path('app_articles', {'category': category.id}) }}">{{ category.name}}</a></li>
+            {% endif %}
+            {% if slug %}
+                <li aria-current="page">{{ slug }}</li>
+            {% endif %}
+        {# Cas 4 : tous les articles #}
+        {% else %}
+            <li aria-current="page">Tous les articles</li>
+        {% endif %}
+    </ol>
+</nav

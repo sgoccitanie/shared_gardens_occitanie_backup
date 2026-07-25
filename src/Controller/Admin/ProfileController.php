@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Form\UserProfileType;
-use App\Service\PictureService;
 use App\Service\Utils;
 use App\Service\CommonDataService;
 use App\Repository\AssociationRepository;

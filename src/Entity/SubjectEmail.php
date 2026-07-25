@@ -33,6 +33,9 @@ class SubjectEmail
 
     public function __toString()
     {
+        if ($this->label === null) {
+            return '';
+        }
         return $this->label;
     }
 

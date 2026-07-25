@@ -22,17 +22,18 @@
 
     								{% set postCount = tabWithPosts.posts|length %}
 									{% set singlePost = postCount == 1 ? tabWithPosts.posts|first : null %}
+									{% set currentSlug = app.request.attributes.get('slug') %}
 
 									<a href="
 										{% if postCount == 1 %}
 											{{ singlePost.url }}
 										{% elseif postCount > 1 %}
-											{{ path('app_home_with_slug', {'slug': tabWithPosts.tab.slug}) }}
+											{{ path('app_home_with_slug', {'slug': tabWithPosts.tab.slug}) }}?category={{ categoryWithTabs.categories.id }}
 										{% else %}
 											#
 										{% endif %}
 									"
-									class="tab-link"
+									class="tab-link{{ tabWithPosts.tab.slug == currentSlug ? ' active' : '' }}"
 									title="{{ tabWithPosts.tab.label }}">
 										{{ tabWithPosts.tab.label }}
 									</a>

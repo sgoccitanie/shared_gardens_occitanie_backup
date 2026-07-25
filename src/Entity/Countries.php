@@ -31,6 +31,9 @@ class Countries
 
     public function __toString(): string
     {
+        if ($this->name === null) {
+            return '';
+        }
         return $this->name;
     }
 

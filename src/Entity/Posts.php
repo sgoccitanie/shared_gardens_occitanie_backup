@@ -97,6 +97,9 @@ class Posts
 
     public function __toString(): string
     {
+        if ($this->slug === null) {
+            return '';
+        }
         return $this->slug;
     }
 
@@ -227,7 +230,7 @@ class Posts
     {
         if ($this->comments->removeElement($comment)) {
             if ($comment->getPost() === $this) {
-                $comment->setPost(null);
+                $comment->setPost($this);
             }
         }
         return $this;

@@ -12,3 +12,7 @@ framework:
       policy: "sliding_window"
       limit: 2
       interval: "1 hour"
+    comment_form:
+      policy: 'sliding_window'
+      limit: 3
+      interval: '10 minutes'

@@ -31,6 +31,8 @@
 									Voir nos articles
 								</a>
 							</div>
+							{# breadCrumb : Fil d'ariane en french #}
+							{% include '_partials/header/breadcrumb.html.twig' with {'post': postWithUrl.post} %}
 							<div class="post-content">
 								{# Contenu modifiable par l'admin mais visible par tous #}
 								{% if presentationContent is defined %}

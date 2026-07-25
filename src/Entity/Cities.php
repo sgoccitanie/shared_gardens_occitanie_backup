@@ -50,6 +50,9 @@ class Cities
 
     public function __toString(): string
     {
+        if ($this->name === null || $this->postalcode || $this->area_name || $this->dpt_name || $this->country) {
+            return '';
+        }
         return $this->name . ', ' . $this->postalcode . ', ' . $this->area_name . ', ' . $this->dpt_name . ', ' . $this->country;
     }
 

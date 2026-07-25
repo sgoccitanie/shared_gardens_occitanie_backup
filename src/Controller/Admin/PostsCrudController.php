@@ -178,7 +178,7 @@ class PostsCrudController extends AbstractCrudController
         return $content;
     }
 
-        private function ensureUniqueSlug(EntityManagerInterface $entityManager, Posts $post): void
+    private function ensureUniqueSlug(EntityManagerInterface $entityManager, Posts $post): void
     {
         $baseSlug = $post->getSlug();
         if (empty($baseSlug)) {

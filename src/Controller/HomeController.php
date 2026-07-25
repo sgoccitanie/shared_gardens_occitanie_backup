@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\Posts;
 use App\Form\CommentType;
 use App\Repository\PostsRepository;
+use App\Repository\CategoriesRepository;
 use App\Repository\PresentationRepository;
 use App\Service\CommonDataService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,7 +14,9 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class HomeController extends AbstractController
 {
@@ -27,9 +30,12 @@ class HomeController extends AbstractController
     public function __construct(
         private readonly CommonDataService $commonDataService,
         private readonly PostsRepository $postsRepository,
+        private readonly CategoriesRepository $categoriesRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
         private readonly PresentationRepository $presentationRepository,
+        #[Autowire(service: 'limiter.comment_form')]
+        private readonly RateLimiterFactory $commentFormLimiter,
         
     ) {}
 
@@ -54,13 +60,14 @@ class HomeController extends AbstractController
 
         // Le slug correspond-il à un article ?
         $post = $this->findPostBySlug($slug);
+        $categoryId = $request->query->get('category');
 
         if ($post !== null) {
             return $this->renderSinglePost($post, $request);
         }
 
         // Sinon, le slug correspond peut-être à une page : on liste ses articles
-        return $this->renderTabPosts($slug, $order);
+        return $this->renderTabPosts($slug, $order, $categoryId);
     }
 
     #[Route('/articles', name: 'app_articles', methods: ['GET'])]
@@ -146,6 +153,11 @@ class HomeController extends AbstractController
         $commentForm->handleRequest($request);
 
         if ($commentForm->isSubmitted() && $commentForm->isValid()) {
+            $limiter = $this->commentFormLimiter->create($request->getClientIp());
+            if (!$limiter->consume(1)->isAccepted()) {
+                $this->addFlash('error', 'Trop de commentaires envoyés. Réessayez dans quelques minutes.');
+                return $this->redirectToRoute('app_home_with_slug', ['slug' => $post->getSlug()]);
+            }
             $user = $this->getUser();
             if ($user !== null) {
                 $comment->setUser($user);
@@ -165,8 +177,9 @@ class HomeController extends AbstractController
             }
         }
 
+        // Recherche les commentaires approuvés et rattachés au post
         $comments = $this->entityManager->getRepository(Comment::class)
-            ->findBy(['post' => $post], ['createdAt' => 'ASC']);
+            ->findBy(['post' => $post, 'parent' => null, 'isApproved' => true], ['createdAt' => 'ASC']);
 
         return $this->render('home/index.html.twig', [
             'postsWithUrls' => $this->commonDataService->buildPostsWithUrls([$post]),
@@ -187,8 +200,10 @@ class HomeController extends AbstractController
     /**
      * Affiche la liste des articles rattachés à une page (tab).
      */
-    private function renderTabPosts(string $slug, string $order): Response
+    private function renderTabPosts(string $slug, string $order, ?string $categoryId): Response
     {
+        $tabPost = true;
+
         try {
             $posts = $this->postsRepository->createQueryBuilder('p')
                 ->select('DISTINCT p')
@@ -204,7 +219,7 @@ class HomeController extends AbstractController
             $posts = [];
         }
 
-        return $this->renderList($posts, $order, $slug);
+        return $this->renderList($posts, $order, $slug, $categoryId, $tabPost);
     }
 
     /**
@@ -212,8 +227,11 @@ class HomeController extends AbstractController
      *
      * @param Posts[] $posts
      */
-    private function renderList(array $posts, string $order, ?string $slug = null, ?string $categoryId = null): Response
+    private function renderList(array $posts, string $order, ?string $slug, ?string $categoryId, ?bool $tabPost = false): Response
     {
+        if(!empty($categoryId) && $categoryId !== null){
+            $category = $this->categoriesRepository->find($categoryId);
+        }
 
         return $this->render('home/index.html.twig', [
             'postsWithUrls' => $this->commonDataService->buildPostsWithUrls($posts),
@@ -224,10 +242,12 @@ class HomeController extends AbstractController
             'commentCount' => 0,            
             'postSlug' => $slug,
             'slug' => $slug,
-            'categoryId' => $categoryId,
+            'categoryId' => $categoryId ?? null,
+            'category' => $category ?? null,
             'backToList' => false,
             'eventCalendar' => false,
             'order' => $order,
+            'tabPost' => $tabPost,
         ]);
     }
 

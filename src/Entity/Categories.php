@@ -6,6 +6,7 @@ use App\Repository\CategoriesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategoriesRepository::class)]
 class Categories
@@ -16,8 +17,8 @@ class Categories
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    #[ORM\Constraint(length: 50, message: 'Le nom de la catégorie ne peut pas dépasser {{ limit }} caractères.')]
-    #[ORM\NotBlank(message: 'Le nom de la catégorie ne peut pas être vide.')]
+    #[Assert\Length(min: 5, max: 50, message: 'Le nom de la catégorie ne peut pas dépasser {{ limit }} caractères.')]
+    #[Assert\NotBlank(message: 'Le nom de la catégorie ne peut pas être vide.')]
     private ?string $name = null;
 
     /**
@@ -33,6 +34,9 @@ class Categories
 
     public function __toString(): string
     {
+        if ($this->name === null) {
+            return '';
+        }
         return $this->name ?? '';
     }
 

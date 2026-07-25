@@ -4,24 +4,21 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Comment;
-use App\Repository\UserRepository;
-use Doctrine\ORM\QueryBuilder;
-use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
-use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
-use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
+use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
+use Psr\Log\LoggerInterface;
 
 #[IsGranted('ROLE_EDITOR')]
 class CommentCrudController extends AbstractCrudController
@@ -29,23 +26,22 @@ class CommentCrudController extends AbstractCrudController
     use EasyAdminAssetsTrait;
     use EasyAdminActionsTrait;
 
-    private UserRepository $userRepository;
 
-    public function __construct(UserRepository $userRepository)
-    {
-        $this->userRepository = $userRepository;
-    }
+    public function __construct(
+        private readonly LoggerInterface $logger,
+    )
+    {}
 
     public static function getEntityFqcn(): string
     {
         return Comment::class;
     }
 
-    public function createEntity(string $entityFqcn)
-    {
-        $comment = new Comment();
-        return $comment;
-    }
+    // public function createEntity(string $entityFqcn)
+    // {
+    //     $comment = new Comment();
+    //     return $comment;
+    // }
 
     public function configureCrud(Crud $crud): Crud
     {
@@ -64,13 +60,14 @@ class CommentCrudController extends AbstractCrudController
     {
         return $actions
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER); 
+            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
+            ->remove(Crud::PAGE_INDEX, Action::NEW);
     }
 
     // Style des boutons
     public function configureAssets(Assets $assets): Assets
     {
-        return $this->configureCommonAssets($assets, '10px', '#729D2D')
+        return $this->configureCommonAssets($assets)
             ->addHtmlContentToBody('
             <style>
                 .page-actions .btn:focus,
@@ -86,24 +83,95 @@ class CommentCrudController extends AbstractCrudController
             ');
     }
 
-    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    private function cleanContent(?string $content): string
     {
-        $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        if (empty($content)) {
+            return '';
+        }
 
-        return $qb;
+        $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);
+        $content = preg_replace('/<!--(?!\[if).*?-->/s', '', $content);
+
+        // return $this->sanitizer->sanitize($content);
+        return $content;
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        try {
+            $content = $entityInstance->getContent();
+            // Si content n'est pas vide on le clean et on set le contenu dans Comment avec la méthode setContent
+            if (!empty($content)) {
+                $entityInstance->setContent($this->cleanContent($content));
+            }
+            if ($entityInstance->getParent() !== null && empty($entityInstance->getPseudo())) {
+                $entityInstance->setPseudo('Réseau des Semeurs de Jardins');
+            }
+
+            parent::updateEntity($entityManager, $entityInstance);
+            $this->addFlash('success', 'Le commentaire a été modifié avec succès.');
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur modification commentaire : ' . $e->getMessage(), ['exception' => $e]);
+            $this->addFlash('danger', "Le commentaire n'a pas pu être modifié.");
+        }
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        try {
+            $content = $entityInstance->getContent();
+            $pseudo = $entityInstance->getPseudo();
+            if (!empty($content)) {
+                $content = $this->cleanContent($content);
+                $entityInstance->setContent($content);
+            }
+            if(!empty($pseudo)){
+                $pseudo = $this->cleanContent($pseudo);
+                $entityInstance->setPseudo($pseudo);
+            }
+            if ($entityInstance->getParent() !== null && empty($entityInstance->getPseudo())) {
+                $entityInstance->setPseudo('Réseau des Semeurs de Jardins');
+            }
+
+            parent::persistEntity($entityManager, $entityInstance);
+            $this->addFlash(
+                'success',
+                'Le commentaire a été ajouté avec succès =)'
+            );
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur création commentaire : ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            $this->addFlash('danger', "Le commentaire n'a pas pu être enregistré =/ Réessayez ou contactez l'administrateur.");
+
+        }
     }
 
     public function configureFields(string $pageName): iterable
     {
-        return [
-            AssociationField::new('post', 'Article'),
-            AssociationField::new('user', 'Utilisateur')
-                ->setFormTypeOption('query_builder', function (UserRepository $userRepository) {
-               
-                    return $userRepository->createQueryBuilder('u');
-                }),
-            TextareaField::new('content', 'Contenu'),
-            DateTimeField::new('createdAt', 'Date de création')->setDisabled(true),
-        ];
+        yield AssociationField::new('post', 'Article');
+
+        yield AssociationField::new('parent', 'En réponse à')
+            ->setHelp('Laisser vide pour un commentaire principal, ou choisir le commentaire auquel celui-ci répond')
+            ->setFormTypeOption('choice_label', fn(Comment $c) => sprintf(
+                '#%d — %s : %.40s',
+                $c->getId(),
+                $c->getPseudo() ?? 'Anonyme',
+                $c->getContent()
+            ))
+            ->setFormTypeOption('required', false)
+            ->formatValue(fn($value, Comment $entity) =>
+                $entity->getParent()
+                    ? sprintf('#%d', $entity->getParent()->getId())
+                    : '—'
+            );
+
+        yield TextareaField::new('content', 'Contenu');
+
+        yield AssociationField::new('user', 'Utilisateur')->hideOnIndex();
+
+        yield DateTimeField::new('createdAt', 'Date de création')->setDisabled(true);
+
+        yield BooleanField::new('isApproved', 'Approuvé')->renderAsSwitch(true);
     }
 }

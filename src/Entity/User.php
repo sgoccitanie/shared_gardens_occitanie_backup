@@ -128,6 +128,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __toString(): string
     {
+        if ($this->firstname === null || $this->lastname === null) {
+            return '';
+        }
         return sprintf(
 
             $this->firstname . ' ' . $this->lastname

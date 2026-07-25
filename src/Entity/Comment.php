@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\CommentRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
@@ -13,12 +15,13 @@ class Comment
     private ?int $id = null;
 
     #[ORM\Column(type: 'text')]
+    #[Assert\Length(max: 5000)]
     #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
     private ?string $content = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Assert\Length(min: 2, max: 100, minMessage: 'Le pseudo doit contenir au moins 2 caractères', maxMessage: 'Le pseudo ne peut pas dépasser 100 caractères'
-    )]
+    #[Assert\Length(min: 2, max: 100, minMessage: 'Le pseudo doit contenir au moins 2 caractères', maxMessage: 'Le pseudo ne peut pas dépasser 100 caractères')]    
+    #[Assert\NotBlank(message: 'Le pseudo ne peut pas être vide')]
     private ?string $pseudo = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
@@ -32,18 +35,83 @@ class Comment
     #[ORM\JoinColumn(nullable: true)]
     private ?User $user = null;
 
+    #[ORM\Column]
+    private bool $isApproved = true;
+
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'replies')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    private ?self $parent = null;
+
+    /**
+     * @var Collection <int, Comment>
+     */
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent')]
+    private Collection $replies;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->replies = new ArrayCollection();
     }
 
     // Titre du commentaire
     public function __toString(): string
     {
-        return substr($this->content, 0, 30) . (strlen($this->content) > 30 ? '...' : '');
+        if ($this->content === null) {
+            return '';
+        }
+        return mb_substr($this->content, 0, 30) . (mb_strlen($this->content) > 30 ? '...' : '');
     }
 
     // Getters et setters
+        public function isApproved(): bool
+    {
+        return $this->isApproved;
+    }
+
+    public function setIsApproved(bool $isApproved): self
+    {
+        $this->isApproved = $isApproved;
+        return $this;
+    }
+
+    public function getParent(): ?self
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?self $parent): self
+    {
+        $this->parent = $parent;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getReplies(): Collection
+    {
+        return $this->replies;
+    }
+
+    public function addReply(self $reply): self
+    {
+        if (!$this->replies->contains($reply)) {
+            $this->replies->add($reply);
+            $reply->setParent($this);
+        }
+        return $this;
+    }
+
+    public function removeReply(self $reply): self
+    {
+        if ($this->replies->removeElement($reply)) {
+            if ($reply->getParent() === $this) {
+                $reply->setParent(null);
+            }
+        }
+        return $this;
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -56,7 +124,7 @@ class Comment
 
     public function setContent(string $content): self
     {
-        $this->content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $this->content = $content;
 
         return $this;
     }

@@ -98,10 +98,10 @@ class TabsCrudController extends AbstractCrudController
                 'La page a été modifiée avec succès.'
             );
         } catch (\Exception $e) {
-            $this->addFlash(
-                'danger',
-                'Erreur lors de la modification : ' . $e->getMessage()
-            );
+            $this->logger->error('Erreur modification page : ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            $this->addFlash('danger', "Les modifications de la page n'ont pas pu être enregistrées. Réessayez ou contactez l'administrateur.");
         }
     }
 
