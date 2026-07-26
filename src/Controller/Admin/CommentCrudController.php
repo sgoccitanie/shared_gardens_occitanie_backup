@@ -16,8 +16,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 use Doctrine\ORM\EntityManagerInterface;
+use Dom\Text;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Google\Service\Spanner\Field;
 use Psr\Log\LoggerInterface;
 
 #[IsGranted('ROLE_EDITOR')]
@@ -59,9 +62,16 @@ class CommentCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
-            ->remove(Crud::PAGE_INDEX, Action::NEW);
+            ->add(Crud::PAGE_EDIT, Action::INDEX)
+            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE, function (Action $action) {
+                return $action->setLabel('Enregistrer et rester');
+            })
+            ->update(Crud::PAGE_EDIT, Action::INDEX, function (Action $action) {
+                return $action
+                    ->setLabel('Retour aux commentaires')
+                    ->setIcon('fa fa-arrow-left');
+            })
+            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER);
     }
 
     // Style des boutons
@@ -100,6 +110,7 @@ class CommentCrudController extends AbstractCrudController
     {
         try {
             $content = $entityInstance->getContent();
+            $pseudo = $entityInstance->getPseudo();
             // Si content n'est pas vide on le clean et on set le contenu dans Comment avec la méthode setContent
             if (!empty($content)) {
                 $entityInstance->setContent($this->cleanContent($content));
@@ -147,9 +158,24 @@ class CommentCrudController extends AbstractCrudController
         }
     }
 
+     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        /** @var Comment $entityInstance */
+        $content = $entityInstance->getContent();
+
+        try {
+            parent::deleteEntity($entityManager, $entityInstance);
+            $extrait = mb_substr($content, 0, 10);
+            $this->addFlash('success', sprintf('Le commentaire « %s… » a bien été supprimé.', $extrait));
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur suppression article : ' . $e->getMessage(), ['exception' => $e]);
+            $this->addFlash('danger', "Le commentaire n'a pas pu être supprimé. Il est peut-être lié à d'autres contenus.");
+        }
+    }
+
     public function configureFields(string $pageName): iterable
     {
-        yield AssociationField::new('post', 'Article');
+        yield AssociationField::new('post', 'Article associé');
 
         yield AssociationField::new('parent', 'En réponse à')
             ->setHelp('Laisser vide pour un commentaire principal, ou choisir le commentaire auquel celui-ci répond')
@@ -160,16 +186,20 @@ class CommentCrudController extends AbstractCrudController
                 $c->getContent()
             ))
             ->setFormTypeOption('required', false)
-            ->formatValue(fn($value, Comment $entity) =>
-                $entity->getParent()
-                    ? sprintf('#%d', $entity->getParent()->getId())
-                    : '—'
-            );
+             ->formatValue(function ($value, $entity) {
+                $parent = $entity->getParent();
+                if ($parent === null) {
+                    return '—';
+                }
+                // mb_substr permet de récupérer les 50 premieres chaines de caractères ici (0, 50) 
+                $extrait = mb_substr($parent->getContent(), 0, 50);
+                // sprintf permet de créer un format à partir ici du pseudo et de l'extrait
+                return sprintf('%s : « %s… »', $parent->getPseudo() ?? 'Anonyme', $extrait);
+            });
 
         yield TextareaField::new('content', 'Contenu');
 
         yield AssociationField::new('user', 'Utilisateur')->hideOnIndex();
-
         yield DateTimeField::new('createdAt', 'Date de création')->setDisabled(true);
 
         yield BooleanField::new('isApproved', 'Approuvé')->renderAsSwitch(true);

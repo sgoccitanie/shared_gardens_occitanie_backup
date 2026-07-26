@@ -173,6 +173,17 @@ class PostsCrudController extends AbstractCrudController
 
         $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);
         $content = preg_replace('/<!--(?!\[if).*?-->/s', '', $content);
+        // Déballe les wrappers WordPress (garde le contenu, retire le div englobant)
+        $content = preg_replace('#<div[^>]*(id="(container|content)"|class="[^"]*(hentry|entry-content|post-\d+)[^"]*")[^>]*>#i', '', $content);
+
+        // Retire les attributs data-* de WordPress
+        $content = preg_replace('/\s*data-[a-z-]+="[^"]*"/i', '', $content);
+
+        // Retire les paddings inline parasites
+        $content = preg_replace('/\s*padding-left:\s*\d+px;?/i', '', $content);
+
+        $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);
+
 
         // return $this->sanitizer->sanitize($content);
         return $content;

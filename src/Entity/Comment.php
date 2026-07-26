@@ -19,9 +19,7 @@ class Comment
     #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
     private ?string $content = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    #[Assert\Length(min: 2, max: 100, minMessage: 'Le pseudo doit contenir au moins 2 caractères', maxMessage: 'Le pseudo ne peut pas dépasser 100 caractères')]    
-    #[Assert\NotBlank(message: 'Le pseudo ne peut pas être vide')]
+    #[ORM\Column(length: 50, nullable: true)]
     private ?string $pseudo = null;
 
     #[ORM\Column(type: 'datetime_immutable')]

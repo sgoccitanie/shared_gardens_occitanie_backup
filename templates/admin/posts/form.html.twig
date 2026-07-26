@@ -135,7 +135,7 @@
             extended_valid_elements: 'object[data|type|width|height|style],param[name|value],iframe[src|width|height|style|frameborder|allowfullscreen]',
             allow_html_in_named_anchor: true,
             allow_conditional_comments: false,
-            allow_script_urls: true,
+            allow_script_urls: false,
             allow_svg: true,
             /* Désactiver le nettoyage automatique du HTML */
             cleanup_on_startup: false,
@@ -146,11 +146,15 @@
             extended_valid_elements: '*[*]',
             verify_html: false,
             cleanup: false, // Désactiver le nettoyage automatique
-            plugins: ['link', 'image', 'pdf', 'code', 'lists', 'table'],
+            plugins: [
+                "link", "image", "lists", "advlist", "autolink", "charmap", "anchor",
+                "searchreplace", "visualblocks", "code", "fullscreen", "insertdatetime",
+                "media", "table", "help", "wordcount"
+            ],
 
             /* Plugins et barre d'outils */
             toolbar: 'undo redo | bold italic underline fontfamily fontsize| ' +
-                    ' blocks styles forecolor backcolor  |' +
+                    ' block_formats styles forecolor backcolor  |' +
                     'alignleft aligncenter alignright alignjustify | ' +
                     'bullist numlist | ' +
                     'link image pdf | removeformat | code',
@@ -184,7 +188,9 @@
                 '666666', 'Texte clair',
                 'FFFFFF', 'Blanc',
             ],
+            style_formats_merge: false,
             style_formats: [
+                { title: 'Titre 1', block: 'h1' },
                 { title: 'Titre 2', block: 'h2' },
                 { title: 'Titre 3', block: 'h3' },
                 { title: 'Paragraphe', block: 'p' },
@@ -193,8 +199,6 @@
                 { title: 'Image centrée', selector: 'img', styles: { display: 'block', marginLeft: 'auto', marginRight: 'auto' } },
                 { title: 'Image flottante à gauche', selector: 'img', styles: { float: 'left', marginRight: '15px' } },
                 { title: 'Image flottante à droite', selector: 'img', styles: { float: 'right', marginLeft: '15px' } },
-                { title: 'Liste à puces', selector: 'ul', classes: 'list-unstyled' },
-                { title: 'Liste numérotée', selector: 'ol', classes: 'list-unstyled'},
                 { title: 'Bouton', selector: 'a', classes: 'btn btn-secondary-green' },
                 { title: 'Citation', block: 'blockquote', styles: { 'border-left': '3px solid black', 'padding-left': '15px', 'font-style': 'italic' } },
             ],
@@ -207,6 +211,8 @@
 
             /* Uploads d'images */
             images_upload_url: '{{ path('api_tinymce_upload_image') }}',
+            paste_data_images: true,
+            object_resizing: true,
             images_upload_handler: async function (blobInfo, progress) {
                 try {
                     const formData = new FormData();
@@ -282,8 +288,6 @@
                 //* Écouteurs pour le drag & drop *//
                 editor.on('BeforeSetContent', function(e) { e.content = e.content; });
                 editor.on('PostProcess', function(e) { e.content = e.content; });
-                // Style visuel pendant le drag
-                editor.on('dragend', function(e) { e.preventDefault(); });
                 editor.on('dragover', function(e) {
                     e.preventDefault();
                     e.stopPropagation();

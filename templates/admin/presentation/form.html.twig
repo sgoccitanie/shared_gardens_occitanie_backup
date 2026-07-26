@@ -26,7 +26,7 @@
                 "media", "table", "help", "wordcount"
             ],
             toolbar: [
-                "undo redo | blocks styles forecolor backcolor  |" +
+                "undo redo | block_formats styles forecolor backcolor  |" +
                 "bold italic underline fontfamily fontsize| " +
                 "alignleft aligncenter alignright alignjustify | " +
                 "bullist numlist outdent indent | " +
@@ -42,9 +42,10 @@
                 "Verdana=verdana, geneva, sans-serif",
 
             font_size_formats: '10px 12px 14px 16px 18px 20px 24px 32px 36px',
-
+            style_formats_merge: false,
             // Ajouter des styles personnalisés
-            style_formats: [
+            style_formats: [                
+                { title: 'Titre 1', block: 'h1' },
                 { title: 'Titre 2', block: 'h2' },
                 { title: 'Titre 3', block: 'h3' },
                 { title: 'Paragraphe', block: 'p' },
@@ -53,8 +54,6 @@
                 { title: 'Image centrée', selector: 'img', styles: { display: 'block', marginLeft: 'auto', marginRight: 'auto' } },
                 { title: 'Image flottante à gauche', selector: 'img', styles: { float: 'left', marginRight: '15px' } },
                 { title: 'Image flottante à droite', selector: 'img', styles: { float: 'right', marginLeft: '15px' } },
-                { title: 'Liste à puces', selector: 'ul', classes: 'list-unstyled' },
-                { title: 'Liste numérotée', selector: 'ol', classes: 'list-unstyled'},
                 { title: 'Bouton', selector: 'a', classes: 'btn btn-secondary-green' },
                 { title: 'Citation', block: 'blockquote', styles: { 'border-left': '3px solid black', 'padding-left': '15px', 'font-style': 'italic' } },
             ],

@@ -158,11 +158,20 @@ class HomeController extends AbstractController
                 $this->addFlash('error', 'Trop de commentaires envoyés. Réessayez dans quelques minutes.');
                 return $this->redirectToRoute('app_home_with_slug', ['slug' => $post->getSlug()]);
             }
+            
             $user = $this->getUser();
             if ($user !== null) {
                 $comment->setUser($user);
                 if ($isEditorOrAdmin) {
-                    $comment->setPseudo((string) $user);
+                    // Use the user identifier (username/email) instead of non-existent getLogin()
+                    if (method_exists($user, 'getUserIdentifier')) {
+                        $comment->setPseudo($user->getUserIdentifier());
+                    } elseif (method_exists($user, 'getUsername')) {
+                        $comment->setPseudo($user->getUsername());
+                    } else {
+                        // Fallback to casting user to string if possible
+                        $comment->setPseudo((string) $user);
+                    }
                 }
             }
 

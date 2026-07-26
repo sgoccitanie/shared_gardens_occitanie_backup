@@ -82,21 +82,22 @@ class TinyMceUploadController extends AbstractController
         }
 
         // Générer un nom de fichier sécurisé
-        $directory = $this->params->get('kernel.project_dir') . '/public/uploads/files';
+        $directory = $this->params->get('kernel.project_dir') . '/public/uploads/images';
         if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
             $this->logger->error('Impossible de créer le répertoire : ' . $directory);
             return new JsonResponse(['error' => "Le fichier n'a pas pu être enregistré."], 500);
         }
-        $fileName = uniqid('img_', true) . '.pdf';
+
+        $fileName = uniqid('img_', true) . '.' . $extension;
+
         try {
             $file->move($directory, $fileName);
         } catch (FileException $e) {
-            $this->logger->error('Erreur déplacement fichier', ['exception' => $e]);
+            $this->logger->error('Erreur déplacement image', ['exception' => $e]);
             return new JsonResponse(['error' => "Le fichier n'a pas pu être enregistré."], 500);
         }
 
-
-        $fileUrl = $this->generateUrl('app_home', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'uploads/images/' . $fileName;
+        $fileUrl = '/uploads/images/' . $fileName;
         return new JsonResponse(['location' => $fileUrl]);
     }
 

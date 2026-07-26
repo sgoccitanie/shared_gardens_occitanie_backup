@@ -20,7 +20,6 @@ class CommentType extends AbstractType
     if (!$options['is_editor_or_admin']) {
             $builder->add('pseudo', TextType::class, [
                 'label' => 'Votre pseudo',
-                'required' => true,
                 'label_attr' => [
                     'class' => 'me-2 mb-0'
                 ],
