@@ -1,0 +1,191 @@
+/* ============================================
+   STYLES DU CONTENU DES ARTICLES
+   Chargé à deux endroits :
+   - sur le site public, sur .post-content
+   - dans TinyMCE via content_css
+   ============================================ */
+:root {
+    --papier:   #f6f4ee;  /* fond écru */
+    --encre:    #3a3f36;  /* texte, vert-gris profond */
+    --mousse:   #30AF85;  /* vert mousse principal */
+    --mousse-fonce: #55634a;
+    --sauge:    #dfe3d5;  /* sauge très clair */
+    --sauge-2:  #cdd4bf;
+}
+
+.post-content *:not(iframe):not(embed):not(object):not(img){
+    all: revert;
+}
+
+.post-content p, .post-content div {
+    margin: 0 0 1rem!important;
+}
+
+.post-content img {
+    max-width: 100%;
+}
+.post-content {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #333;
+    text-align: left;
+}
+
+/* bouton */
+/* ── Le bouton discret ─────────────────────────── */
+ .post-content .btn-botanique, .post-content .btn-botanique:visited, .post-content .btn-botanique:active {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    color: var(--papier)!important;
+    background: var(--mousse);
+    border: 1px solid var(--mousse-fonce);
+    border-radius: 999px;
+    padding: 0.50em 1em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.35s ease;
+  }
+
+  .post-content .btn-botanique:hover,
+  .post-content .btn-botanique:focus-visible {
+    background: var(--sauge);
+    border-color: var(--sauge);
+    color: var(--encre)!important;
+    outline: none;    
+    border: 1px solid var(--mousse-fonce);
+    text-decoration: none;
+  }
+
+ .post-content .btn-botanique:focus-visible {
+    box-shadow: 0 0 0 3px rgba(107, 122, 94, 0.25);
+  }
+
+  .post-content.btn-botanique:active {
+    transform: translateY(1px);
+  }
+
+  /* accessibilité : on respecte reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .post-content.btn-botanique { transition: none; }
+  }
+
+/* Titres */
+.post-content h2,
+.post-content h3,
+.post-content h4 {
+    margin: 2rem 0 1rem;
+    line-height: 1.3;
+    color: #99cd47;
+}
+
+.post-content h2 { font-size: 1.6rem; }
+.post-content h3 { font-size: 1.3rem; }
+.post-content h4 { font-size: 1.1rem; }
+
+/* Paragraphes et listes */
+.post-content p {
+    margin: 0 0 1.2rem;
+}
+
+.post-content ul,
+.post-content ol {
+    margin: 0 0 1.2rem;
+    padding-left: 1.5rem;
+}
+
+.post-content li {
+    margin-bottom: 0.4rem;
+}
+
+/* Liens */
+.post-content a, .post-content a:hover, .post-content a:active, .post-content a:visited, .post-content a:focus {
+    text-decoration: underline;
+}
+
+/* Citations */
+.post-content blockquote {
+    margin: 1.5rem 0;
+    padding: 0.5rem 0 0.5rem 1.2rem;
+    border-left: 3px solid #99cd47;
+    font-style: italic;
+    color: #555;
+}
+
+/* Tableaux */
+.post-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.post-content th,
+.post-content td {
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.post-content th {
+    background: #f5f5f5;
+    font-weight: 600;
+}
+
+/* PDF intégrés */
+.post-content .pdf-embed {
+    width: 100%;
+    height: 1122px;
+    margin: 1.5rem 0;
+    border: 1px solid #ddd;
+}
+
+.post-content .pdf-embed iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+.post-content .pdf-embed object[type="application/pdf"] {
+    width: 100%;
+    height: 1122px;
+    display: block;
+    border: none;
+}
+
+/* Conteneur parent : s'assurer qu'il ne limite pas la hauteur */
+.post-content .pdf-embed {
+    width: 100%;
+    margin: 1rem 0;
+    display: block;
+    overflow: hidden;
+}
+.post-content img {
+    max-width: 100%;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+/* Uniquement celles qui n'ont pas de taille définie dans l'éditeur */
+.post-content img:not([width]):not([style*="width"]) {
+    height: auto;
+}
+
+/* Sécurité mobile : on ne déborde jamais, même sur une image large */
+@media (max-width: 768px) {
+    .post-content img {
+        height: auto !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .post-content h2 { font-size: 1.4rem; }
+    .post-content h3 { font-size: 1.2rem; }
+
+    .post-content .pdf-embed {
+        height: 600px;
+    }
+    .post-content .pdf-embed object[type="application/pdf"] {
+        height: 800px;
+    }
+}

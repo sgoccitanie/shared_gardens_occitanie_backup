@@ -1,0 +1,82 @@
+:root {
+    --darkColor: #2c3e50;
+    --secondaryGreen: #7cb342;
+    --lightGreen: #a4d461;
+    --borderRadius: 20px;
+    --transition: all 0.3s ease;
+}
+
+/***** Boutons génériques *****/
+.button,
+.button-save,
+.button-cancel,
+.button-delete {
+    padding: 10px 20px;
+    border-radius: var(--borderRadius);
+    border: 1px solid var(--darkColor);
+    font-weight: 500;
+    transition: var(--transition);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.button-save {
+    background-color: var(--secondaryGreen);
+    color: white;
+}
+
+.button-save:hover {
+    background-color: var(--lightGreen);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.button-cancel {
+    background-color: white;
+    color: var(--darkColor);
+}
+
+.button-delete {
+    background-color: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
+}
+.datagrid {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.datagrid td, 
+.datagrid th {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.datagrid tr:hover {
+    background-color: rgba(124, 179, 66, 0.05);
+    cursor: pointer;
+}
+.button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--secondaryGreen);
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    .datagrid-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .datagrid td,
+    .datagrid th {
+        padding: 8px 10px;
+        font-size: 0.9em;
+    }
+}

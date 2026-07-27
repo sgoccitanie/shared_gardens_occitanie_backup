@@ -1,0 +1,348 @@
+html{
+    font-family: 'KG Second Chances Sketch';
+    src: 
+    url('../fonts/KGSecondChances/KGSecondChancesSketch.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+.coming-soon{
+    width: 100%!important;
+    margin: 1em 0 5em 0;
+}
+.eventTitle{
+    border-bottom: 3px solid #80808059;
+    padding-bottom: 10px;
+}
+.coming-soon .eventTitle{
+    text-align: center;
+}
+#events .eventsList {
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    line-height: 1;
+    padding-left: 40px;
+}
+#events .eventsList.color-1 {
+    background: linear-gradient(to left, rgba(48, 175, 133, 0.21), rgba(48, 175, 133, 0.21) 95% 5%,  var(--turquoise) 95%) ;
+}
+#events .eventsList.color-6 {
+    background: linear-gradient(to left, rgba(255, 193, 7, 0.21), rgba(255, 193, 7, 0.21) 95% 5%,  var(--yellow) 95%) ;
+}
+#events .eventsList.color-3 {
+    background: linear-gradient(to left, rgba(153, 205, 71, 0.21), rgba(153, 205, 71, 0.21) 95% 5%,  var(--green) 95%) ;
+}
+
+.coming-soon .eventsList.color-1 {
+    background: linear-gradient(to left, rgba(48, 175, 133, 0.21), rgba(48, 175, 133, 0.21) 98% 2%, var(--turquoise) 98%)!important;
+}
+.coming-soon .eventsList.color-6 {
+    background: linear-gradient(to left, rgba(255, 193, 7, 0.21), rgba(255, 193, 7, 0.21) 98% 2%,  var(--yellow) 98%)!important;
+}
+.coming-soon .eventsList.color-3 {
+    background: linear-gradient(to left, rgba(153, 205, 71, 0.21), rgba(153, 205, 71, 0.21) 98% 2%, var(--green) 98%)!important;
+}
+
+#events .eventsList p {
+    font-size: 1.2rem;
+    margin-bottom: 3px;
+    font-family: var(--primary-font);
+}
+
+#events .eventsList p:first-child {
+    font-weight: bold;
+}
+#events .row-event{
+    width: 95%;
+    margin-right: 0;
+    margin-left: 0;
+}
+.eventsCard{
+    border-radius: 10px;
+    box-shadow: var(--box-shadow-card);
+    border: 1px solid #5B535342;
+    padding-top: 15px;
+    overflow: auto;
+    max-height: 704px;
+}
+.tooltip {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+    pointer-events: none; /* Pour éviter que la bulle ne bloque les clics */
+}
+.fc-col-header{
+    background: #80808036;
+}
+
+.fc .fc-button{
+    background-color: transparent;
+    color: #000;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active{
+    background-color: transparent;
+    color: #000;
+}
+/* Overlay semi-transparent derrière le loader */
+.loader-container {
+    z-index: 9999;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Le spinner en lui-même */
+.loader-spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid rgba(48, 175, 133, 0.2);
+    border-top-color: rgb(48, 175, 133);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+/* Style de la modal */
+/* Overlay derrière la modale */
+.modal-custom {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-custom.d-block {
+    display: flex !important;
+}
+
+/* Boîte de la modale */
+.modal-custom-content {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out;
+}
+
+/* Bouton fermeture */
+.modal-custom-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    line-height: 1;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.modal-custom-close:hover {
+    color: rgb(48, 175, 133);
+    background: rgba(48, 175, 133, 0.1);
+    transform: rotate(90deg);
+}
+
+/* Titre */
+.modal-custom-title {
+    color: rgb(48, 175, 133);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    padding-right: 40px;
+    border-bottom: 2px solid rgba(48, 175, 133, 0.2);
+    padding-bottom: 15px;
+}
+
+/* Corps de la modale */
+.modal-custom-body {
+    color: #333;
+    line-height: 1.6;
+}
+
+.modal-custom-body p {
+    margin-bottom: 12px;
+}
+
+.modal-custom-body p i {
+    color: rgb(48, 175, 133);
+    margin-right: 8px;
+}
+
+/* Lien "Ajouter à mon agenda" */
+.modal-custom-body .btn {
+    background: rgb(48, 175, 133);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.2s;
+    margin-top: 15px;
+}
+
+.modal-custom-body .btn:hover {
+    background: rgb(38, 145, 110);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.modal-custom-body .btn i {
+    color: white;
+    margin-right: 0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive mobile */
+@media (max-width: 576px) {
+    .modal-custom-content {
+        padding: 25px;
+        border-radius: 15px;
+    }
+    
+    .modal-custom-title {
+        font-size: 1.25rem;
+    }
+}
+
+/* Style du bouton de fermeture */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer; /* Curseur en main */
+}
+
+.close:hover,
+.close:focus {
+    color: #000; /* Couleur au survol */
+    text-decoration: none;
+}
+
+/* Style du message de la modal */
+#eventContent {
+    font-size: 16px; /* Taille de la police */
+    color: #555; /* Couleur du texte */
+}
+
+/* Style du bouton OK */
+button {
+    background-color: #4CAF50; /* Couleur de fond */
+    color: white; /* Couleur du texte */
+    padding: 10px 20px; /* Espacement */
+    border: none; /* Pas de bordure */
+    border-radius: 5px; /* Coins arrondis */
+    cursor: pointer; /* Curseur en main */
+    transition: background-color 0.3s; /* Transition pour le survol */
+}
+
+button:hover {
+    background-color: #45a049; /* Couleur au survol */
+}
+
+.fc-daygrid-event-harness:hover{
+    cursor: pointer;
+}
+
+    /* Style de la barre de défilement */
+::-webkit-scrollbar {
+    width: 12px; /* Largeur de la barre de défilement */
+    height: 12px; /* Hauteur de la barre de défilement horizontal */
+}
+
+/* Style de la piste de la barre de défilement */
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Couleur de la piste */
+    border-radius: 10px; /* Coins arrondis */
+}
+
+/* Style de la poignée de la barre de défilement */
+::-webkit-scrollbar-thumb {
+    background: #888; /* Couleur de la poignée */
+    border-radius: 10px; /* Coins arrondis */
+}
+
+/* Style de la poignée au survol */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Couleur de la poignée au survol */
+}
+/* Largeur de la barre de défilement */
+* {
+    scrollbar-width: thin; /* Options : auto, thin, none */
+    scrollbar-color: #888 #f1f1f1; /* Couleur de la poignée et de la piste */
+}
+    /* Animation d'apparition */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Animation de glissement */
+    @keyframes slideIn {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+@media (max-width: 768px) {
+    .eventsCard{
+        margin-bottom: 100px;
+    }
+    .fc-toolbar.fc-header-toolbar {
+        font-size: 60%
+    }
+}
+
+
+
+
+
+

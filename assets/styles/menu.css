@@ -1,0 +1,121 @@
+/**
+* SIDEBAR Style
+*/
+.nav-link img{
+    height: 2em;
+    width: 2em;
+}
+
+#sidebar {
+    position: fixed;
+    z-index: 1000;
+    min-width: 270px;
+    max-width: 300px;
+    min-height: 100vh;
+    background: white;
+    transition: all 0.3s;
+    box-shadow: 4px 6px 6px 0 rgba(0, 0, 0, 0.25);
+    border-radius:  0 50px 0 0 ;
+    font-family: var(--primary-font);
+    overflow-y: auto; /* Pour scroller */
+    max-height: 100vh;  /* Limite la hauteur à la hauteur de la fenêtre */
+    /* firefox */
+    scrollbar-width: thin;
+}
+
+/* Chrome, Edge, Safari */
+#sidebar::-webkit-scrollbar {
+    width: 6px; /* épaisseur */
+}
+
+#sidebar .logo{
+    border-radius: 50px;
+    padding: 20px;
+}
+
+#content {
+    width: 100%;
+    min-height: 100vh;
+    transition: all 0.3s;
+}
+
+/* sidebar links style */
+#sidebar .nav-link {
+    color: black;
+    padding: 25px 50px;
+    box-shadow: 0px 4px 4px 0 rgba(0, 0, 0, 0.25);
+    width: 100%;
+}
+
+#sidebar .nav-link:hover, #sidebar .nav-link.active {
+    background-color: var(--green-rgb);
+}
+
+/* 
+* NAVBAR MOBILE
+*/
+#navbar-mobile {
+    min-height: 13vh;
+    background-color: white;
+    transition: all 0.3s;
+    box-shadow: 0px 6px 6px 4px rgba(0, 0, 0, 0.25);
+    justify-content: center;
+    align-content: center;
+}
+#navbar-mobile .row-navbar{
+    display: flex;
+    flex-direction: row;
+}
+
+#navbar-mobile .nav-link{
+    padding: 0;
+}
+
+a:link, a:hover, a:active,  a:visited, a:focus{
+    color: black;
+    text-decoration: none;
+}
+
+a.active{
+    font-weight: 500;
+}
+
+.color-green a, .color-green a:hover, .color-green a:active, .color-green a:visited, .color-green a:focus{
+    color: var(--dark-green);
+}
+
+.menu-txt {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.coordinates-asso{
+    line-height: normal;
+    /* text-align: center; */
+}
+
+.coordinates-asso .fa-solid {
+    font-size: 0.9em;
+    padding: 0.3em;
+}
+
+.coordinates-asso p {
+    font-size: 1em;
+    margin-bottom: 10px;
+}
+
+.email, .phone {
+    font-weight: bolder;
+}
+
+/* icon disabled */
+#main-menu .menu .submenu-toggle-icon{
+    display: none
+}
+
+/* Sidebar responsive */
+@media (max-width: 768px) {
+    .menu-txt p{
+        font-size: 0.8em;
+    }
+}

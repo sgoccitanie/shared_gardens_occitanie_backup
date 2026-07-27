@@ -1,0 +1,96 @@
+/* ============================================
+   FORCER LES COULEURS EASYADMIN
+   ============================================ */
+.ea {
+    --green: #99cd47;
+    --green-hover: #7fbf3a;
+    --green-border: #3a550e;
+    --rose-pale: #fff9eb;
+    --green-active-box-shadow: 0 0 0 0.2rem rgba(153, 205, 71, 0.5);
+    --green-active-color: #fff;
+    --bs-btn-active-bg: #7fbf3a;
+    --bs-btn-active-border-color: #3a550e;
+    --green-rgb:rgba(153, 205, 71, 0.44); 
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #7fbf3a;
+    --bs-btn-hover-border-color: #3a550e;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #7fbf3a;
+    --bs-btn-active-border-color: #3a550e;
+}
+.btn-secondary, .btn-secondary.btn.disabled, .btn-secondary.btn:disabled {
+  --button-color: var(--green);
+  --button-border-color: var(--green-border);
+  --button-hover-bg: var(--green-hover);
+  --button-hover-color: var(--button-secondary-hover-color);
+  --button-hover-border-color: var(--button-secondary-hover-border-color);
+  --button-active-box-shadow: var(--green-active-box-shadow);
+  --button-active-color: var(--green-active-color);
+}
+.ea .page-actions .btn-primary,
+.ea .page-actions .btn.btn-primary {
+    --button-primary-bg: var(--green);
+    --button-primary-color: white;
+    --button-primary-border-color: var(--green);
+    /* etc. */
+}
+.ea .page-actions .btn > .btn-icon {
+  color: var(--button-icon-color,currentColor);
+  display: grid;
+  flex-shrink: 0;
+  inline-size: 1em;
+  width: auto;
+}
+.ea-dark-scheme .form-switch .form-check-input:checked, .form-switch .form-check-input:checked {
+  background-color: var(--green);
+  border-color: black;
+}
+
+.ea .page-actions .btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--green-rgb);
+  --bs-btn-border-color: var(--green);
+}
+/* Bouton "Créer X" en vert */
+.ea .page-actions .btn-primary,
+.ea .page-actions .btn.btn-primary {
+    --button-primary-bg: #99cd47;
+    --button-primary-color: white;
+    --button-primary-border-color: #99cd47;
+    --button-primary-hover-bg: #7fbf3a;
+    --button-primary-hover-color: white;
+    --button-primary-hover-border-color: #7fbf3a;
+    --button-primary-active-bg: #7fbf3a;
+    --button-primary-active-color: white;
+    --button-primary-active-border-color: #7fbf3a;
+    --button-primary-icon-color: white;
+    
+    box-shadow: 4px 6px 4px 0 rgba(0, 0, 0, 0.25);
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    text-decoration: none;
+}
+
+.ea .page-actions .btn.btn-primary:hover,
+.ea .page-actions .btn:hover {
+    background-color: var(--green);
+    border-color: var(--green-hover);
+    color: black;
+    transform: translateY(-1px);
+}
+
+.ea .page-actions .btn.btn-primary:focus,
+.ea .page-actions .btn:focus,
+.ea .page-actions .btn.btn-primary:focus-visible,
+.ea .page-actions .btn:focus-visible {
+    background-color: var(--green);
+    border-color: var(--green);
+    box-shadow: 0 0 0 0.2rem rgba(153, 205, 71, 0.5);
+    outline: none;
+}
+
+.ea .page-actions .btn.btn-primary:active,
+.ea .page-actions .btn:active {
+    background-color: var(--green);
+    border-color: var(--green-hover);
+}

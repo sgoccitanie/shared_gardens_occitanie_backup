@@ -1,0 +1,14 @@
+/* ============================================
+   VARIABLES
+   ============================================ */
+:root {
+    --green: #99cd47;
+    --green-hover: #7fbf3a;
+    --green-light: #d4e8b0;
+    --danger: #dc3545;
+    --box-shadow-card: 4px 6px 4px 0 rgba(0, 0, 0, 0.25);
+    --border-radius-sm: 6px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 15px;
+    --transition: all 0.2s ease;
+}

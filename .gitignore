@@ -49,3 +49,4 @@ credentials.json
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+/assets/vendor/
