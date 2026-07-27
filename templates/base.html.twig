@@ -27,8 +27,7 @@
 	<body>
 		{% block body %}
 			{# flex-column pour forcer le footer en bas #}
-			<div
-				id="body-container" class="d-flex flex-column min-vh-100">
+			<div id="body-container" class="d-flex flex-column min-vh-100">				
 				{# Main navigation #}
 				<nav>
 					<div class="d-none d-lg-block h-100">
@@ -39,8 +38,7 @@
 					</div>
 				</nav>
 				{# grow pour forcer le footer en bas #}
-				<div
-					class="home-container container-fluid flex-column grow d-flex p-0">
+				<div class="home-container flex-column grow d-flex p-0">
 					{# Header #}
 					<header class="w-100 p-0">
 						{% include '_partials/header/header.html.twig' %}

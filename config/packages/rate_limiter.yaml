@@ -6,7 +6,7 @@ framework:
       interval: "1 hour"
     drive_search:
       policy: "sliding_window"
-      limit: 20
+      limit: 10
       interval: "1 minute"
     contact_form:
       policy: "sliding_window"
@@ -16,3 +16,7 @@ framework:
       policy: 'sliding_window'
       limit: 3
       interval: '10 minutes'
+    reset_password:
+      policy: 'sliding_window'
+      limit: 3
+      interval: '1 hour'

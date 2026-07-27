@@ -14,10 +14,10 @@
 {% block content %}
 	<div class="container-fluid d-flex flex-column main-container-style">
 		<div class="content_home josefinSans">
+			{# Banniere #}
 			<div class="home_picture" style="background-image: url('{{ asset(bannerPath) }}');"></div>
-			<div
-				class="content_main">
-
+			
+			<div class="content_main">
 				{# Categories et onglets #}
 				<div class="d-none d-lg-block h-100">						
 					{% include '_partials/categories_tabs/categories_tabs.html.twig' %}

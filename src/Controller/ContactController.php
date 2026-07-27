@@ -82,7 +82,7 @@ final class ContactController extends AbstractController
                 // Association destinataire
                 $firstAssociation = $this->assoRepo->findOneBy([], ['id' => 'ASC']);
                 if (!$firstAssociation) {
-                    $this->contactLogger->error('Aucune association trouvée');
+                    $this->contactLogger->error('Page contact - tentative envoi email - erreur : aucune association trouvée');
                     $this->addFlash('error', 'Erreur technique. Veuillez réessayer plus tard.');
                     return $this->redirectToRoute('app_contact');
                 }

@@ -132,6 +132,7 @@ class CommentCrudController extends AbstractCrudController
         try {
             $content = $entityInstance->getContent();
             $pseudo = $entityInstance->getPseudo();
+
             if (!empty($content)) {
                 $content = $this->cleanContent($content);
                 $entityInstance->setContent($content);
@@ -140,6 +141,7 @@ class CommentCrudController extends AbstractCrudController
                 $pseudo = $this->cleanContent($pseudo);
                 $entityInstance->setPseudo($pseudo);
             }
+            // Si le commentaire a un parent et est vide
             if ($entityInstance->getParent() !== null && empty($entityInstance->getPseudo())) {
                 $entityInstance->setPseudo('Réseau des Semeurs de Jardins');
             }

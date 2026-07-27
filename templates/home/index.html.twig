@@ -14,17 +14,20 @@
 
 {% block content %}
 	<div class="container-fluid d-flex flex-column main-container-style">
-		{% for message in app.flashes('success') %}
-			<div class="flash-notice alert alert-success">
-				{{ message }}
+		<div class="content_home josefinSans">	
+			<div class="home-container">
+				{% for message in app.flashes('success') %}
+					<div class="flash-notice alert alert-success">
+						{{ message }}
+					</div>
+				{% endfor %}
+				{% for message in app.flashes('error') %}
+					<div class="flash-notice alert alert-danger">
+						{{ message }}
+					</div>
+				{% endfor %}
 			</div>
-		{% endfor %}
-		{% for message in app.flashes('error') %}
-			<div class="flash-notice alert alert-danger">
-				{{ message }}
-			</div>
-		{% endfor %}
-		<div class="content_home josefinSans">
+			{# Banniere #}
 			<div class="home_picture" style="background-image: url('{{ asset(bannerPath) }}');"></div>
 
 			{# Categories et onglets #}
@@ -34,7 +37,7 @@
 			<div class="container-fluid d-lg-none">
 				{% include '_partials/categories_tabs/categories_tabs_mobile.html.twig' %}
 			</div>
-			<div class="content_main">
+			<div class="content_main">				
 				<div class="d-flex flex-column p-2">	
 					{# --- LISTE DES ARTICLES --- #}
 					{% if displayList %}

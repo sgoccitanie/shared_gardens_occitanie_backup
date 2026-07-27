@@ -158,6 +158,9 @@ class HomeController extends AbstractController
                 $this->addFlash('error', 'Trop de commentaires envoyés. Réessayez dans quelques minutes.');
                 return $this->redirectToRoute('app_home_with_slug', ['slug' => $post->getSlug()]);
             }
+
+            $pseudo = $commentForm->get('pseudo')->getData();
+            // $content = $commentForm->get('content');
             
             $user = $this->getUser();
             if ($user !== null) {
@@ -173,6 +176,8 @@ class HomeController extends AbstractController
                         $comment->setPseudo((string) $user);
                     }
                 }
+            }else{
+                $pseudo === null ? $comment->setPseudo('Anonyme') : $comment->setPseudo($pseudo);
             }
 
             try {
