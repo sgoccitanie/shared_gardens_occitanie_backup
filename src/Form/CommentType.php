@@ -24,7 +24,7 @@ class CommentType extends AbstractType
                     'class' => 'me-2 mb-0'
                 ],
                 'attr' => [
-                    'maxlength' => 100,
+                    'maxlength' => 50,
                     'placeholder' => 'Entrez votre pseudo',
                     'class' => 'form-control border-0 shadow-none p-3',
                 ],
