@@ -19,8 +19,12 @@
 				class="content_main">
 
 				{# Categories et onglets #}
-				{% include '_partials/categories_tabs/categories_tabs.html.twig' %}
-
+				<div class="d-none d-lg-block h-100">						
+					{% include '_partials/categories_tabs/categories_tabs.html.twig' %}
+				</div>
+				<div class="container-fluid d-lg-none">
+					{% include '_partials/categories_tabs/categories_tabs_mobile.html.twig' %}
+				</div>
 				<div class="p-4">
 					<div class="row justify-content-center">
 						<div

@@ -149,7 +149,7 @@
             plugins: [
                 "link", "image", "lists", "advlist", "autolink", "charmap", "anchor",
                 "searchreplace", "visualblocks", "code", "fullscreen", "insertdatetime",
-                "media", "table", "help", "wordcount"
+                "media", "table", "help", "wordcount", "pdf"
             ],
 
             /* Plugins et barre d'outils */
@@ -157,7 +157,7 @@
                     ' block_formats styles forecolor backcolor  |' +
                     'alignleft aligncenter alignright alignjustify | ' +
                     'bullist numlist | ' +
-                    'link image pdf | removeformat | code',
+                    'link image pdf | removeformat |  code',
 
             // Ajouter des styles personnalisés            
 
@@ -190,16 +190,16 @@
             ],
             style_formats_merge: false,
             style_formats: [
-                { title: 'Titre 1', block: 'h1' },
-                { title: 'Titre 2', block: 'h2' },
-                { title: 'Titre 3', block: 'h3' },
+                { title: 'Titre 1', block: 'h1', styles: { 'font-size' : '36px' }},
+                { title: 'Titre 2', block: 'h2', styles: { 'font-size' : '32px' }},
+                { title: 'Titre 3', block: 'h3', styles: { 'font-size' : '28px' }},
                 { title: 'Paragraphe', block: 'p' },
                 { title: 'Block', block: 'div' },
                 { title: 'Image responsive', selector: 'img', classes: 'img-fluid' },
                 { title: 'Image centrée', selector: 'img', styles: { display: 'block', marginLeft: 'auto', marginRight: 'auto' } },
                 { title: 'Image flottante à gauche', selector: 'img', styles: { float: 'left', marginRight: '15px' } },
                 { title: 'Image flottante à droite', selector: 'img', styles: { float: 'right', marginLeft: '15px' } },
-                { title: 'Bouton', selector: 'a', classes: 'btn btn-secondary-green' },
+                { title: 'Bouton', selector: 'a', classes: 'btn-botanique' },
                 { title: 'Citation', block: 'blockquote', styles: { 'border-left': '3px solid black', 'padding-left': '15px', 'font-style': 'italic' } },
             ],
             // laisse accès au sélecteur libre

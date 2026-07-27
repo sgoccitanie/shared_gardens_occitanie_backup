@@ -1,0 +1,76 @@
+{% if categoriesWithTabs is defined and categoriesWithTabs|length > 0 %}
+    {% set currentSlug = app.request.attributes.get('slug') %}
+    <nav class="categories-tabs-container navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ path('app_home') }}">Menu</a>
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#mainNav"
+                    aria-controls="mainNav" aria-expanded="false"
+                    aria-label="Afficher le menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                    {% for categoryWithTabs in categoriesWithTabs %}
+                        {% if categoryWithTabs.categories is not null %}
+                            {% if categoryWithTabs.categories.id == 2 %}
+                                {# Catégorie spéciale, lien direct sans dropdown #}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_coming_soon') }}">
+                                        {{ categoryWithTabs.categories.name }}
+                                    </a>
+                                </li>
+                            {% elseif categoryWithTabs.tabs|length > 0 %}
+                                {# Catégorie avec tabs → dropdown #}
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#"
+                                       id="dropdown{{ categoryWithTabs.categories.id }}"
+                                       role="button"
+                                       data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        {{ categoryWithTabs.categories.name }}
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end"  aria-labelledby="dropdown{{ categoryWithTabs.categories.id }}">
+                                        {# Lien vers tous les articles de la catégorie #}
+                                        <li>
+                                            <a class="dropdown-item" href="{{ path('app_articles', {'category': categoryWithTabs.categories.id}) }}">
+                                                Tout voir
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        {% for tabWithPosts in categoryWithTabs.tabs %}
+                                            {% set postCount = tabWithPosts.posts|length %}
+                                            {% set singlePost = postCount == 1 ? tabWithPosts.posts|first : null %}
+                                            {% if postCount == 1 %}
+                                                {% set tabUrl = singlePost.url %}
+                                            {% elseif postCount > 1 %}
+                                                {% set tabUrl = path('app_home_with_slug', {'slug': tabWithPosts.tab.slug, 'category': categoryWithTabs.categories.id}) %}
+                                            {% else %}
+                                                {% set tabUrl = '#' %}
+                                            {% endif %}
+                                            <li>
+                                                <a class="dropdown-item{{ tabWithPosts.tab.slug == currentSlug ? ' active' : '' }}"
+                                                   href="{{ tabUrl }}"
+                                                   title="{{ tabWithPosts.tab.label }}">
+                                                    {{ tabWithPosts.tab.label }}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% else %}
+                                {# Catégorie sans tab → lien simple #}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_articles', {'category': categoryWithTabs.categories.id}) }}">
+                                        {{ categoryWithTabs.categories.name }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

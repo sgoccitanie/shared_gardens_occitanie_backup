@@ -26,7 +26,12 @@
 			<div class="home_picture" style="background-image: url('{{ asset(bannerPath) }}');"></div>
 
 			{# Categories et onglets #}
-			{% include '_partials/categories_tabs/categories_tabs.html.twig' %}
+			<div class="d-none d-lg-block h-100">						
+				{% include '_partials/categories_tabs/categories_tabs.html.twig' %}
+			</div>
+			<div class="container-fluid d-lg-none">
+				{% include '_partials/categories_tabs/categories_tabs_mobile.html.twig' %}
+			</div>
 
 			{% include '_partials/calendar/calendar_events.html.twig' with {'events': events} %}
 

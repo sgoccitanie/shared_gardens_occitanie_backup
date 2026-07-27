@@ -11,16 +11,15 @@
 /bundles/
 credentials.json
 
-/assets/
-/assets/vendor
+/assets/vendor/
+/assets/plugins/
 /vendor/
 
 /var/
 /node_modules/
 
 
-/public/bundles/
-/public/assets/
+
 /public/tokens
 /public/uploads/*/.cache/
 ###< symfony/framework-bundle ###
@@ -36,7 +35,9 @@ credentials.json
 ###< symfony/phpunit-bridge ###
 
 ###> symfony/asset-mapper ###
+/public/bundles/
 /public/assets/
+/public/uploads/
 ###< symfony/asset-mapper ###
 
 ###> league/oauth2-server-bundle ###
@@ -48,4 +49,3 @@ credentials.json
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
-/public/uploads/

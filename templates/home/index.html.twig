@@ -28,7 +28,12 @@
 			<div class="home_picture" style="background-image: url('{{ asset(bannerPath) }}');"></div>
 
 			{# Categories et onglets #}
-			{% include '_partials/categories_tabs/categories_tabs.html.twig' %}
+			<div class="d-none d-lg-block h-100">						
+				{% include '_partials/categories_tabs/categories_tabs.html.twig' %}
+			</div>
+			<div class="container-fluid d-lg-none">
+				{% include '_partials/categories_tabs/categories_tabs_mobile.html.twig' %}
+			</div>
 			<div class="content_main">
 				<div class="d-flex flex-column p-2">	
 					{# --- LISTE DES ARTICLES --- #}
@@ -110,8 +115,8 @@
 							{% endif %}							
 							{# breadCrumb : Fil d'ariane en french #}
 							{% include '_partials/header/breadcrumb.html.twig' with {'post': postWithUrl.post} %}
-							<div class="post-content row_index">
-								<div class="row_index_item single-post">
+							<div class=" row_index">
+								<div class="row_index_item single-post post-content">
 									<div class="row_index_item_content">
 										<div class="row_index_item_header d-flex flex-column flex-md-row justify-content-end align-items-md-center mb-3">
 											<span class="post-date text-muted">

@@ -200,7 +200,7 @@ class CommonDataService
     public function getLogoPath(?string $assoLogo = null): string
     {
         $defaultLogoPath = 'uploads/profiles/SDJ/logo/logo_SDJ.png';
-        $fallbackLogoPath = 'img/icons/logo_SDJ.png';
+        $fallbackLogoPath = 'img/logos/logo_SDJ.png';
 
         if ($assoLogo && file_exists($this->kernelProjectDir . '/public/' . $assoLogo)) {
             return $assoLogo;
