@@ -49,3 +49,5 @@ credentials.json
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+data_prod.sql
+*.sql
