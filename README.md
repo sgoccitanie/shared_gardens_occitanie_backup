@@ -43,7 +43,7 @@
 
 ### **Cœur du projet**
 
-- **[Symfony 7.1.0](https://symfony.com/)** : Framework PHP full-stack utilisé pour le **backend** et le **frontend** (via Twig et Symfony UX)
+- **[Symfony 7.4.0](https://symfony.com/)** : Framework PHP full-stack utilisé pour le **backend** et le **frontend** (via Twig et Symfony UX)
 - **[PHP 8.3.28](https://www.php.net/)** : Côté serveur.
 - **[Composer 2.9.3](https://getcomposer.org/)** : Gestionnaire de dépendances PHP pour installer et mettre à jour les bibliothèques (Symfony, Doctrine, etc.)
 
