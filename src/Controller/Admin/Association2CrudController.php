@@ -17,6 +17,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -52,6 +53,7 @@ class Association2CrudController extends AbstractCrudController
             TextField::new('name')->setLabel('Nom'),
             TextField::new('mantra')->setLabel('Mantra'),
             TextField::new('mobile')->setLabel('Téléphone'),
+            TextareaField::new('description')->setLabel('Description'),
 
             ImageField::new('logo')
                 ->setLabel('Logo')

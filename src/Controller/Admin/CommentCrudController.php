@@ -106,7 +106,6 @@ class CommentCrudController extends AbstractCrudController
     {
         try {
             $content = $entityInstance->getContent();
-            $pseudo = $entityInstance->getPseudo();
             // Si content n'est pas vide on le clean et on set le contenu dans Comment avec la méthode setContent
             if (!empty($content)) {
                 $entityInstance->setContent($this->cleanContent($content));
