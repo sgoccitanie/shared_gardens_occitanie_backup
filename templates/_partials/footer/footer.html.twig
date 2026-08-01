@@ -1,16 +1,18 @@
 <footer class="pt-lg-5 pb-lg-3 mb-5 josefinSans">
     <div class="container">
+        {% set currentPath = path(app.request.attributes.get('_route'),
+        app.request.attributes.get('_route_params')) %}
         <div class="row">
             <div class="col-6 d-flex justify-content-center">
 			<!-- Rediriger vers "Présentation" -->
-                <a href="{{ path('app_home') }}">Qui sommes-nous ?</a>
+                <a href="{{ path('app_home') }}" class="{{  currentPath === '/' ? ' active' : '' }}">Qui sommes-nous ?</a>
                 <span>|</span>
-                <a href="{{ path('app_contact') }}">Contactez-nous</a>
+                <a href="{{ path('app_contact') }}" class="{{  currentPath === '/contact' ? ' active' : '' }}">Contactez-nous</a>
             </div>
             <div class="col-5 d-flex justify-content-center">
-                <a href="{{ path('app_legal') }}">Mentions légales</a>
+                <a href="{{ path('app_privacy') }}" class="{{  currentPath === '/politique-de-confidentialite' ? ' active' : '' }}">Politique de confidentialité</a>
                 <span>|</span>
-                <a href="{{ path('app_rgpd') }}">RGPD</a>
+                <a href="{{ path('app_rgpd') }}" class="{{  currentPath === '/rgpd' ? ' active' : '' }}">RGPD</a>
             </div>
         </div>
     </div>

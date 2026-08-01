@@ -10,6 +10,7 @@ use App\Repository\CategoriesRepository;
 use App\Repository\PresentationRepository;
 use App\Service\CommonDataService;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -57,11 +58,16 @@ class HomeController extends AbstractController
         }
 
         $order = $this->validateOrder($request->query->get('order'));
-
-        // Le slug correspond-il à un article ?
-        $post = $this->findPostBySlug($slug);
         $categoryId = $request->query->get('category');
 
+        // Le slug correspond-il à un article ?
+        try{
+            $post = $this->findPostBySlug($slug);
+        }catch(\Exception $e){
+            $this->logger->error('Erreur récupération findPostBySlug : ' . $e->getMessage());
+            $post = null;
+        }
+        
         if ($post !== null) {
             return $this->renderSinglePost($post, $request);
         }
@@ -153,17 +159,21 @@ class HomeController extends AbstractController
         $commentForm->handleRequest($request);
 
         if ($commentForm->isSubmitted() && $commentForm->isValid()) {
+            // create a limiter based on a unique identifier of the client
+            // (e.g. the client's IP address, a username/email, an API key, etc.)
             $limiter = $this->commentFormLimiter->create($request->getClientIp());
+            // the argument of consume() is the number of tokens to consume
+            // and returns an object of type Limit
             if (!$limiter->consume(1)->isAccepted()) {
                 $this->addFlash('error', 'Trop de commentaires envoyés. Réessayez dans quelques minutes.');
                 return $this->redirectToRoute('app_home_with_slug', ['slug' => $post->getSlug()]);
             }
-
-            $pseudo = $commentForm->get('pseudo')->getData();
+            $pseudo = null;
+            $pseudo = $isEditorOrAdmin ? null : $commentForm->get('pseudo')->getData();
             // $content = $commentForm->get('content');
-            
             $user = $this->getUser();
-            if ($user !== null) {
+            
+            if ($user !== null && $pseudo !== null) {
                 $comment->setUser($user);
                 if ($isEditorOrAdmin) {
                     // Use the user identifier (username/email) instead of non-existent getLogin()
@@ -183,7 +193,7 @@ class HomeController extends AbstractController
             try {
                 $this->entityManager->persist($comment);
                 $this->entityManager->flush();
-
+                $this->addFlash('success', 'Votre commentaire a bien été enregistré ! Merci ^^');
                 return $this->redirectToRoute('app_home_with_slug', ['slug' => $post->getSlug()]);
             } catch (\Exception $e) {
                 $this->logger->error('Erreur sauvegarde commentaire : ' . $e->getMessage());

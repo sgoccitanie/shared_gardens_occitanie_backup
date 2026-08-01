@@ -1,0 +1,447 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mentions Légales | Réseau des Semeurs de Jardins
+{% endblock %}
+
+{% block stylesheets %}
+<style type="text/css">.legal-container p{font-size: 1.2em; font-family: var(--primary-font);}.lst-kix_list_2-6>li:before{content:" "}.lst-kix_list_2-7>li:before{content:" "}ul.lst-kix_list_1-0{list-style-type:none}.lst-kix_list_2-4>li:before{content:" "}.lst-kix_list_2-5>li:before{content:" "}.lst-kix_list_2-8>li:before{content:" "}ul.lst-kix_list_2-8{list-style-type:none}ul.lst-kix_list_1-3{list-style-type:none}ul.lst-kix_list_2-2{list-style-type:none}.lst-kix_list_1-0>li:before{content:"\0025cf   "}ul.lst-kix_list_1-4{list-style-type:none}ul.lst-kix_list_2-3{list-style-type:none}ul.lst-kix_list_1-1{list-style-type:none}ul.lst-kix_list_2-0{list-style-type:none}ul.lst-kix_list_1-2{list-style-type:none}ul.lst-kix_list_2-1{list-style-type:none}ul.lst-kix_list_1-7{list-style-type:none}ul.lst-kix_list_2-6{list-style-type:none}.lst-kix_list_1-1>li:before{content:"\0025cb   "}.lst-kix_list_1-2>li:before{content:"\0025a0   "}ul.lst-kix_list_1-8{list-style-type:none}ul.lst-kix_list_2-7{list-style-type:none}ul.lst-kix_list_1-5{list-style-type:none}ul.lst-kix_list_2-4{list-style-type:none}ul.lst-kix_list_1-6{list-style-type:none}ul.lst-kix_list_2-5{list-style-type:none}.lst-kix_list_1-3>li:before{content:"\0025cf   "}.lst-kix_list_1-4>li:before{content:"\0025cb   "}.lst-kix_list_1-7>li:before{content:"\0025cf   "}.lst-kix_list_1-5>li:before{content:"\0025a0   "}.lst-kix_list_1-6>li:before{content:"\0025cf   "}li.li-bullet-0:before{margin-left:-10.8pt;white-space:nowrap;display:inline-block;min-width:10.8pt}.lst-kix_list_2-0>li:before{content:"\002022   "}.lst-kix_list_2-1>li:before{content:"\0025e6   "}.lst-kix_list_1-8>li:before{content:"\0025cf   "}.lst-kix_list_2-2>li:before{content:" "}.lst-kix_list_2-3>li:before{content:" "}ol{margin:0;padding:0}table td,table th{padding:0}.c11{border-right-style:solid;padding:5pt 6pt 5pt 6pt;border-bottom-color:#000000;border-top-width:1pt;border-right-width:1pt;border-left-color:#000000;vertical-align:top;border-right-color:#000000;border-left-width:1pt;border-top-style:solid;background-color:#1f4e5f;border-left-style:solid;border-bottom-width:1pt;width:335pt;border-top-color:#000000;border-bottom-style:solid}.c9{border-right-style:solid;padding:5pt 6pt 5pt 6pt;border-bottom-color:#000000;border-top-width:1pt;border-right-width:1pt;border-left-color:#000000;vertical-align:top;border-right-color:#000000;border-left-width:1pt;border-top-style:solid;border-left-style:solid;border-bottom-width:1pt;width:140pt;border-top-color:#000000;border-bottom-style:solid}.c20{border-right-style:solid;padding:5pt 6pt 5pt 6pt;border-bottom-color:#000000;border-top-width:1pt;border-right-width:1pt;border-left-color:#000000;vertical-align:top;border-right-color:#000000;border-left-width:1pt;border-top-style:solid;border-left-style:solid;border-bottom-width:1pt;width:335pt;border-top-color:#000000;border-bottom-style:solid}.c33{padding-top:0pt;border-bottom-color:#1f4e5f;border-bottom-width:0.8pt;padding-bottom:8pt;line-height:1.0;border-bottom-style:solid;orphans:2;widows:2;text-align:center}.c6{margin-left:28.8pt;padding-top:0pt;padding-left:-7.2pt;padding-bottom:5pt;line-height:1.1666666666666667;orphans:2;widows:2;text-align:left}.c12{color:#2e74b5;font-weight:400;text-decoration:none;vertical-align:baseline;font-size:0.9em;font-style:normal}.c0{color:#000000;font-weight:400;text-decoration:none;vertical-align:baseline;font-size:08;font-style:normal}.c22{padding-top:14pt;padding-bottom:7pt;line-height:1.0;orphans:2;widows:2;text-align:left}.c1{padding-top:0pt;padding-bottom:0pt;line-height:1.0;orphans:2;widows:2;text-align:left}.c4{padding-top:0pt;padding-bottom:10pt;line-height:1.25;orphans:2;widows:2;text-align:left}.c31{padding-top:0pt;padding-bottom:5pt;line-height:1.0;orphans:2;widows:2;text-align:center}.c21{padding-top:20pt;padding-bottom:10pt;line-height:1.0;orphans:2;widows:2;text-align:left}.c27{padding-top:0pt;padding-bottom:3pt;line-height:1.0;orphans:2;widows:2;text-align:center}.c28{text-decoration-skip-ink:none;-webkit-text-decoration-skip:none;font-style:italic;color:#1155cc;text-decoration:underline}.c14{border-spacing:0;border-collapse:collapse;margin-right:auto}.c17{text-decoration:none;vertical-align:baseline;font-style:normal}.c29{font-weight:400;text-decoration:none;vertical-align:baseline}.c23{color:#2e74b5;font-weight:400;font-size:0.85em}.c32{background-color:#ffffff;max-width:485.4pt;padding:50pt 55pt 50pt 55pt}.c15{color:#1f4e5f;font-size:1em}.c10{color:#1f4e5f;font-size:1.1em}.c26{padding:0;margin:0}.c7{color:#b00020;font-style:italic}.c13{color:#1f4e5f;font-size:0.8em}.c3{color:inherit;text-decoration:inherit}.c19{font-size:0.8em}.c34{color:#000000}.c8{color:#ffffff}.c24{height:0.85em}.c5{font-weight:700}.c18{height:10pt}.c30{font-style:italic}.c25{background-color:#1f4e5f}.c2{height:0pt}.c16{color:#5a5a5a}.title{padding-top:0pt;color:#000000;font-size:28pt;padding-bottom:0pt;line-height:1.0;orphans:2;widows:2;text-align:left}.subtitle{padding-top:18pt;color:#666666;font-size:24pt;padding-bottom:4pt;font-family:"Georgia";line-height:1.0;page-break-after:avoid;font-style:italic;orphans:2;widows:2;text-align:left}li{color:#000000;font-size:1em}p{margin:0;color:#000000;font-size:10pt}h1{padding-top:0pt;color:#2e74b5;font-size:16pt;padding-bottom:0pt;line-height:1.0;orphans:2;widows:2;text-align:left}h2{padding-top:0pt;color:#2e74b5;font-size:13pt;padding-bottom:0pt;line-height:1.0;orphans:2;widows:2;text-align:left}h3{padding-top:0pt;color:#1f4d78;font-size:12pt;padding-bottom:0pt;line-height:1.0;orphans:2;widows:2;text-align:left}h4{padding-top:0pt;color:#2e74b5;font-size:10pt;padding-bottom:0pt;line-height:1.0;font-style:italic;orphans:2;widows:2;text-align:left}h5{padding-top:0pt;color:#2e74b5;font-size:10pt;padding-bottom:0pt;line-height:1.0;orphans:2;widows:2;text-align:left}h6{padding-top:0pt;color:#1f4d78;font-size:10pt;padding-bottom:0pt;line-height:1.0;orphans:2;widows:2;text-align:left}</style>
+{% endblock %}
+{% block content %}
+	<div class="container main-container-style pt-5 pb-5 c32 doc-content legal-container">
+		<h1 class="text-center kgSecondChancesSolid mb-5">Politique de confidentialité</h1>
+		<p class="c27">
+			<span class="c0">Le R&eacute;seau des Semeurs de Jardins</span>
+		</p>
+		<p class="c33">
+			<span class="c16 c19">Derni&egrave;re mise &agrave; jour
+				                :
+			</span>
+			<span class="c16">16 juillet 2026</span>
+		</p>
+		<p class="c4">
+			<span>La pr&eacute;sente politique de
+				                confidentialit&eacute; a pour objectif d&#39;informer les
+				                utilisateurs du site</span>
+			<span class="c30">&nbsp;semeursdejardins.fr</span>
+			<span class="c0">&nbsp;(ci-apr&egrave;s &laquo; le site &raquo;) sur
+				                la mani&egrave;re dont Le R&eacute;seau des Semeurs de Jardins
+				                (ci-apr&egrave;s &laquo; l&#39;association &raquo;) collecte,
+				                utilise et prot&egrave;ge leurs donn&eacute;es personnelles,
+				                conform&eacute;ment au R&egrave;glement (UE) 2016/679 du 27
+				                avril 2016 relatif &agrave; la protection des personnes
+				                physiques &agrave; l&#39;&eacute;gard du traitement des
+				                donn&eacute;es &agrave; caract&egrave;re personnel (&laquo; RGPD
+				                &raquo;) et &agrave; la loi n&deg; 78-17 du 6 janvier 1978
+				                modifi&eacute;e relative &agrave; l&#39;informatique, aux
+				                fichiers et aux libert&eacute;s.</span>
+		</p>
+		<h1 class="c21">
+			<span class="c15 c5">1. Responsable de traitement</span>
+		</h1>
+		<table class="c14">
+			<thead>
+				<tr class="c2">
+					<td class="c9 c25" colspan="1" rowspan="1">
+						<p class="c1">
+							<span class="c5 c8">&Eacute;l&eacute;ment</span>
+						</p>
+					</td>
+					<td class="c11" colspan="1" rowspan="1">
+						<p class="c1">
+							<span class="c8 c5">D&eacute;tail</span>
+						</p>
+					</td>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</tr>
+		<tr class="c2">
+			<td class="c9" colspan="1" rowspan="1">
+				<p class="c1">
+					<span class="c5">Responsable de
+						                                traitement</span>
+				</p>
+			</td>
+			<td class="c20" colspan="1" rowspan="1">
+				<p class="c1">
+					<span>L&#39;association
+					</span>
+					<span class="c0">Le R&eacute;seau des Semeurs de
+						                                Jardins, repr&eacute;sent&eacute;e par son
+						                                repr&eacute;sentant
+						                                l&eacute;gal.</span>
+				</p>
+			</td>
+		</tr>
+		<tr class="c2">
+			<td class="c9" colspan="1" rowspan="1">
+				<p class="c1">
+					<span class="c5">Si&egrave;ge
+						                                social</span>
+				</p>
+			</td>
+			<td class="c20" colspan="1" rowspan="1">
+				<p class="c1">
+					<span class="c0">Parc Magnol, 59bis rue de las Sorbes,
+						                                34070 Montpellier</span>
+				</p>
+			</td>
+		</tr>
+		<tr class="c2">
+			<td class="c9" colspan="1" rowspan="1">
+				<p class="c1">
+					<span class="c5">Contact (exercice des
+						                                droits)</span>
+				</p>
+			</td>
+			<td class="c20" colspan="1" rowspan="1">
+				<p class="c1">
+					<span class="c28">
+						<a class="c3" href="mailto:semeursdejardinslr@gmail.com">semeursdejardinslr@gmail.com</a>
+					</span>
+					<span class="c7">&nbsp;</span>
+				</p>
+			</td>
+		</tr>
+		<tr class="c2">
+			<td class="c9" colspan="1" rowspan="1">
+				<p class="c1">
+					<span class="c5">R&eacute;f&eacute;rent
+						                                RGPD</span>
+				</p>
+			</td>
+			<td class="c20" colspan="1" rowspan="1">
+				<p class="c1">
+					<span class="c0">Le
+						                                coordinateur de l&#39;association, en sa
+						                                qualit&eacute; de repr&eacute;sentant
+						                                l&eacute;gal.</span>
+				</p>
+			</td>
+		</tr>
+	</thead>
+</table>
+<h1 class="c21">
+	<span class="c15 c5">2. Donn&eacute;es collect&eacute;es
+		                et traitements r&eacute;alis&eacute;s</span>
+</h1>
+<p class="c4">
+	<span class="c0">Le site limite volontairement la
+		                collecte de donn&eacute;es personnelles au strict
+		                n&eacute;cessaire. Les traitements suivants sont mis en
+		                &oelig;uvre :</span>
+</p>
+<h2 class="c22">
+	<span class="c17 c13 c5">2.1 Formulaire de contact</span>
+</h2>
+<p class="c1">
+	<span class="c0">Le site propose un formulaire de contact
+		                &agrave; ses utilisateurs. Ce formulaire permet aux utilisateurs
+		                du site d&rsquo;envoyer un message &agrave; l&rsquo;association
+		                accompagn&eacute; de leur adresse e-mail aux fins de
+		                r&eacute;ponse.</span>
+</p>
+<p class="c1 c18">
+	<span class="c0"></span>
+</p>
+<table class="c14">
+	<thead>
+		<tr class="c2">
+			<td class="c9 c25" colspan="1" rowspan="1">
+				<p class="c1">
+					<span class="c8 c5">&Eacute;l&eacute;ment</span>
+				</p>
+			</td>
+			<td class="c11" colspan="1" rowspan="1">
+				<p class="c1">
+					<span class="c8 c5">D&eacute;tail</span>
+				</p>
+			</td>
+		</tr>
+	</thead>
+	<tbody></tbody>
+</tr>
+<tr class="c2">
+	<td class="c9" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c5">Finalit&eacute;</span>
+		</p>
+	</td>
+	<td class="c20" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c0">Permettre &agrave; l&#39;association
+				                                de r&eacute;pondre aux demandes adress&eacute;es
+				                                par les utilisateurs du
+				                                site.</span>
+		</p>
+	</td>
+</tr>
+<tr class="c2">
+	<td class="c9" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c5">Donn&eacute;es
+				                                collect&eacute;es</span>
+		</p>
+	</td>
+	<td class="c20" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c0">Adresse e-mail saisie par
+				                                l&rsquo;utilisateur, sujet du message, contenu
+				                                du message.</span>
+		</p>
+	</td>
+</tr>
+<tr class="c2">
+	<td class="c9" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c5">Base
+				                                l&eacute;gale</span>
+		</p>
+	</td>
+	<td class="c20" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c0">Int&eacute;r&ecirc;t l&eacute;gitime
+				                                de l&#39;association &agrave; r&eacute;pondre
+				                                aux sollicitations qui lui sont adress&eacute;es
+				                                (article 6.1.f du RGPD).</span>
+		</p>
+	</td>
+</tr>
+<tr class="c2">
+	<td class="c9" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c5">Destinataire</span>
+		</p>
+	</td>
+	<td class="c20" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c0">Les messages sont transmis &agrave;
+				                                la bo&icirc;te de messagerie Gmail de
+				                                l&#39;association, op&eacute;r&eacute;e par
+				                                Google. Ce transfert implique un transfert de
+				                                donn&eacute;es hors de l&#39;Union
+				                                europ&eacute;enne, encadr&eacute; par les
+				                                clauses contractuelles mises en &oelig;uvre par
+				                                Google dans le cadre de ses
+				                                services.</span>
+		</p>
+	</td>
+</tr>
+<tr class="c2">
+	<td class="c9" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c5">Stockage sur le
+				                                site</span>
+		</p>
+	</td>
+	<td class="c20" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c0">Les
+				                                donn&eacute;es sont stock&eacute;es de
+				                                fa&ccedil;on transitoire par le serveur du site
+				                                avant leur transmission &agrave; la bo&icirc;te
+				                                e-mail de l&#39;association. Elles ne font
+				                                l&#39;objet d&#39;aucun stockage persistant ni
+				                                d&#39;aucun acc&egrave;s par les administrateurs
+				                                du site, sauf en cas d&#39;incident technique
+				                                exceptionnel retardant la
+				                                transmission.</span>
+		</p>
+	</td>
+</tr>
+<tr class="c2">
+	<td class="c9" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c5">Dur&eacute;e de
+				                                conservation</span>
+		</p>
+	</td>
+	<td class="c20" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c0">3
+				                                ans maximum &agrave; compter du dernier
+				                                &eacute;change avec l&#39;utilisateur, puis
+				                                suppression ou
+				                                anonymisation.</span>
+		</p>
+	</td>
+</tr></thead></table><h2 class="c22 c24"><span class="c17 c13 c5"></span></h2><h2 class="c22"><span class="c13 c5">2.2 Espace de partage de fichiers
+	                (Google Drive)</span></h2><p class="c4"><span class="c0">Le site
+	                propose un lien renvoyant vers un espace Google Drive externe,
+	                permettant &agrave; l&#39;utilisateur, s&#39;il le souhaite et
+	                apr&egrave;s connexion volontaire &agrave; son propre compte
+	                Google, d&#39;acc&eacute;der &agrave; des fichiers
+	                partag&eacute;s.</span></p><p class="c4"><span class="c0">Aucune
+	                donn&eacute;e n&#39;est collect&eacute;e par le site ou par
+	                l&#39;association dans le cadre de cette fonctionnalit&eacute;.
+	                La connexion &agrave; Google Drive et les donn&eacute;es
+	                associ&eacute;es rel&egrave;vent exclusivement de la politique
+	                de confidentialit&eacute; de Google, &agrave; laquelle
+	                l&#39;utilisateur est invit&eacute; &agrave; se
+	                r&eacute;f&eacute;rer.</span></p><h2 class="c22"><span class="c5 c13">2.3 Espace d&#39;administration</span></h2><p class="c4"><span class="c0">Le site dispose d&#39;un espace
+	                d&#39;administration, s&eacute;curis&eacute; par identifiants,
+	                &agrave; l&#39;usage exclusif des membres autoris&eacute;s de
+	                l&#39;association pour la gestion du contenu du site. Cet espace
+	                n&#39;est pas accessible aux visiteurs du site.</span></p><p class="c1 c18"><span class="c0"></span></p><table class="c14"><thead>
+<tr class="c2">
+	<td class="c9 c25" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c8 c5">&Eacute;l&eacute;ment</span>
+		</p>
+	</td>
+	<td class="c11" colspan="1" rowspan="1">
+		<p class="c1">
+			<span class="c8 c5">D&eacute;tail</span>
+		</p>
+	</td>
+</tr></thead><tbody></tbody></tr><tr class="c2"><td class="c9" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c5">Finalit&eacute;</span>
+</p></td><td class="c20" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c0">Permettre &agrave; l&#39;association
+		                                de g&eacute;rer le contenu du
+		                                site</span>
+</p></td></tr><tr class="c2"><td class="c9" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c5">Donn&eacute;es
+		                                collect&eacute;es</span>
+</p></td><td class="c20" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c0">Adresse e-mail de
+		                                l&rsquo;utilisateur, mot de
+		                                passe</span>
+</p></td></tr><tr class="c2"><td class="c9" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c5">Base l&eacute;gale</span>
+</p></td><td class="c20" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c0">Int&eacute;r&ecirc;t l&eacute;gitime
+		                                de l&#39;association &agrave; g&eacute;rer le
+		                                contenu du site (article 6.1.f du
+		                                RGPD).</span>
+</p></td></tr><tr class="c2"><td class="c9" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c5">Stockage sur le
+		                                site</span>
+</p></td><td class="c20" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c0">Les
+		                                donn&eacute;es sont stock&eacute;es dans la base
+		                                de donn&eacute;es associ&eacute;e au site. Le
+		                                mot de passe est crypt&eacute; de mani&egrave;re
+		                                s&eacute;curis&eacute;e.</span>
+</p></td></tr><tr class="c2"><td class="c9" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c5">Dur&eacute;e de
+		                                conservation</span>
+</p></td><td class="c20" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c0">Les identifiants d&#39;acc&egrave;s
+		                                &agrave; l&#39;espace d&#39;administration
+		                                (adresse e-mail, mot de passe) sont
+		                                conserv&eacute;s pour la dur&eacute;e pendant
+		                                laquelle la personne est habilit&eacute;e
+		                                &agrave; intervenir sur la gestion du site. Ils
+		                                sont supprim&eacute;s ou
+		                                d&eacute;sactiv&eacute;s dans les meilleurs
+		                                d&eacute;lais d&egrave;s que cette habilitation
+		                                prend fin, notamment en cas de fin de mandat, de
+		                                d&eacute;mission, d&#39;exclusion ou de fin de
+		                                mission
+		                                b&eacute;n&eacute;vole.</span>
+</p></td></tr></thead></table><h1 class="c21"><span class="c15 c5">3. Cookies</span></h1><p class="c4"><span>L</span><span class="c0">e site d&eacute;pose
+	                uniquement des cookies techniques strictement n&eacute;cessaires
+	                &agrave; son fonctionnement (gestion de session,
+	                s&eacute;curit&eacute;). Ces cookies ne n&eacute;cessitent pas
+	                de consentement pr&eacute;alable, conform&eacute;ment aux
+	                recommandations de la Commission Nationale de l&#39;Informatique
+	                et des Libert&eacute;s (CNIL), et ne sont utilis&eacute;s
+	                &agrave; aucune fin de mesure d&#39;audience, de
+	                publicit&eacute; ou de tra&ccedil;age.</span></p><h1 class="c21"><span class="c15 c5">4.
+	                H&eacute;bergement</span></h1><table class="c14"><thead><tr class="c2"><td class="c9 c25" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c8 c5">&Eacute;l&eacute;ment</span>
+</p></td><td class="c11" colspan="1" rowspan="1">
+<p class="c1">
+	<span class="c8 c5">D&eacute;tail</span>
+</p></td></tr></thead><tbody></tbody></tr><tr class="c2"><td class="c9" colspan="1" rowspan="1"><p class="c1"><span class="c5">H&eacute;bergeur</span></p></td><td class="c20" colspan="1" rowspan="1"><a class="c3" href="https://docs.hetzner.com/general/company-and-policy" target="_blank"><span class="c30">HETZNER ONLINE GMBH</span></a></td></tr><tr class="c2"><td class="c9" colspan="1" rowspan="1"><p class="c1"><span class="c5">Adresse</span></p></td><td class="c20" colspan="1" rowspan="1"><p class="c1"><span class="c29 c19 c30 c34">INDUSTRIESTR. 25 91710
+	                                GUNZENHAUSEN ALLEMAGNE</span></p><p class="c1 c18"><span class="c7 c19 c29"></span></p></td></tr></thead></table><p class="c4"><span class="c0">L&#39;h&eacute;bergeur du site est
+	                susceptible de conserver des donn&eacute;es techniques de
+	                connexion (journaux/logs serveur) dans le cadre de son
+	                fonctionnement normal et de ses obligations l&eacute;gales,
+	                ind&eacute;pendamment de toute action de
+	                l&#39;association.</span></p><h1 class="c21"><span class="c15 c5">5. Destinataires des donn&eacute;es</span></h1><p class="c4"><span class="c0">Les donn&eacute;es personnelles
+	                collect&eacute;es via le site sont susceptibles d&#39;&ecirc;tre
+	                transmises aux seuls destinataires suivants :</span></p><ul class="c26 lst-kix_list_2-0 start"><li class="c6 li-bullet-0"><span class="c0">Les membres de l&#39;association habilit&eacute;s
+	                    &agrave; traiter les demandes de contact ;</span></li><li class="c6 li-bullet-0"><span class="c0">Google, dans le cadre de
+	                    la r&eacute;ception des messages du formulaire de contact
+	                    sur la bo&icirc;te Gmail de l&#39;association
+	                    ;</span></li><li class="c6 li-bullet-0"><span>Hetzner Online
+	                    GmbH</span><span class="c0">, en tant
+	                    qu&#39;h&eacute;bergeur technique du
+	                    site.</span></li></ul><p class="c4"><span class="c0">Aucune
+	                donn&eacute;e n&#39;est vendue, lou&eacute;e ou
+	                c&eacute;d&eacute;e &agrave; des tiers &agrave; des fins
+	                commerciales.</span></p><h1 class="c21"><span class="c15 c5">6.
+	                Transferts de donn&eacute;es hors Union
+	                europ&eacute;enne</span></h1><p class="c4"><span class="c0">Certaines donn&eacute;es (celles transmises via le
+	                formulaire de contact) sont h&eacute;berg&eacute;es par Google,
+	                soci&eacute;t&eacute; &eacute;tablie aux &Eacute;tats-Unis. Ce
+	                transfert hors de l&#39;Union europ&eacute;enne est
+	                encadr&eacute; par les clauses contractuelles mises en
+	                &oelig;uvre par Google dans le cadre de ses services
+	                Workspace/Gmail.</span></p><h1 class="c21"><span class="c15 c5">7. Dur&eacute;es de
+	                conservation</span></h1><table class="c14"><thead><tr class="c2"><td class="c9 c25" colspan="1" rowspan="1"><p class="c1"><span class="c8 c5">&Eacute;l&eacute;ment</span></p></td><td class="c11" colspan="1" rowspan="1"><p class="c1"><span class="c8 c5">D&eacute;tail</span></p></td></tr></thead><tbody></tbody></tr><tr class="c2"><td class="c9" colspan="1" rowspan="1"><p class="c1"><span class="c5">Formulaire de
+	                                contact</span></p></td><td class="c20" colspan="1" rowspan="1"><p class="c1"><span class="c0">3
+	                                ans maximum &agrave; compter du dernier
+	                                &eacute;change</span></p></td></tr><tr class="c2"><td class="c9" colspan="1" rowspan="1"><p class="c1"><span class="c5">Cookies
+	                                techniques</span></p></td><td class="c20" colspan="1" rowspan="1"><p class="c1"><span class="c0">Dur&eacute;e de la session ou
+	                                strictement n&eacute;cessaire au fonctionnement
+	                                du site</span></p></td></tr><tr class="c2"><td class="c9" colspan="1" rowspan="1"><p class="c1"><span class="c5">Logs techniques de
+	                                l&#39;h&eacute;bergeur</span></p></td><td class="c20" colspan="1" rowspan="1"><p class="c1"><span>1 an
+	                                maximum</span></p></td></tr></thead></table><h1 class="c21"><span class="c15 c5">8. Droits des
+	                utilisateurs</span></h1><p class="c4"><span class="c0">Conform&eacute;ment au RGPD, toute personne dispose
+	                des droits suivants sur ses donn&eacute;es personnelles
+	                :</span></p><ul class="c26 lst-kix_list_2-0"><li class="c6 li-bullet-0"><span class="c0">Droit d&#39;acc&egrave;s
+	                    : obtenir la confirmation que des donn&eacute;es la
+	                    concernant sont trait&eacute;es, et en obtenir une copie
+	                    ;</span></li><li class="c6 li-bullet-0"><span class="c0">Droit de rectification : demander la correction
+	                    de donn&eacute;es inexactes ou incompl&egrave;tes
+	                    ;</span></li><li class="c6 li-bullet-0"><span class="c0">Droit &agrave; l&#39;effacement : demander la
+	                    suppression de ses donn&eacute;es, dans les limites
+	                    pr&eacute;vues par la loi ;</span></li><li class="c6 li-bullet-0"><span class="c0">Droit &agrave; la
+	                    limitation du traitement ;</span></li><li class="c6 li-bullet-0"><span class="c0">Droit d&#39;opposition,
+	                    pour motif l&eacute;gitime, aux traitements fond&eacute;s
+	                    sur l&#39;int&eacute;r&ecirc;t l&eacute;gitime de
+	                    l&#39;association ;</span></li><li class="c6 li-bullet-0"><span class="c0">Droit &agrave; la
+	                    portabilit&eacute; des donn&eacute;es, lorsque ce droit est
+	                    applicable.</span></li></ul><p class="c4"><span>Ces droits
+	                peuvent &ecirc;tre exerc&eacute;s en &eacute;crivant &agrave;
+	                l&#39;adresse suivante :</span><span class="c28"><a class="c3" href="mailto:semeursdejardinslr@gmail.com">semeursdejardinslr@gmail.com</a></span><span class="c7">&nbsp;</span><span class="c0">. Une r&eacute;ponse
+	                sera apport&eacute;e dans un d&eacute;lai maximal d&#39;un mois
+	                &agrave; compter de la r&eacute;ception de la
+	                demande.</span></p><p class="c4"><span class="c0">En cas de
+	                difficult&eacute; persistante, toute personne peut
+	                &eacute;galement introduire une r&eacute;clamation aupr&egrave;s
+	                de la Commission Nationale de l&#39;Informatique et des
+	                Libert&eacute;s (CNIL)</span></p><p class="c4"><span class="c15 c5 c17">9. S&eacute;curit&eacute; des
+	                donn&eacute;es</span></p><p class="c4"><span class="c0">L&#39;association met en &oelig;uvre les mesures
+	                techniques et organisationnelles raisonnables pour assurer la
+	                s&eacute;curit&eacute; et la confidentialit&eacute; des
+	                donn&eacute;es personnelles trait&eacute;es, et pour
+	                emp&ecirc;cher qu&#39;elles soient d&eacute;form&eacute;es,
+	                endommag&eacute;es, ou que des tiers non autoris&eacute;s y
+	                aient acc&egrave;s.</span></p><h1 class="c21"><span class="c15 c5">10. Modifications de la politique de
+	                confidentialit&eacute;</span></h1><p class="c4"><span class="c0">La pr&eacute;sente politique de
+	                confidentialit&eacute; peut &ecirc;tre mise &agrave; jour
+	                &agrave; tout moment, notamment pour se conformer &agrave; toute
+	                &eacute;volution r&eacute;glementaire, jurisprudentielle ou
+	                technique. Les utilisateurs sont invit&eacute;s &agrave; la
+	                consulter r&eacute;guli&egrave;rement.</span></p><h1 class="c21"><span class="c5 c15">11. Contact</span></h1><p class="c4"><span>Pour toute question relative &agrave; la
+	                pr&eacute;sente politique de confidentialit&eacute; ou au
+	                traitement de vos donn&eacute;es personnelles, vous pouvez
+	                contacter l&#39;association &agrave; l&#39;adresse suivante :</span><span class="c28"><a class="c3" href="mailto:semeursdejardinslr@gmail.com">semeursdejardinslr@gmail.com</a></span><span class="c7">&nbsp;</span><span class="c0">.</span></p>
+    </div> 
+                    
+{% endblock %}

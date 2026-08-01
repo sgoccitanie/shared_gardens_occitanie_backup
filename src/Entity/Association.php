@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\User;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: AssociationRepository::class)]
 class Association
@@ -23,14 +25,14 @@ class Association
     #[ORM\Column(length: 100)]
     private ?string $mantra = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $banner = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private ?string $banner;
 
-    #[ORM\Column]
-    private ?bool $isLucrative = null;
+    #[ORM\Column(nullable: false)]
+    private ?bool $isLucrative;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private ?string $name;
 
     /**
      * @var Collection<int, User>
@@ -50,17 +52,17 @@ class Association
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $status = null;
 
-    #[ORM\Column(length: 20)]
-    private ?string $mobile = null;
+    #[ORM\Column(length: 20, nullable: false)]    
+    private ?string $mobile;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $email = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private ?string $email;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $update_at = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $created_at;
 
     #[ORM\ManyToOne(inversedBy: 'asso_address')]
     private ?Addresses $address = null;
@@ -83,7 +85,6 @@ class Association
         $this->links = new ArrayCollection();
         $this->subjectEmails = new ArrayCollection();
         $this->founded_at = new \DateTimeImmutable();
-        $this->banner = null;
         $this->logo = null;
         $this->isLucrative = false;
         $this->created_at = new \DateTimeImmutable();
@@ -118,14 +119,14 @@ class Association
         return $this;
     }
 
-    public function getBanner(): ?string
+    public function getBanner(): string
     {
         return $this->banner;
     }
 
-    public function setBanner(?string $banner): static
+    public function setBanner(string $banner): static
     {
-        $this->banner = $banner ?? '';
+        $this->banner = $banner;
         return $this;
     }
 

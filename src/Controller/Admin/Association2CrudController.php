@@ -16,6 +16,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_ADMIN')]
@@ -24,7 +26,10 @@ class Association2CrudController extends AbstractCrudController
     use EasyAdminAssetsTrait;
     use EasyAdminActionsTrait;
 
-    public function __construct(private ManagerRegistry $doctrine) {}
+    public function __construct(
+        private readonly ManagerRegistry $doctrine,        
+        private LoggerInterface $logger
+    ) {}
 
     public static function getEntityFqcn(): string
     {
@@ -62,7 +67,7 @@ class Association2CrudController extends AbstractCrudController
 
     public function configureAssets(Assets $assets): Assets
     {
-        return $this->configureCommonAssets($assets, '5px 30px');
+        return $this->configureCommonAssets($assets);
     }
 
     public function configureActions(Actions $actions): Actions
@@ -76,7 +81,25 @@ class Association2CrudController extends AbstractCrudController
 
         return $actions
             ->add(Crud::PAGE_INDEX, $deleteBannerAndLogo)
-            ->remove(Crud::PAGE_INDEX, Action::DELETE);
+            ->remove(Crud::PAGE_INDEX, Action::DELETE)
+            ->remove(Crud::PAGE_INDEX, Action::NEW);
+    }
+
+     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        /** @var Association $entityInstance */
+        try {
+            parent::updateEntity($entityManager, $entityInstance);
+            $this->addFlash(
+                'success',
+                'Le profile association a été modifié avec succès.'
+            );
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur modification profile de l\'association : ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            $this->addFlash('danger', "Les modifications du profile n'ont pas pu être enregistrées. Réessayez ou contactez l'administrateur.");
+        }
     }
 
 

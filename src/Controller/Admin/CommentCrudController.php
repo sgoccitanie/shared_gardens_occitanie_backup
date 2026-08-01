@@ -16,11 +16,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use Dom\Text;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Google\Service\Spanner\Field;
 use Psr\Log\LoggerInterface;
 
 #[IsGranted('ROLE_EDITOR')]

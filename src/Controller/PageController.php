@@ -13,13 +13,7 @@ class PageController extends AbstractController
     {
         return $this->render('page/rgpd.html.twig');
     }
-
-    #[Route('/mentions-legales', name: 'app_legal', priority: 10)]
-    public function legal(): Response
-    {
-        return $this->render('page/legal.html.twig');
-    }
-
+    
     #[Route('/politique-de-confidentialite', name: 'app_privacy', priority: 10)]
     public function privacy(): Response
     {

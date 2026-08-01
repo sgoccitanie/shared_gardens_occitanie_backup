@@ -35,6 +35,7 @@ class AssoProfileType extends AbstractType
             ])
             ->add('email', EmailType::class, [
                 'attr' => ['class' => 'js-email'],
+                'required' => true,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez entrer une adresse email',
@@ -87,12 +88,11 @@ class AssoProfileType extends AbstractType
             ->add('mobile', TelType::class, [
                 'label' => 'Téléphone',
                 'attr' => ['class' => 'js-tel'],
-                'required' => false,
+                'required' => true,
                 'data' => $options['data']->getMobile() ?? 'Le n° de téléphone de l\'association',
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
-
                 'required' => false,
                 'attr' => ['class' => 'js-textarea'],
                 'data' => $options['data']->getDescription(),
@@ -100,9 +100,9 @@ class AssoProfileType extends AbstractType
             ])
             ->add('logo', FileType::class, [
                 'label' => 'Logo',
-                'attr' => ['class' => 'js-file'],
                 'mapped' => false,
                 'attr' => [
+                    'class' => 'js-file',
                     'accept' => 'image/png, image/jpeg, image/webp, image/jpg, image/svg+xml'
                 ],
                 'constraints' => [
@@ -124,7 +124,6 @@ class AssoProfileType extends AbstractType
                 ]
             ])
             ->add('Enregistrer', SubmitType::class, [
-
                 'label' => 'Enregistrer',
                 'attr' => ['class' => 'btn btn-primary'],
             ])

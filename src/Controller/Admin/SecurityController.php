@@ -19,6 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 
 class SecurityController extends AbstractController
@@ -28,6 +29,7 @@ class SecurityController extends AbstractController
         private readonly AssociationRepository $assoRepo,
         #[Autowire(service: 'monolog.logger.security')]
         private readonly LoggerInterface $logger,
+        private RateLimiterFactory $resetPasswordLimiter,
     ) {}
 
     #[Route(path: '/login', name: 'app_login')]
@@ -222,6 +224,10 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $limiter = $this->resetPasswordLimiter->create($request->getClientIp());
+            if (!$limiter->consume(1)->isAccepted()) {
+                throw new TooManyRequestsHttpException();
+            }
             $user->setPassword($passwordHasher->hashPassword($user, $form->get('password')->getData()));
             $user->setToken('noToken');
             $user->setUpdatedAt(new \DateTimeImmutable());
