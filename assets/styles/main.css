@@ -43,7 +43,7 @@
     --box-shadow-card : 4px 6px 4px 0 rgba(0, 0, 0, 0.25);
 }
 body {
-    background-color: var(--background-color);
+    margin: 0;
 }
 .home-container{
     margin-left: 150px;
@@ -176,19 +176,7 @@ button.main-button:hover:after {
 .post-container > .empty-post{
     margin: 4em auto;
 }
-footer{
-    font-size: 0.9em;
-    line-height: normal;
-    /* position: absolute; */
-    /* bottom: 0; */
-    /* margin: 10px auto 10px auto; */
-    justify-content: center;
-    display: flex;
-    /* width: 80%; */
-}
-footer span{
-    margin: 0 0.5em;
-}
+
 .previous-icon{
     margin-right: 10px;
 }

@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
+	{{ parent() }}
 	<link rel="stylesheet" href="{{ asset('styles/calendar.css') }}">
 {% endblock %}
 
@@ -47,6 +48,7 @@
 {% endblock %}
 
 {% block js %}
+	{{ parent() }}
 	<script src="{{ asset('js/main.js') }}" defer></script>
 
 	{% if calendarList|length > 0 %}

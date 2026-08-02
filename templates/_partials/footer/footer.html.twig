@@ -1,8 +1,32 @@
-<footer class="pt-lg-5 pb-lg-3 mb-5 josefinSans">
-    <div class="container">
+{% set headerData = headerData ?? app.request.attributes.get('headerData', {}) %}
+<footer class="josefinSans">
+    <div class="container pt-lg-5 pb-lg-3 mb-5 ">
+        <div class="coordinates-asso px-3  mt-3">     
+            <div class="container footer-info mt-5">
+                <p class="contact-us fw-bolder fs-5">Contactez-nous</p>
+                <p class="city">
+                    {{ headerData.assoDescription|default('Description non disponible') }}
+                </p>
+                <p class="color-green fw-bolder">
+                    <a href="{{ path('app_contact') }}#simple-list-item-2" class="color-green fw-bolder">Accès à la carte</a>
+                </p>
+                <p class="email">
+                    <i class="fa-solid fa-envelope"></i>
+                    <a href="mailto:{{ headerData.assoEmail|default('Email non disponible') }}">
+                        {{ headerData.assoEmail|default('Email non disponible') }}
+                    </a>
+                </p>
+                <p class="phone mb-4">
+                    <i class="fa-solid fa-phone"></i>
+                    {{ headerData.assoPhone|default('Téléphone non disponible') }}
+                </p>
+            </div>       
+            {# Mini carte uMap #}
+            {% include '_partials/navbar/_mini-map.html.twig' %}
+        </div>
         {% set currentPath = path(app.request.attributes.get('_route'),
         app.request.attributes.get('_route_params')) %}
-        <div class="row">
+        <div class="row footer-links pt-5">
             <div class="col-6 d-flex justify-content-center">
 			<!-- Rediriger vers "Présentation" -->
                 <a href="{{ path('app_home') }}" class="{{  currentPath === '/' ? ' active' : '' }}">Qui sommes-nous ?</a>

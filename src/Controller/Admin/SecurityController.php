@@ -150,7 +150,7 @@ class SecurityController extends AbstractController
                 $this->logger->info('Demande de reset pour email inexistant: {email}', ['email' => $emailReceiver]);
             }
 
-            // Message identique dans tous les cas (anti-énumération)
+            // Message identique dans tous les cas (anti-énumération des comptes enregistrés)
             $this->addFlash('success', 'Si un compte existe avec cet email, un lien de réinitialisation vous a été envoyé.');
         }
 

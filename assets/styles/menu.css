@@ -89,24 +89,6 @@ a.active{
     padding-top: 10px;
 }
 
-.coordinates-asso{
-    line-height: normal;
-    /* text-align: center; */
-}
-
-.coordinates-asso .fa-solid {
-    font-size: 0.9em;
-    padding: 0.3em;
-}
-
-.coordinates-asso p {
-    font-size: 1em;
-    margin-bottom: 10px;
-}
-
-.email, .phone {
-    font-weight: bolder;
-}
 
 /* icon disabled */
 #main-menu .menu .submenu-toggle-icon{

@@ -4,7 +4,6 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         .map-container {
             margin-top: 120px;
@@ -47,7 +46,6 @@
 
 {% block js %}
     {{ parent() }}
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 1) Initialiser la carte avec une vue centrée sur Montpellier

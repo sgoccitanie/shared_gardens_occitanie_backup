@@ -42,28 +42,7 @@
 						Carte des jardins
 					</a>
 				</nav>
-				<div
-					class="coordinates-asso align-content-end justify-content-center px-3 mt-3">
-					{# Mini carte uMap #}
-					{% include '_partials/navbar/_mini-map.html.twig' %}
-					<p class="contact-us text-center fw-bolder fs-5">Contactez-nous</p>
-					<p class="city">
-						{{ headerData.assoDescription|default('Description non disponible') }}
-					</p>
-					<p class="color-green text-center fw-bolder">
-						<a href="{{ path('app_contact') }}#simple-list-item-2" class="color-green fw-bolder">Accès à la carte</a>
-					</p>
-					<p class="email">
-						<i class="fa-solid fa-envelope"></i>
-						<a href="mailto:{{ headerData.assoEmail|default('Email non disponible') }}">
-							{{ headerData.assoEmail|default('Email non disponible') }}
-						</a>
-					</p>
-					<p class="phone mb-4">
-						<i class="fa-solid fa-phone"></i>
-						{{ headerData.assoPhone|default('Téléphone non disponible') }}
-					</p>
-				</div>
+				
 			</div>
 		</div>
 	</div>

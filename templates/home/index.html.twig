@@ -5,7 +5,7 @@
 {{ pageTitle|default('Réseau des Semeurs de Jardins') }}
 {% endblock %}
 
-	{% block stylesheets %}
+{% block stylesheets %}
 	{{ parent() }}
 	<link rel="stylesheet" href="{{ asset('styles/index.css') }}"> 
 	<link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
@@ -193,5 +193,6 @@
 		{% endblock %}
 
 		{% block js %}
+			{{ parent() }}
 			<script src="{{ asset('js/index.js') }}" defer></script>
 		{% endblock %}
