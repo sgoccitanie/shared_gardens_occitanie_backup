@@ -6,4 +6,4 @@ framework:
     cookie_httponly: true
     cookie_samesite: lax
     use_cookies: true
-    gc_maxlifetime: 3600
+    gc_maxlifetime: 1500
