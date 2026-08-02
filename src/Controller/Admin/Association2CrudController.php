@@ -53,7 +53,6 @@ class Association2CrudController extends AbstractCrudController
             TextField::new('name')->setLabel('Nom'),
             TextField::new('mantra')->setLabel('Mantra'),
             TextField::new('mobile')->setLabel('Téléphone'),
-            TextareaField::new('description')->setLabel('Description'),
 
             ImageField::new('logo')
                 ->setLabel('Logo')

@@ -2,6 +2,7 @@ framework:
   session:
     handler_id: null
     cookie_secure: auto
+    cookie_lifetime: 3600
     cookie_httponly: true
     cookie_samesite: lax
     use_cookies: true
