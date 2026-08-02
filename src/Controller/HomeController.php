@@ -44,8 +44,7 @@ class HomeController extends AbstractController
     public function home(): Response
     {
         return $this->render('home/presentation.html.twig', [
-            'headerData' => $this->commonDataService->getFullHeaderData(),
-            'presentationContent' => $this->getPresentationContent(),
+            'presentationContent' => $this->getPresentationContent()
         ]);
     }
 
