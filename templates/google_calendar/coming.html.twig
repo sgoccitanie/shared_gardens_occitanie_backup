@@ -36,8 +36,8 @@
 			{% include '_partials/calendar/calendar_events.html.twig' with {'events': events} %}
 
 
-			<div id="loader" class="position-absolute top-50 start-50 translate-middle d-none">
-				<i class="fa-solid fa-spinner"></i>
+			<div id="loader" class="position-fixed top-50 start-50 translate-middle d-none loader-container">
+				<div class="loader-spinner"></div>
 			</div>
 
 			<div id="eventModal" class="modal">
@@ -50,5 +50,6 @@
 		</div>
 	{% endblock %}
 	{% block js %}
+		{{ parent() }}
 		<script src="{{asset('js/calendar.js')}}" defer></script>
 	{% endblock %}

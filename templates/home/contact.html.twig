@@ -76,6 +76,7 @@
 {% endblock %}
 
 {% block js %}
+	{{ parent() }}
 	<script src="{{ asset('js/form.js') }}" defer></script>
 	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endblock %}

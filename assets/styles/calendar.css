@@ -16,6 +16,9 @@ html{
 .coming-soon .eventTitle{
     text-align: center;
 }
+#events{
+    min-height: 1000px;
+}
 #events .eventsList {
     border-radius: 10px;
     padding: 10px;
@@ -24,7 +27,7 @@ html{
     padding-left: 40px;
 }
 #events .eventsList.color-1 {
-    background: linear-gradient(to left, rgba(48, 175, 133, 0.21), rgba(48, 175, 133, 0.21) 95% 5%,  var(--turquoise) 95%) ;
+    background: linear-gradient(to left, rgba(48, 175, 133, 0.21), rgba(48, 175, 133, 0.22) 98% 4%, var(--turquoise) 95%);
 }
 #events .eventsList.color-6 {
     background: linear-gradient(to left, rgba(255, 193, 7, 0.21), rgba(255, 193, 7, 0.21) 95% 5%,  var(--yellow) 95%) ;
