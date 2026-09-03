@@ -11,12 +11,50 @@ nelmio_security:
             - 'strict-origin-when-cross-origin'
     forced_ssl:
         hsts_max_age: 31536000
-        hsts_subdomains: true   
+        hsts_subdomains: true
     permissions_policy:
         enabled: true
         directives:
             geolocation: ['self', 'https://cartes.app']
-            microphone: []      # liste vide = désactivé
+            microphone: []
             camera: []
             payment: []
             usb: []
+    csp:
+        enabled: true
+        report_endpoint:
+            log_channel: security
+            log_level: notice
+            filters:
+                domains: true
+                schemes: true
+                browser_bugs: true
+                injected_scripts: true
+        report:
+            report-uri: /nelmio/csp/report
+            default-src:
+                - 'self'
+            script-src:
+                - 'self'
+                - 'unsafe-inline'
+                - 'https://cdn.jsdelivr.net'
+                - 'https://unpkg.com'
+            style-src:
+                - 'self'
+                - 'unsafe-inline'
+                - 'https://cdn.jsdelivr.net'
+                - 'https://unpkg.com'
+            img-src:
+                - 'self'
+                - 'data:'
+                - 'https://tile.openstreetmap.org'
+                - 'https://*.tile.openstreetmap.org'
+            frame-src:
+                - 'self'
+                - 'https://calendar.google.com'
+                - 'https://cartes.app'
+            font-src:
+                - 'self'
+                - 'data:'
+            connect-src:
+                - 'self'
