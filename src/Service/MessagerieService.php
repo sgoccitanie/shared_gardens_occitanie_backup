@@ -37,7 +37,6 @@ class MessagerieService
         if ($replyTo) {
             $mail->replyTo(new Address($replyTo));
         }
-        dump('emailSent =', $mail);
         try {
             $this->mailer->send($mail);
             $this->logger->info('Email envoyé avec succès', [

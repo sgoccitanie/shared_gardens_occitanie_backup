@@ -58,7 +58,8 @@ class UserCrudController extends AbstractCrudController
 
             // the labels used to refer to this entity in titles, buttons, etc.
             ->setEntityLabelInSingular('Membre')
-            ->setEntityLabelInPlural('Membres')
+            ->setEntityLabelInPlural('Membres')            
+            ->setDefaultSort(['id' => 'DESC'])
             ->setPageTitle('index', 'Listes des %entity_label_plural%')
             ->setPageTitle('detail', fn(User $user) => (string) $user)
             ->setPageTitle('edit', fn(User $user) => sprintf('Edition de "<b>%s</b>', $user->getFirstName() . ' ' . $user->getLastName() . '"'))

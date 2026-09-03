@@ -15,7 +15,7 @@ class Comment
     private ?int $id = null;
 
     #[ORM\Column(type: 'text')]
-    #[Assert\Length(max: 5000)]
+    #[Assert\Length(max: 5000, maxMessage: 'Le commentaire ne peut pas dépasser {{ limit }} caractères.')]
     #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
     private ?string $content = null;
 

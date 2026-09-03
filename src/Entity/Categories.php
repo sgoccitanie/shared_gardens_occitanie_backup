@@ -16,10 +16,10 @@ class Categories
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    #[Assert\Length(min: 5, max: 50, message: 'Le nom de la catégorie ne peut pas dépasser {{ limit }} caractères.')]
+    #[ORM\Column(length: 50, nullable: false)]
+    #[Assert\Length(min: 3, max: 50, minMessage: 'Le nom de la catégorie doit comporter au moins {{ limit }} caractères.', maxMessage: 'Le nom de la catégorie ne peut pas dépasser {{ limit }} caractères.')]
     #[Assert\NotBlank(message: 'Le nom de la catégorie ne peut pas être vide.')]
-    private ?string $name = null;
+    private string $name;
 
     /**
      * @var Collection<int, Tabs>
@@ -56,20 +56,6 @@ class Categories
         return $this;
     }
 
-    public function addTabsCat(Tabs $tabsCat): static
-    {
-        if (!$this->tabs_cat->contains($tabsCat)) {
-            $this->tabs_cat->add($tabsCat);
-        }
-        return $this;
-    }
-
-    public function removeTabsCat(Tabs $tabsCat): static
-    {
-        $this->tabs_cat->removeElement($tabsCat);
-        return $this;
-    }
-
     public function setTabsCat(Collection $tabs_cat): static
     {
         $this->tabs_cat = $tabs_cat;
@@ -79,5 +65,19 @@ class Categories
     public function getTabsCat(): Collection
     {
         return $this->tabs_cat;
+    }
+
+    public function addTab(Tabs $tab): static
+    {
+        if (!$this->tabs_cat->contains($tab)) {
+            $this->tabs_cat->add($tab);
+        }
+        return $this;
+    }
+
+    public function removeTab(Tabs $tab): static
+    {
+        $this->tabs_cat->removeElement($tab);
+        return $this;
     }
 }

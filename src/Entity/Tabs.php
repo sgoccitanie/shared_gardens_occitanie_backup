@@ -102,7 +102,7 @@ class Tabs
         return $this->categories;
     }
 
-    public function setCategories(Collection $categories    ): static
+    public function setCategories(Collection $categories): static
     {
         $this->categories = $categories;
         return $this;
@@ -127,22 +127,23 @@ class Tabs
         return $this;
     }
 
-    
-    
-    public function addCategory(Categories $categories): static
+    public function addCategory(Categories $tabsCat): static
     {
-        if (!$this->categories->contains($categories)) {
-            $this->categories->add($categories);
-            $categories->addTabsCat($this);
+        if (!$this->categories->contains($tabsCat)) {
+            $this->categories->add($tabsCat);
+            $tabsCat->addTab($this);
         }
         return $this;
     }
 
-    public function removeCategory(Categories $categories): static
+    public function removeCategory(Categories $tabsCat): static
     {
-        if ($this->categories->removeElement($categories)) {
-            $categories->removeTabsCat($this);
+        if ($this->categories->removeElement($tabsCat)) {
+            $this->categories->removeElement($tabsCat);
+            $tabsCat->removeTab($this);
         }
         return $this;
     }
+    
+   
 }

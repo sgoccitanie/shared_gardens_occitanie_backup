@@ -25,6 +25,7 @@ html{
     margin: 10px;
     line-height: 1;
     padding-left: 40px;
+    overflow: hidden;
 }
 #events .eventsList.color-1 {
     background: linear-gradient(to left, rgba(48, 175, 133, 0.21), rgba(48, 175, 133, 0.22) 98% 4%, var(--turquoise) 95%);

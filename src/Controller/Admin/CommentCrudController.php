@@ -36,17 +36,12 @@ class CommentCrudController extends AbstractCrudController
         return Comment::class;
     }
 
-    // public function createEntity(string $entityFqcn)
-    // {
-    //     $comment = new Comment();
-    //     return $comment;
-    // }
-
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
             ->setEntityLabelInSingular('Commentaire')
-            ->setEntityLabelInPlural('Commentaires')
+            ->setEntityLabelInPlural('Commentaires')            
+            ->setDefaultSort(['id' => 'DESC'])
             ->setPageTitle('index', 'Liste des %entity_label_plural%')
             ->setPageTitle('detail', fn(Comment $comment) => (string) $comment)
             ->setPageTitle('edit', fn(Comment $comment) => sprintf('Modifier le commentaire n°%d', $comment->getId()))
@@ -172,8 +167,7 @@ class CommentCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield AssociationField::new('post', 'Article associé');
-
+        
         yield AssociationField::new('parent', 'En réponse à')
             ->setHelp('Laisser vide pour un commentaire principal, ou choisir le commentaire auquel celui-ci répond')
             ->setFormTypeOption('choice_label', fn(Comment $c) => sprintf(
@@ -194,9 +188,11 @@ class CommentCrudController extends AbstractCrudController
                 return sprintf('%s : « %s… »', $parent->getPseudo() ?? 'Anonyme', $extrait);
             });
 
-        yield TextareaField::new('content', 'Contenu');
+        yield TextareaField::new('content', 'Contenu du commentaire')->setFormTypeOption('attr', ['rows' => 5]);
 
         yield AssociationField::new('user', 'Utilisateur')->hideOnIndex();
+        yield AssociationField::new('post', 'Article associé');
+
         yield DateTimeField::new('createdAt', 'Date de création')->setDisabled(true);
 
         yield BooleanField::new('isApproved', 'Approuvé')->renderAsSwitch(true);

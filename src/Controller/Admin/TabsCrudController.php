@@ -37,7 +37,8 @@ class TabsCrudController extends AbstractCrudController
     {
         return $crud
             ->setEntityLabelInSingular('Page')
-            ->setEntityLabelInPlural('Pages')
+            ->setEntityLabelInPlural('Pages')            
+            ->setDefaultSort(['id' => 'DESC'])
             ->setPageTitle('index', 'Listes des %entity_label_plural%')
             ->setPageTitle('detail', fn(Tabs $tab) => (string) $tab)
             ->setPageTitle('edit', fn(Tabs $tab) => sprintf('Edition de la page "<b>%s</b>"', $tab->getLabel()))

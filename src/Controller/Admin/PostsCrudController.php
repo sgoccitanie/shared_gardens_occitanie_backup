@@ -61,7 +61,7 @@ class PostsCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Articles')
             ->setPageTitle('index', 'Liste des %entity_label_plural%')
             ->setPageTitle('detail', fn(Posts $post) => (string) $post)
-            ->setDefaultSort(['posted_at' => 'DESC'])
+            ->setDefaultSort(['id' => 'DESC'])
             ->setPageTitle('edit', fn(Posts $post) => sprintf('Édition de l\'article "<b>%s</b>"', $post->getTitle()))
             ->setFormThemes(['@EasyAdmin/crud/form_theme.html.twig', 'admin/posts/form.html.twig']);
     }

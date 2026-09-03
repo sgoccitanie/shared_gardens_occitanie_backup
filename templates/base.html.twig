@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="robots" content="noindex, nofollow">
-		<title>
+		<title>	
 			{% block title %}Accueil | Réseau des Semeurs de Jardins
 			{% endblock %}
 		</title>
@@ -65,7 +65,8 @@
 				const map = L.map('map').setView([43.6174, 3.8629], 18);
 				L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 					attribution: '© OpenStreetMap',
-					maxZoom: 28
+					maxZoom: 28,
+					referrerPolicy: 'strict-origin-when-cross-origin'
 				}).addTo(map);
 				L.marker([43.6174, 3.8629]).addTo(map)
 					.bindPopup('Réseau des Semeurs de Jardins');
