@@ -150,11 +150,7 @@ modalTitle.textContent = event.summary;
 // Contenu sécurisé (textContent puis ajout HTML dans un conteneur)
 const container = document.createElement('div');
 
-if (event.description) {
-const desc = document.createElement('p');
-desc.innerHTML = event.description;
-container.appendChild(desc);
-}
+
 
 if (event.location) {
 const loc = document.createElement('p');
@@ -190,7 +186,7 @@ const linkContainer = document.createElement('div');
 linkContainer.className = 'd-flex justify-content-end mt-3';
 
 const link = document.createElement('a');
-link.href = 'https://calendar.google.com/calendar/render?action=TEMPLATE' + '&text=' + encodeURIComponent(event.summary || '') + '&dates=' + encodeURIComponent(event.start.dateTime || '') + '/' + encodeURIComponent(event.end.dateTime || '') + '&details=' + encodeURIComponent(event.description || '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '') + encodeURIComponent((event.description || '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '')) + '&location=' + encodeURIComponent(event.location || '');
+link.href = 'https://calendar.google.com/calendar/render?action=TEMPLATE' + '&text=' + encodeURIComponent(event.summary || '') + '&dates=' + encodeURIComponent(event.start.dateTime || '') + '/' + encodeURIComponent(event.end.dateTime || '') +  '&location=' + encodeURIComponent(event.location || '');
 link.target = '_blank';
 link.rel = 'noopener noreferrer';
 link.className = 'btn btn-outline-primary btn-sm';

@@ -88,16 +88,18 @@ class GoogleCalendarController extends AbstractController
                 if ($event->summary) {
                     $event->summary = preg_replace('/\s*\([^)]*\)/', '', $event->summary);
                 }
-                if ($event->description) {
-                    // Retirer les emails
-                    // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
-                    $event->description = preg_replace(
-                        '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
-                        '',
-                        $event->description
-                    );
-                }
+                
+                $event->description = null;
+                //     // Retirer les emails
+                //     // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
+                //     $event->description = preg_replace(
+                //         '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
+                //         '',
+                //         $event->description
+                //     );
+                // }
             }
+            
             // Filtre qui inclut aussi les événements "journée entière"
             $filteredCalendar = array_filter($calendarArray, function ($e) {
                 return (isset($e->start->dateTime) && isset($e->end->dateTime))
@@ -109,14 +111,15 @@ class GoogleCalendarController extends AbstractController
                 if ($event->summary) {
                     $event->summary = preg_replace('/\s*\([^)]*\)/', '', $event->summary);
                 }
-                if ($event->description) {
-                    // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
-                    $event->description = preg_replace(
-                        '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
-                        '',
-                        $event->description
-                    );
-                }
+                $event->description = null;
+                // if ($event->description) {
+                //     // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
+                //     $event->description = preg_replace(
+                //         '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
+                //         '',
+                //         $event->description
+                //     );
+                // }
             }
 
             return $this->render('google_calendar/index.html.twig', [
@@ -148,14 +151,15 @@ class GoogleCalendarController extends AbstractController
             if ($event->summary) {
                 $event->summary = preg_replace('/\s*\([^)]*\)/', '', $event->summary);
             }
-            if ($event->description) {
-                // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
-                $event->description = preg_replace(
-                    '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
-                    '',
-                    $event->description
-                );
-            }
+            $event->description = null;
+            // if ($event->description) {
+            //     // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
+            //     $event->description = preg_replace(
+            //         '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
+            //         '',
+            //         $event->description
+            //     );
+            // }
 
             return new JsonResponse($event);
         } catch (\Exception $e) {
@@ -200,13 +204,14 @@ class GoogleCalendarController extends AbstractController
             // Retirer la description de chaque événement et les noms de calendrier entre parenthèses RGPD
             foreach ($filteredEvents as $event) {
                 if ($event->summary) {
-                    // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
-                    $event->description = preg_replace(
-                        '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
-                        '',
-                        $event->description
-                    );
-                    $event->description = strip_tags($event->description, '<b><br><p><strong><em>');
+                   $event->description = null;
+            //     //     // Retire tout entre "<b>Réservé par</b>" et "<b>Ville</b>"
+            //     //     $event->description = preg_replace(
+            //     //         '/<b>Réservé par<\/b>.*?(?=<b>Ville<\/b>|$)/s',
+            //     //         '',
+            //     //         $event->description
+            //     //     );
+            //     //     $event->description = strip_tags($event->description, '<b><br><p><strong><em>');
                 }
             }
 

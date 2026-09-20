@@ -116,7 +116,7 @@ class HomeController extends AbstractController
         }
 
         return $this->render('home/postslist.html.twig', [
-            'postsWithUrls' => $this->commonDataService->buildPostsWithUrls($posts),
+            'postsWithUrls' => $this->commonDataService->buildPost%sWithUrls($posts),
         ]);
     }
 
