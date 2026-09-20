@@ -31,18 +31,15 @@ header{
 .show-hide{
     display: none;
 }
-/* header responsive */
-@media (max-width: 1600px) { 
+@media (max-width: 768px) {
+    header{
+        margin: auto 2vw;
+    }
     .header-container{
         width: 100%;
     }
-}
-@media (max-width: 768px) {
     .div-mantra{
         display: none;
-    }
-    header{
-        margin: auto 2vw;
     }
     .show-hide{
         display: flex;

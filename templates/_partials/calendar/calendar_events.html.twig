@@ -41,11 +41,10 @@
 						{{ eventEnd|format_datetime(locale:'fr', pattern:'d MMMM') }}
 					{% endif %}
 				</p>
-				<p>{{ event.description ? event.description|raw : 'Aucune description.' }}</p>
 				<p>{{ event.location ? event.location : '' }}</p>
 				<div class="d-flex justify-content-end">
 					{% if event.start.dateTime %}
-						<a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ event.summary|url_encode }}&dates={{ event.start.dateTime|date('Ymd\\THis') }}/{{ event.end.dateTime|date('Ymd\\THis') }}&details={{ event.description|raw|replace({'<br>': '\n', '<br/>': '\n', '<br />': '\n'})|striptags|url_encode }}&location={{ event.location|url_encode }}" target="_blank">
+						<a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ event.summary|url_encode }}&dates={{ event.start.dateTime|date('Ymd\\THis') }}/{{ event.end.dateTime|date('Ymd\\THis') }}&location={{ event.location|url_encode }}" target="_blank">
 							<i class="fa-solid fa-calendar-plus"></i>
 							Ajouter à mon agenda
 						</a>
