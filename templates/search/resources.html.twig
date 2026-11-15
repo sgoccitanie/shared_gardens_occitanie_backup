@@ -25,6 +25,9 @@
 		{% endif %}
 
 		{% if files|length > 0 %}
+			<p class="resources-count text-muted mb-3">
+				{{ total }} ressource{{ total > 1 ? 's' : '' }}{% if pageCount > 1 %} · page {{ page }} sur {{ pageCount }}{% endif %}
+			</p>
 			<div class="row row-cols-1 row-cols-md-2 g-4 w-100 mx-auto mx-lg-0">
 				{% for file in files %}
 					<div class="col">
@@ -36,7 +39,7 @@
 								</p>
 								<div class="d-flex justify-content-between align-items-center mt-3">
 									<span class="badge bg-secondary">
-										{{ file.parents[0] == '1sTXBydEI27J0mkwM-A50jXKRLpCsD4vI' ? 'Dossier R. Morez' : 'Dossier RSJ' }}
+										{{ (file.parents[0] ?? null) == (folderMorezId ?? '1sTXBydEI27J0mkwM-A50jXKRLpCsD4vI') ? 'Dossier R. Morez' : 'Dossier RSJ' }}
 									</span>
 									<div>
 										<a href="{{ file.webViewLink }}" class="btn btn-sm btn-outline-primary" target="_blank">
@@ -63,6 +66,34 @@
 					</svg>
 				</button>
 			</div>
+
+			{# Pagination : conserve le mot-clé recherché #}
+			{% if pageCount > 1 %}
+				{% set pageParams = query ? {'q': query} : {} %}
+				<nav class="resources-pagination mt-4" aria-label="Pagination des ressources">
+					<ul class="pagination justify-content-center flex-wrap">
+						<li class="page-item {{ page <= 1 ? 'disabled' }}">
+							<a class="page-link" href="{{ page > 1 ? path('app_resources', pageParams|merge({'page': page - 1})) : '#' }}" {% if page <= 1 %}tabindex="-1" aria-disabled="true"{% endif %} aria-label="Page précédente">&laquo; <span class="d-none d-sm-inline">Précédent</span></a>
+						</li>
+						{% set previousShown = 0 %}
+						{% for p in 1..pageCount %}
+							{# Première, dernière, et 2 pages autour de la page courante #}
+							{% if p == 1 or p == pageCount or (p >= page - 2 and p <= page + 2) %}
+								{% if previousShown and p - previousShown > 1 %}
+									<li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+								{% endif %}
+								<li class="page-item {{ p == page ? 'active' }}" {% if p == page %}aria-current="page"{% endif %}>
+									<a class="page-link" href="{{ path('app_resources', pageParams|merge({'page': p})) }}">{{ p }}</a>
+								</li>
+								{% set previousShown = p %}
+							{% endif %}
+						{% endfor %}
+						<li class="page-item {{ page >= pageCount ? 'disabled' }}">
+							<a class="page-link" href="{{ page < pageCount ? path('app_resources', pageParams|merge({'page': page + 1})) : '#' }}" {% if page >= pageCount %}tabindex="-1" aria-disabled="true"{% endif %} aria-label="Page suivante"><span class="d-none d-sm-inline">Suivant</span> &raquo;</a>
+						</li>
+					</ul>
+				</nav>
+			{% endif %}
 		{% else %}
 			<div class="alert alert-info text-center">
 				<p>Aucune ressource trouvée</p>

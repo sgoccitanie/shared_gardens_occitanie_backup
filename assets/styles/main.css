@@ -383,3 +383,29 @@ button.main-button:hover:after {
     .back-to-top { bottom: 1rem; right: 1rem; }
 }
 
+
+/* ============================================
+   PAGINATION DES RESSOURCES
+   ============================================ */
+.resources-pagination .page-link {
+    color: var(--dark-green);
+    border-color: var(--green-light);
+}
+
+.resources-pagination .page-link:hover,
+.resources-pagination .page-link:focus {
+    color: #fff;
+    background-color: var(--dark-green);
+    border-color: var(--dark-green);
+    box-shadow: none;
+}
+
+.resources-pagination .page-item.active .page-link {
+    color: #fff;
+    background-color: var(--green);
+    border-color: var(--green);
+}
+
+.resources-pagination .page-item.disabled .page-link {
+    color: #999;
+}
