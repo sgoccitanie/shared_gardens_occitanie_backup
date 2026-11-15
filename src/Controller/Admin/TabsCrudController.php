@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -16,6 +17,7 @@ use App\Controller\Admin\Traits\EasyAdminAssetsTrait;
 use App\Controller\Admin\Traits\EasyAdminActionsTrait;
 use App\Entity\Posts;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use Psr\Log\LoggerInterface;
 
 #[IsGranted('ROLE_EDITOR')]
@@ -48,6 +50,11 @@ class TabsCrudController extends AbstractCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         try {
+             $content = $entityInstance->getContent();
+            if (!empty($content)) {
+                $content = $this->cleanContent($content);
+                $entityInstance->setContent($content);
+            }
             parent::persistEntity($entityManager, $entityInstance);
             $this->addFlash('success', 'La page "' . $entityInstance->getLabel() . '" a été créée avec succès.');
         } catch (\Exception $e) {
@@ -60,9 +67,13 @@ class TabsCrudController extends AbstractCrudController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        /** @var Tabs $entityInstance */
         try {
-            /** @var Tabs $entityInstance */
-
+             $content = $entityInstance->getContent();
+            if (!empty($content)) {
+                $content = $this->cleanContent($content);
+                $entityInstance->setContent($content);
+            }
             // Récupérer l'état actuel en base (avant modification)
             $originalTab = $entityManager->getUnitOfWork()->getOriginalEntityData($entityInstance);
 
@@ -139,7 +150,26 @@ class TabsCrudController extends AbstractCrudController
             SlugField::new('slug')->setTargetFieldName(['label'])->setFormTypeOption('attr', ['readonly' => true])->setUnlockConfirmationMessage(
                 'Il est recommandé d\'utiliser les slugs automatiques, mais vous pouvez les personnaliser'
             ),
-            AssociationField::new('categories')->setLabel('Catégorie associée'),
+            // Interrupteur : « Contenu » et « Article(s) associé(s) » ne s'affichent dans le formulaire que s'il est activé
+            // (script à la fin de templates\admin\posts\form.html.twig)
+            BooleanField::new('own_content', 'Page avec son propre contenu')
+                ->setHelp("Activé : la page affiche le contenu ci-dessous, suivi de ses articles associés. Désactivé : la page affiche la liste des articles qui lui sont rattachés (ou l'article seul s'il n'y en a qu'un)."),
+            // Éditeur TinyMCE (templates\admin\posts\form.html.twig), contenu facultatif
+            TextareaField::new('content', 'Contenu')
+                ->hideOnIndex()
+                ->setRequired(false)
+                ->setFormTypeOptions([
+                    'block_name' => 'content',
+                ])
+                ->setFormTypeOption('attr', ['class' => 'tinymce']),
+            AssociationField::new('categories')
+                ->setLabel('Catégorie associée')
+                // Dans la liste : le nom des catégories plutôt que leur nombre
+                ->formatValue(function ($value, ?Tabs $tab) {
+                    $names = $tab?->getCategories()->map(fn ($category) => (string) $category->getName())->toArray() ?? [];
+
+                    return $names ? implode(', ', $names) : '—';
+                }),
             AssociationField::new('tabs_posts', 'Article(s) associé(s)')
             ->setFormTypeOption('by_reference', false)
             ->setFormTypeOption('multiple', true)
@@ -171,6 +201,30 @@ class TabsCrudController extends AbstractCrudController
             ]);
             $this->addFlash('danger', "La page n'a pas pu être supprimée. Elle est peut-être liée à d'autres contenus.");
         }
+    }
+
+    private function cleanContent(?string $content): string
+    {
+        if (empty($content)) {
+            return '';
+        }
+
+        $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);
+        $content = preg_replace('/<!--(?!\[if).*?-->/s', '', $content);
+        // Déballe les wrappers WordPress (garde le contenu, retire le div englobant)
+        $content = preg_replace('#<div[^>]*(id="(container|content)"|class="[^"]*(hentry|entry-content|post-\d+)[^"]*")[^>]*>#i', '', $content);
+
+        // Retire les attributs data-* de WordPress
+        $content = preg_replace('/\s*data-[a-z-]+="[^"]*"/i', '', $content);
+
+        // Retire les paddings inline parasites
+        $content = preg_replace('/\s*padding-left:\s*\d+px;?/i', '', $content);
+
+        $content = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $content);
+
+
+        // return $this->sanitizer->sanitize($content);
+        return $content;
     }
 
     private function ensureUniqueSlug(EntityManagerInterface $entityManager, Tabs $tab): void

@@ -40,8 +40,10 @@
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         {% for tabWithPosts in categoryWithTabs.tabs %}
+                                            {# instanciation des variables postcount(tableau des posts) et singlePost(si postcount == 1 seul post) #}
                                             {% set postCount = tabWithPosts.posts|length %}
-                                            {% set singlePost = postCount == 1 ? tabWithPosts.posts|first : null %}
+                                                {% set singlePost = postCount == 1 ? tabWithPosts.posts|first : null %}
+
                                             {% if postCount == 1 %}
                                                 {% set tabUrl = singlePost.url %}
                                             {% elseif postCount > 1 %}

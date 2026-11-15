@@ -11,6 +11,31 @@
     margin-left: 0;
 }
 
+/* Interrupteurs des formulaires : EasyAdmin les décale de -2.5em, ce qui les fait passer sous le menu latéral */
+body.ea .form-widget .form-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-left: 0;
+}
+
+body.ea .form-widget .form-switch .form-check-input {
+    float: none;
+    flex: 0 0 auto;
+    margin: 0;
+    width: 2.75em;
+    height: 1.4em;
+    cursor: pointer;
+}
+
+body.ea .form-widget .form-switch .form-check-label {
+    /* Sans la marge basse d'EasyAdmin, le libellé est centré sur l'interrupteur */
+    padding: 0;
+    margin: 0;
+    line-height: 1.4em;
+    cursor: pointer;
+}
+
 .form-control {
     border-radius: var(--border-radius-md);
     padding: 0.75rem;
