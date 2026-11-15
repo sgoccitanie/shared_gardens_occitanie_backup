@@ -1,0 +1,102 @@
+/* ============================================
+   CARROUSEL D'ARTICLES (page avec contenu)
+   ============================================ */
+.articles-carousel__wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.articles-carousel__track {
+    display: flex;
+    gap: 1rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 0.5rem 0.25rem 1rem;
+    scroll-padding-inline: 0.25rem;
+    scrollbar-width: none;
+}
+
+.articles-carousel__track::-webkit-scrollbar {
+    display: none;
+}
+
+/* Jusqu'à 3 articles visibles sur grand écran (--per-view est défini dans le template) */
+.articles-carousel__item {
+    flex: 0 0 calc((100% - (var(--per-view, 3) - 1) * 1rem) / var(--per-view, 3));
+    min-width: 0;
+    scroll-snap-align: start;
+}
+
+.articles-carousel__item .card {
+    display: flex;
+    flex-direction: column;
+}
+
+.articles-carousel__arrow {
+    flex: 0 0 auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--green);
+    color: #fff;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.articles-carousel__arrow:hover,
+.articles-carousel__arrow:focus-visible {
+    background-color: var(--dark-green);
+}
+
+/* Au bout du carrousel : la flèche disparaît mais garde sa place (les cartes ne bougent pas) */
+.articles-carousel__arrow.is-hidden {
+    visibility: hidden;
+}
+
+/* Tous les articles tiennent à l'écran : flèches retirées, les cartes prennent toute la largeur */
+.articles-carousel.is-static .articles-carousel__arrow {
+    display: none;
+}
+
+/* Jusqu'à 2 articles visibles sur tablette */
+@media (max-width: 991.98px) {
+    .articles-carousel__item {
+        flex-basis: calc((100% - (var(--per-view-tablet, 2) - 1) * 1rem) / var(--per-view-tablet, 2));
+    }
+}
+
+/* 1 article visible sur mobile */
+@media (max-width: 575.98px) {
+    .articles-carousel__item {
+        flex-basis: 100%;
+    }
+
+    .articles-carousel__wrapper {
+        gap: 0.25rem;
+    }
+
+    .articles-carousel__track {
+        gap: 0.5rem;
+    }
+
+    .articles-carousel__item .card {
+        padding: 1rem !important;
+    }
+
+    .articles-carousel__item h4 {
+        font-size: 1.1rem;
+    }
+
+    .articles-carousel__arrow {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.9rem;
+    }
+}

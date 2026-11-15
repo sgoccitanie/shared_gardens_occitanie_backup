@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\TabsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,6 +23,16 @@ class Tabs
 
     #[ORM\Column]
     private ?bool $news_feed = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $content = null;
+
+    /**
+     * true  : la page affiche son propre contenu, suivi de ses articles associés (carrousel)
+     * false : la page est une page d'articles (liste, ou article seul s'il n'y en a qu'un)
+     */
+    #[ORM\Column(options: ['default' => false])]
+    private bool $own_content = false;
 
     #[ORM\Column(length: 50, unique: true)]
     private ?string $slug = null;
@@ -105,6 +116,59 @@ class Tabs
     public function setCategories(Collection $categories): static
     {
         $this->categories = $categories;
+        return $this;
+    }
+    public function isOwnContent(): bool
+    {
+        return $this->own_content;
+    }
+
+    public function setOwnContent(bool $own_content): static
+    {
+        $this->own_content = $own_content;
+        return $this;
+    }
+
+    /**
+     * Contenu à afficher sur le site : seulement si la page est en mode « contenu propre ».
+     * Désactiver l'option ne supprime pas le contenu saisi, il est simplement ignoré.
+     */
+    public function getDisplayedContent(): ?string
+    {
+        return $this->own_content ? $this->getContent() : null;
+    }
+
+    public function getContent(): ?string
+    {
+        // Texte brut (collé sans mise en forme, aucune balise) : on reconstitue les paragraphes
+        // pour qu'ils s'affichent dans l'éditeur comme sur le site. Le HTML est renvoyé tel quel.
+        if ($this->content !== null && $this->content === strip_tags($this->content)) {
+            $paragraphs = preg_split('/\R\s*\R/u', trim($this->content)) ?: [];
+            // Retire aussi les espaces insécables en début/fin de paragraphe
+            $paragraphs = array_map(fn (string $p) => preg_replace('/^[\s\x{00A0}]+|[\s\x{00A0}]+$/u', '', $p) ?? $p, $paragraphs);
+            $paragraphs = array_filter($paragraphs, fn (string $p) => $p !== '');
+
+            return implode("\n", array_map(fn (string $p) => '<p>' . nl2br($p, false) . '</p>', $paragraphs));
+        }
+
+        return $this->content;
+    }
+
+    public function setContent(?string $content): static
+    {
+        // Contenu facultatif : une page peut n'afficher que ses articles
+        if ($content === null || trim($content) === '') {
+            $this->content = null;
+            return $this;
+        }
+
+        // Décoder une première fois
+        $content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        // Décoder une deuxième fois (cas où le contenu est double-encodé)
+        $content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        $this->content = $content;
         return $this;
     }
 

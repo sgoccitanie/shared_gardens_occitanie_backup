@@ -10,7 +10,6 @@ use App\Repository\CategoriesRepository;
 use App\Repository\PresentationRepository;
 use App\Service\CommonDataService;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -71,7 +70,7 @@ class HomeController extends AbstractController
             return $this->renderSinglePost($post, $request);
         }
 
-        // Sinon, le slug correspond peut-être à une page : on liste ses articles
+        // Sinon, le slug correspond à une page : on liste ses articles
         return $this->renderTabPosts($slug, $order, $categoryId);
     }
 
@@ -104,7 +103,7 @@ class HomeController extends AbstractController
     }
 
     #[Route('/order/{order}', name: 'app_home_order_all', methods: ['POST'], requirements: ['order' => 'ASC|DESC'])]
-    public function orderAllPosts(string $order, Request $request): Response
+    public function orderAllPosts(string $order): Response
     {
         $order = $this->validateOrder($order);
 
@@ -116,7 +115,7 @@ class HomeController extends AbstractController
         }
 
         return $this->render('home/postslist.html.twig', [
-            'postsWithUrls' => $this->commonDataService->buildPost%sWithUrls($posts),
+            'postsWithUrls' => $this->commonDataService->buildPostsWithUrls($posts),
         ]);
     }
 
@@ -228,6 +227,14 @@ class HomeController extends AbstractController
         $tabPost = true;
 
         try {
+            $tab = $this->entityManager->getRepository(\App\Entity\Tabs::class)
+                ->findOneBy(['slug' => $slug]);
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur récupération tab : ' . $e->getMessage());
+            $tab = null;
+        }
+
+        try {
             $posts = $this->postsRepository->createQueryBuilder('p')
                 ->select('DISTINCT p')
                 ->innerJoin('p.tabs', 't')
@@ -242,7 +249,7 @@ class HomeController extends AbstractController
             $posts = [];
         }
 
-        return $this->renderList($posts, $order, $slug, $categoryId, $tabPost);
+        return $this->renderList($posts, $order, $slug, $categoryId, $tabPost, $tab);
     }
 
     /**
@@ -250,7 +257,7 @@ class HomeController extends AbstractController
      *
      * @param Posts[] $posts
      */
-    private function renderList(array $posts, string $order, ?string $slug, ?string $categoryId, ?bool $tabPost = false): Response
+    private function renderList(array $posts, string $order, ?string $slug, ?string $categoryId, ?bool $tabPost = false, ?object $tab = null): Response
     {
         if(!empty($categoryId) && $categoryId !== null){
             $category = $this->categoriesRepository->find($categoryId);
@@ -271,6 +278,8 @@ class HomeController extends AbstractController
             'eventCalendar' => false,
             'order' => $order,
             'tabPost' => $tabPost,
+            'tab' => $tab,                             
+            'tabContent' => $tab?->getDisplayedContent(), 
         ]);
     }
 

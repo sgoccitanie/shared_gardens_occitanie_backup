@@ -118,26 +118,25 @@ class CommonDataService
         } catch (\Exception $e) {
             $this->logger->error('Erreur récupération tous articles: ' . $e->getMessage());
             $allPosts = [];
-        }                
+        } 
                 
         $allPostsWithUrls = $this->buildPostsWithUrls($allPosts);
 
         $categories = $this->categoriesRepository->findAll();
         $categoriesWithTabs = array_map(function ($cat) use ($allPostsWithUrls) {
+            $tabs = $this->tabsRepository->findByCategory($cat);
 
-        $tabs = $this->tabsRepository->findByCategory($cat);
+            $tabsWithPosts = [];
 
-        $tabsWithPosts = [];
-
-        foreach ($tabs as $tab) {
-            $posts = array_filter($allPostsWithUrls, function ($postWithUrl) use ($tab) {
-                foreach ($postWithUrl['post']->getTabs() as $postTab) {
-                    if ($postTab->getId() === $tab->getId()) {
-                        return true;
+            foreach ($tabs as $tab) {
+                $posts = array_filter($allPostsWithUrls, function ($postWithUrl) use ($tab) {
+                    foreach ($postWithUrl['post']->getTabs() as $postTab) {
+                        if ($postTab->getId() === $tab->getId()) {
+                            return true;
+                        }
                     }
-                }
-                return false;
-            });
+                    return false;
+                });
                 $tabsWithPosts[] = [
                     'tab' => $tab,
                     'posts' => array_values($posts),
