@@ -8,7 +8,7 @@
 
 {% block _Posts_content_widget %}
     <script src="{{ asset('bundles/tinymce/ext/tinymce/tinymce.min.js') }}"></script>
-    <textarea name="Posts[content]" id="{{ id }}" class="tinymce" role="textbox" style="background-red">{{ data }}</textarea>
+    <textarea name="{{ full_name }}" id="{{ id }}"class="tinymce" role="textbox" style="background-red">{{ data }}</textarea>
 
     <script>
         /* Message (succès ou erreur) dans un conteneur .pdf-embed */
@@ -365,6 +365,35 @@
                     return '';
                 }
             }
+        });
+    </script>
+{% endblock %}
+
+{# Même éditeur TinyMCE pour le contenu des pages (Tabs) #}
+{% block _Tabs_content_widget %}
+    {{ block('_Posts_content_widget') }}
+
+    {# « Contenu » et « Article(s) associé(s) » ne sont affichés que si « Page avec son propre contenu » est activé.
+       Les champs restent dans le formulaire : désactiver l'option ne supprime ni le contenu ni les rattachements. #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggle = document.getElementById('Tabs_own_content');
+            if (!toggle) return;
+
+            const rows = ['Tabs_content', 'Tabs_tabs_posts']
+                .map(function (id) {
+                    const field = document.getElementById(id);
+                    const group = field ? field.closest('.form-group') : null;
+                    // La colonne Bootstrap qui enveloppe le champ, sinon le groupe lui-même
+                    return group ? (group.parentElement.matches('[class*="col-"]') ? group.parentElement : group) : null;
+                })
+                .filter(Boolean);
+
+            const sync = function () {
+                rows.forEach(function (row) { row.hidden = !toggle.checked; });
+            };
+            toggle.addEventListener('change', sync);
+            sync();
         });
     </script>
 {% endblock %}

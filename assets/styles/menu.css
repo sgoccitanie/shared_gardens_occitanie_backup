@@ -9,8 +9,7 @@
 #sidebar {
     position: fixed;
     z-index: 1000;
-    min-width: 270px;
-    max-width: 300px;
+    width: 270px;
     min-height: 100vh;
     background: white;
     transition: all 0.3s;
