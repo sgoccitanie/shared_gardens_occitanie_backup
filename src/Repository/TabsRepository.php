@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Categories;
 use App\Entity\Tabs;
+use App\Entity\Posts;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,6 +20,20 @@ class TabsRepository extends ServiceEntityRepository
 
     /**
      * @return Tabs[]
+     */
+    public function findOneTabBy(Categories $category): array
+    {
+        return $this->createQueryBuilder('t')
+        ->innerJoin('t.categories', 'c')
+        ->addSelect('p')
+        ->where('c = :category')
+        ->setParameter('category', $category)
+        ->getQuery()
+        ->getResult();
+    }
+
+    /**
+     * @return Posts[]
      */
     public function findByCategory(Categories $category): array
     {

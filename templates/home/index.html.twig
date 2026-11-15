@@ -1,20 +1,20 @@
 {% extends 'base.html.twig' %}
-{# => Si displayList = true : afficher la liste des articles #}
-{# => Sinon : afficher un article unique (postWithUrls[0]) #}
-	{% block title %}
-{{ pageTitle|default('Réseau des Semeurs de Jardins') }}
+{# => Si displayList = true : afficher le contenu de la page (si présent) + ses articles (carrousel ou liste) #}
+{# => Sinon : afficher un article unique (postsWithUrls[0]) #}
+{% block title %}
+	{{ pageTitle|default('Réseau des Semeurs de Jardins') }}
 {% endblock %}
 
 {% block stylesheets %}
 	{{ parent() }}
-	<link rel="stylesheet" href="{{ asset('styles/index.css') }}"> 
+	<link rel="stylesheet" href="{{ asset('styles/index.css') }}">
 	<link rel="stylesheet" href="{{ asset('styles/categories_tabs.css') }}">
 	<link rel="stylesheet" href="{{ asset('styles/post.css') }}">
 {% endblock %}
 
 {% block content %}
 	<div class="container-fluid d-flex flex-column main-container-style">
-		<div class="content_home josefinSans">	
+		<div class="content_home josefinSans">
 			<div class="home-container">
 				{% for message in app.flashes('success') %}
 					<div class="flash-notice alert alert-success">
@@ -27,78 +27,142 @@
 					</div>
 				{% endfor %}
 			</div>
-			{# Banniere #}
+
+			{# Bannière #}
 			<div class="home_picture" style="background-image: url('{{ asset(bannerPath) }}');"></div>
 
-			{# Categories et onglets #}
-			<div class="d-none d-lg-block h-100">						
+			{# Catégories et onglets #}
+			<div class="d-none d-lg-block h-100">
 				{% include '_partials/categories_tabs/categories_tabs.html.twig' %}
 			</div>
 			<div class="container-fluid d-lg-none">
 				{% include '_partials/categories_tabs/categories_tabs_mobile.html.twig' %}
 			</div>
-			<div class="content_main">				
-				<div class="d-flex flex-column p-2">	
-					{# --- LISTE DES ARTICLES --- #}
-					{% if displayList %}
-						{% if postsWithUrls|length > 0 %}
-							{# breadCrumb : Fil d'ariane en french #}
-							{% include '_partials/header/breadcrumb.html.twig' with {'category': category} %}
-							<div class="row_index">
-								<div class="d-flex justify-content-end me-3">
-									{% set orderUrl = categoryId is defined and categoryId is not null and tabPost === false
-										? path('app_articles', {'category': categoryId})
-										: (slug is defined and slug is not null
-											? path('app_home_with_slug', {'slug': slug, 'category': categoryId})
-											: path('app_articles')) %}
 
-									<select class="form-select"
-											aria-label="Trier les articles"
-											style="width: fit-content;"
-											onchange="window.location.href='{{ orderUrl }}{{ '?' in orderUrl ? '&' : '?' }}order=' + this.value">
-										<option value="ASC" {% if order == 'ASC' %}selected{% endif %}>Du plus ancien au plus récent</option>
-										<option value="DESC" {% if order == 'DESC' %}selected{% endif %}>Du plus récent au plus ancien</option>
-									</select>
-								</div>
-								<div id="posts_list">									
-									{% for postWithUrl in postsWithUrls %}
-										{% set post = postWithUrl.post %}
-										<div class="row_index_item mx-lg-4 my-lg-4 p-4 my-2 card card-profile">
-											<div class="row_index_item_content">
-												<div class="row_index_item_header d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-2">
-													<h2 class="mb-0">
-														<a href="{{ path('app_home_with_slug', {'slug': post.slug}) }}" class="post-title-link">
-															{{ post.title }}
-														</a>
-													</h2>
-													<span class="post-date text-muted">
-														{{ post.postedAt|format_datetime(locale: 'fr', pattern: 'd MMMM Y') }}
-													</span>
-												</div>
-												<div class="row_index_item_excerpt">
-													{{ post.content|striptags|slice(0, 50)|raw }}...
-												</div>
-												<div class="row_index_item_footer mt-2">
-													<a href="{{ path('app_home_with_slug', {'slug': post.slug, 'category': categoryId, 'postSlug': postSlug}) }}" class="button btn-secondary-outline">
-														Lire la suite
-													</a>
-												</div>
-											</div>
-										</div>
-									{% endfor %}
-								</div>
-							</div>
-						{% else %}
-							<div class="text-center py-5">
-								<h2>Aucun article disponible</h2>
-								<p>Aucun article n'est encore publié pour cette catégorie.</p>
+			<div class="content_main">
+				<div class="d-flex flex-column p-2">
+
+					{# ========================================================== #}
+					{#  LISTE / PAGE (displayList = true)                         #}
+					{# ========================================================== #}
+					{% if displayList %}
+						{# --- 1. Contenu de la page (si présent) --- #}
+						{% if tabContent is not empty %}
+							{% include '_partials/header/breadcrumb.html.twig' with {'category': category} %}
+							<div class="page-content post-content mx-lg-4 my-lg-4 p-4">
+								{{ tabContent|raw }}
 							</div>
 						{% endif %}
+
+						{# --- 2. Articles rattachés --- #}
+						{% if postsWithUrls|length > 0 %}
+
+							{% if tabContent is not empty %}
+								{# --- 2a. CARROUSEL (quand la page a déjà du contenu) --- #}
+								{# Nombre d'articles visibles côte à côte : 3 max sur grand écran, 2 max sur tablette, 1 sur mobile (voir index.css).
+								   S'il y a trop peu d'articles pour remplir la rangée, le dernier est affiché à moitié :
+								   il reste ainsi toujours quelque chose à faire défiler, donc une flèche du côté où il reste des articles. #}
+								{% set nbPosts = postsWithUrls|length %}
+								{% set perView = nbPosts > 3 ? 3 : max(1, nbPosts - 0.5) %}
+								{% set perViewTablet = nbPosts > 2 ? 2 : max(1, nbPosts - 0.5) %}
+								<div class="articles-carousel mx-lg-4 my-lg-4" data-articles-carousel style="--per-view: {{ perView }}; --per-view-tablet: {{ perViewTablet }};">
+									<h3 class="color-green mb-3">Articles associés</h3>
+									<div class="articles-carousel__wrapper">
+										<button class="articles-carousel__arrow articles-carousel__arrow--prev" type="button" data-carousel-prev aria-label="Articles précédents">
+											<span aria-hidden="true">&#10094;</span>
+										</button>
+										<div class="articles-carousel__track" data-carousel-track>
+											{% for postWithUrl in postsWithUrls %}
+												{% set post = postWithUrl.post %}
+												<div class="articles-carousel__item">
+													<div class="card card-profile p-4 h-100">
+														<h4>
+															<a href="{{ path('app_home_with_slug', {'slug': post.slug}) }}" class="post-title-link">{{ post.title }}</a>
+														</h4>
+														<p class="post-date text-muted">
+															{{ post.postedAt|format_datetime(locale: 'fr', pattern: 'd MMMM Y') }}
+														</p>
+														<div class="flex-grow-1">{{ post.content|striptags|slice(0, 100)|raw }}...</div>
+														<a href="{{ path('app_home_with_slug', {'slug': post.slug}) }}" class="button btn-secondary-outline mt-2 align-self-start">
+															Lire la suite
+														</a>
+													</div>
+												</div>
+											{% endfor %}
+										</div>
+										<button class="articles-carousel__arrow articles-carousel__arrow--next" type="button" data-carousel-next aria-label="Articles suivants">
+											<span aria-hidden="true">&#10095;</span>
+										</button>
+									</div>
+								</div>
+
+							{% else %}
+								{# --- 2b. LISTE CLASSIQUE (page sans contenu propre) --- #}
+								{% include '_partials/header/breadcrumb.html.twig' with {'category': category} %}
+								<div class="row_index">
+									<div class="d-flex justify-content-end me-3">
+										{% set orderUrl = categoryId is defined and categoryId is not null and tabPost === false
+											? path('app_articles', {'category': categoryId})
+											: (slug is defined and slug is not null
+												? path('app_home_with_slug', {'slug': slug, 'category': categoryId})
+												: path('app_articles')) %}
+
+										<select class="form-select"
+												aria-label="Trier les articles"
+												style="width: fit-content;"
+												onchange="window.location.href='{{ orderUrl }}{{ '?' in orderUrl ? '&' : '?' }}order=' + this.value">
+											<option value="ASC" {% if order == 'ASC' %}selected{% endif %}>Du plus ancien au plus récent</option>
+											<option value="DESC" {% if order == 'DESC' %}selected{% endif %}>Du plus récent au plus ancien</option>
+										</select>
+									</div>
+									<div id="posts_list">
+										{% for postWithUrl in postsWithUrls %}
+											{% set post = postWithUrl.post %}
+											<div class="row_index_item mx-lg-4 my-lg-4 p-4 my-2 card card-profile">
+												<div class="row_index_item_content">
+													<div class="row_index_item_header d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-2">
+														<h2 class="mb-0">
+															<a href="{{ path('app_home_with_slug', {'slug': post.slug}) }}" class="post-title-link">
+																{{ post.title }}
+															</a>
+														</h2>
+														<span class="post-date text-muted">
+															{{ post.postedAt|format_datetime(locale: 'fr', pattern: 'd MMMM Y') }}
+														</span>
+													</div>
+													<div class="row_index_item_excerpt">
+														{{ post.content|striptags|slice(0, 50)|raw }}...
+													</div>
+													<div class="row_index_item_footer mt-2">
+														<a href="{{ path('app_home_with_slug', {'slug': post.slug, 'category': categoryId, 'postSlug': postSlug}) }}" class="button btn-secondary-outline">
+															Lire la suite
+														</a>
+													</div>
+												</div>
+											</div>
+										{% endfor %}
+									</div>
+								</div>
+							{% endif %}
+
+						{% else %}
+							{# --- 3. Aucun article rattaché ET aucun contenu de page --- #}
+							{% if tabContent is empty %}
+								<div class="text-center py-5">
+									<h2>{{ tab.label ?? 'Page' }}</h2>
+									<p>Aucun contenu n'est encore publié pour cette page.</p>
+								</div>
+							{% endif %}
+						{% endif %}
+
 					{% else %}
-						{# --- ARTICLE UNIQUE --- #}
+						{# ========================================================== #}
+						{#  ARTICLE UNIQUE (displayList = false)                      #}
+						{# ========================================================== #}
 						{% if postsWithUrls|length == 1 %}
 							{% set postWithUrl = postsWithUrls[0] %}
 							{% set post = postWithUrl.post %}
+
 							{% if backToList %}
 								{% if categoryId is defined and categoryId is not null %}
 									<div class="mb-3">
@@ -115,10 +179,12 @@
 										</a>
 									</div>
 								{% endif %}
-							{% endif %}							
-							{# breadCrumb : Fil d'ariane en french #}
+							{% endif %}
+
+							{# Fil d'ariane #}
 							{% include '_partials/header/breadcrumb.html.twig' with {'post': postWithUrl.post} %}
-							<div class=" row_index">
+
+							<div class="row_index">
 								<div class="row_index_item single-post post-content">
 									<div class="row_index_item_content">
 										<div class="row_index_item_header d-flex flex-column flex-md-row justify-content-end align-items-md-center mb-3">
@@ -151,10 +217,10 @@
 															{{ comment.content|nl2br }}
 														</div>
 													</div>
-													 {# Réponses de l'équipe #}
+													{# Réponses de l'équipe #}
 													{% for reply in comment.replies %}
 														{% if reply.isApproved %}
-															<div class="comment-item p-3 mb-2 border border-3 rounded  ms-3">
+															<div class="comment-item p-3 mb-2 border border-3 rounded ms-3">
 																<div class="comment-header d-flex justify-content-between">
 																	<span class="badge-team fw-bold">{{ reply.pseudo }}</span>
 																	<span class="badge-team fw-bold">Réponse du réseau</span>
@@ -180,6 +246,7 @@
 									</div>
 								{% endif %}
 							</div>
+
 						{% else %}
 							<div class="text-center py-5">
 								<h2>Article introuvable</h2>
@@ -190,9 +257,11 @@
 					{% endif %}
 				</div>
 			</div>
-		{% endblock %}
+		</div>
+	</div>
+{% endblock %}
 
-		{% block js %}
-			{{ parent() }}
-			<script src="{{ asset('js/index.js') }}" defer></script>
-		{% endblock %}
+{% block js %}
+	{{ parent() }}
+	<script src="{{ asset('js/index.js') }}" defer></script>
+{% endblock %}
